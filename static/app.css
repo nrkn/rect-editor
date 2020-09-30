@@ -1,0 +1,36 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: grid;
+  grid-template-rows: auto 1fr auto;  
+}
+
+main {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  overflow: hidden;
+}
+
+#viewport {
+  overflow: hidden;
+}
+
+svg {
+  background: #eee;
+}
+
+svg .selected {
+  fill: rgba( 64, 128, 255, 0.75 );
+}

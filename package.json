@@ -1,0 +1,21 @@
+{
+  "name": "rect-editor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "rimraf dist && tsc",
+    "build-client": "npm run build && browserify ./dist/client/index.js -o ./static/app.js",
+    "start": "npm run build-client && node ./dist/server/index"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "object-fit-math": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.8"
+  }
+}
