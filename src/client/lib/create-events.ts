@@ -318,7 +318,7 @@ function getElementBounds (element) {
   }
 }
 
-function isDOMNode (obj): obj is Node | Window {
+function isDOMNode (obj: any): obj is Node | Window {
   if (!obj || obj == null) return false
 
   const winEl = typeof window !== 'undefined' ? window : null
