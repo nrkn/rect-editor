@@ -16,7 +16,7 @@ export const initIOEvents = (state: AppState) => {
   const event = createInputEvents( { target: viewportEl, preventDefault: true } )
 
   let dragLine: Line | null = null
-  let currentRectEl: SVGRectElement | null = null
+  let creatingRectEl: SVGRectElement | null = null
 
   viewportEl.addEventListener('wheel', e => {
     e.preventDefault()
@@ -45,17 +45,17 @@ export const initIOEvents = (state: AppState) => {
   event.on('up', ({ position }) => {
     console.log('up', { position })
 
-    if( currentRectEl ){
-      const { width, height } = currentRectEl
+    if( creatingRectEl ){
+      const { width, height } = creatingRectEl
 
       if( width.baseVal.value === 0 || height.baseVal.value === 0 ){
-        currentRectEl.remove()
+        creatingRectEl.remove()
       } 
 
       selectNone( state )
-      selectRect( state, currentRectEl )
+      selectRect( state, creatingRectEl )
 
-      currentRectEl = null
+      creatingRectEl = null
     }
 
     dragLine = null    
@@ -85,13 +85,13 @@ export const initIOEvents = (state: AppState) => {
     }
 
     if (state.mode === 'draw') {
-      if (!currentRectEl) {
-        currentRectEl = rect({
+      if (!creatingRectEl) {
+        creatingRectEl = rect({
           class: 'draw-rect',
           fill: 'rgba( 255, 255, 255, 0.75 )'
         })
 
-        groupEl.append(currentRectEl)
+        groupEl.append(creatingRectEl)
       }
 
       const { x1, x2, y1, y2 } = dragLine
@@ -103,7 +103,7 @@ export const initIOEvents = (state: AppState) => {
       const { x1: x, y1: y } = line
       const { x: width, y: height } = lineToVector(line)
 
-      attr( currentRectEl, { x, y, width, height } )
+      attr( creatingRectEl, { x, y, width, height } )
     }
   })
 
