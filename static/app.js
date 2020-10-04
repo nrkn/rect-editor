@@ -305,7 +305,7 @@ function isUndefined(arg) {
 },{}],2:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.zoomAt = exports.switchMode = exports.selectRect = exports.selectNone = void 0;
+exports.zoomAt = exports.switchMode = exports.getSelection = exports.selectRect = exports.selectNone = void 0;
 const util_1 = require("../lib/dom/util");
 const transform_1 = require("../lib/geometry/transform");
 const geometry_1 = require("./geometry");
@@ -316,6 +316,10 @@ exports.selectNone = (state) => {
 };
 exports.selectRect = (_state, rectEl) => {
     rectEl.classList.add('selected');
+};
+exports.getSelection = (state) => {
+    const rectEls = rects_1.getDrawRects(state);
+    return rectEls.filter(el => el.classList.contains('selected'));
 };
 const changeEvent = new Event('change');
 exports.switchMode = (state, mode) => {
@@ -341,7 +345,13 @@ exports.populateForm = void 0;
 const h_1 = require("../../lib/dom/h");
 const types_1 = require("../types");
 exports.populateForm = (formEl) => {
-    formEl.append(createPointerModes(), h_1.button({ type: 'button', id: 'resetZoom' }, 'Reset Zoom'), createSizeEditor('Snap to Grid', 'cell'));
+    formEl.append(...createUndoRedo(), createPointerModes(), h_1.button({ type: 'button', id: 'resetZoom' }, 'Reset Zoom'), createSizeEditor('Snap to Grid', 'cell'));
+};
+const createUndoRedo = () => {
+    return [
+        h_1.button({ type: 'button', id: 'undo' }, 'Undo'),
+        h_1.button({ type: 'button', id: 'redo' }, 'Redo')
+    ];
 };
 const createPointerModes = () => h_1.fieldset(h_1.legend('Pointer Mode'), ...types_1.appModes.map(createPointerMode));
 const createPointerMode = (mode) => h_1.div(h_1.label(h_1.input({ name: 'mode', type: 'radio', value: mode, checked: '' }), ` ${mode}`));
@@ -446,7 +456,11 @@ const initState = (options) => {
     viewportEl.append(svgEl);
     const mode = 'pan';
     const dom = { viewportEl, formEl, svgEl, groupEl };
-    const state = { mode, transform, dom, options, defsManager };
+    const dragLine = null;
+    const creatingRectEl = null;
+    const state = {
+        mode, transform, dom, options, defsManager, dragLine, creatingRectEl
+    };
     return state;
 };
 const getDomElements = () => {
@@ -502,8 +516,6 @@ exports.initIOEvents = (state) => {
     const { dom, options } = state;
     const { viewportEl, groupEl } = dom;
     const event = create_events_1.createInputEvents({ target: viewportEl, preventDefault: true });
-    let dragLine = null;
-    let currentRectEl = null;
     viewportEl.addEventListener('wheel', e => {
         e.preventDefault();
         const { left, top } = viewportEl.getBoundingClientRect();
@@ -522,50 +534,50 @@ exports.initIOEvents = (state) => {
     });
     event.on('up', ({ position }) => {
         console.log('up', { position });
-        if (currentRectEl) {
-            const { width, height } = currentRectEl;
+        if (state.creatingRectEl) {
+            const { width, height } = state.creatingRectEl;
             if (width.baseVal.value === 0 || height.baseVal.value === 0) {
-                currentRectEl.remove();
+                state.creatingRectEl.remove();
             }
             actions_1.selectNone(state);
-            actions_1.selectRect(state, currentRectEl);
-            currentRectEl = null;
+            actions_1.selectRect(state, state.creatingRectEl);
+            state.creatingRectEl = null;
         }
-        dragLine = null;
+        state.dragLine = null;
     });
     event.on('move', ({ position, dragging }) => {
         if (!dragging)
             return;
         const { x, y } = normalizeLocal(state, position);
-        if (dragLine) {
-            dragLine.x2 = x;
-            dragLine.y2 = y;
+        if (state.dragLine) {
+            state.dragLine.x2 = x;
+            state.dragLine.y2 = y;
         }
         else {
-            dragLine = { x1: x, y1: y, x2: x, y2: y };
+            state.dragLine = { x1: x, y1: y, x2: x, y2: y };
         }
         if (state.mode === 'pan') {
-            const { x: dX, y: dY } = line_1.lineToVector(dragLine);
+            const { x: dX, y: dY } = line_1.lineToVector(state.dragLine);
             state.transform.x += dX;
             state.transform.y += dY;
             geometry_2.applyTransform(state);
             return;
         }
         if (state.mode === 'draw') {
-            if (!currentRectEl) {
-                currentRectEl = s_1.rect({
+            if (!state.creatingRectEl) {
+                state.creatingRectEl = s_1.rect({
                     class: 'draw-rect',
                     fill: 'rgba( 255, 255, 255, 0.75 )'
                 });
-                groupEl.append(currentRectEl);
+                groupEl.append(state.creatingRectEl);
             }
-            const { x1, x2, y1, y2 } = dragLine;
+            const { x1, x2, y1, y2 } = state.dragLine;
             if (x1 >= x2 || y1 >= y2)
                 return;
-            const line = line_1.snapLineToGrid(dragLine, options.snap);
+            const line = line_1.snapLineToGrid(state.dragLine, options.snap);
             const { x1: x, y1: y } = line;
             const { x: width, y: height } = line_1.lineToVector(line);
-            util_1.attr(currentRectEl, { x, y, width, height });
+            util_1.attr(state.creatingRectEl, { x, y, width, height });
         }
     });
     event.on('tap', ({ position }) => {
@@ -610,9 +622,7 @@ exports.keyHandler = (state, key) => {
         if (key === '+') {
             scale = state.transform.scale + 0.25;
         }
-        if (scale !== state.transform.scale) {
-            actions_1.zoomAt(state, { x, y, scale });
-        }
+        actions_1.zoomAt(state, { x, y, scale });
         return;
     }
     if (isMove(key)) {
@@ -637,8 +647,11 @@ exports.keyHandler = (state, key) => {
         geometry_1.applyTransform(state);
         return;
     }
+    if (isDelete(key)) {
+    }
 };
 const isResetZoom = (key) => key === '*';
+const isDelete = (key) => key === 'Delete';
 const isZoom = (key) => ['-', '+'].includes(key);
 const isMove = (key) => ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(key);
 
@@ -808,7 +821,8 @@ exports.createInputEvents = (opt) => {
         const wasDragging = dragging;
         const touch = getCurrentEvent(event);
         let valid = true;
-        if (filtered && event.changedTouches && (!touch || touch.identifier !== initialIdentifier)) {
+        if (filtered && event.changedTouches &&
+            (!touch || touch.identifier !== initialIdentifier)) {
             // skip entirely if this touch doesn't match expected
             valid = false;
         }
@@ -948,8 +962,10 @@ function distance(a, b) {
 }
 function isInsideBounds(event, bounds) {
     const { clientX, clientY } = event;
-    return clientX >= bounds.left && clientX < bounds.right &&
-        clientY >= bounds.top && clientY < bounds.bottom;
+    return (clientX >= bounds.left &&
+        clientX < bounds.right &&
+        clientY >= bounds.top &&
+        clientY < bounds.bottom);
 }
 function getNormalizedPosition(position, bounds) {
     return [
@@ -957,7 +973,7 @@ function getNormalizedPosition(position, bounds) {
         position[1] / bounds.height
     ];
 }
-function getPosition(event, target, bounds) {
+function getPosition(event, _target, bounds) {
     const { clientX, clientY } = event;
     const x = clientX - bounds.left;
     const y = clientY - bounds.top;
@@ -986,7 +1002,8 @@ function isDOMNode(obj) {
     if (!obj || obj == null)
         return false;
     const winEl = typeof window !== 'undefined' ? window : null;
-    return obj === winEl || (typeof obj.nodeType === 'number' && typeof obj.nodeName === 'string');
+    return (obj === winEl ||
+        (typeof obj.nodeType === 'number' && typeof obj.nodeName === 'string'));
 }
 
 },{"events":1}],15:[function(require,module,exports){

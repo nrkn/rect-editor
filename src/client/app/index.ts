@@ -45,7 +45,12 @@ const initState = (options: AppOptions) => {
 
   const mode: AppMode = 'pan'
   const dom: AppDomEls = { viewportEl, formEl, svgEl, groupEl }
-  const state: AppState = { mode, transform, dom, options, defsManager }
+  const dragLine = null
+  const creatingRectEl = null
+  
+  const state: AppState = { 
+    mode, transform, dom, options, defsManager, dragLine, creatingRectEl
+  }
 
   return state
 }

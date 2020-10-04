@@ -15,6 +15,12 @@ export const selectRect = ( _state: AppState, rectEl: SVGRectElement ) => {
   rectEl.classList.add( 'selected' )
 }
 
+export const getSelection = ( state: AppState ) => {
+  const rectEls = getDrawRects( state )
+
+  return rectEls.filter( el => el.classList.contains( 'selected' ) )
+}
+
 const changeEvent = new Event('change')
 
 export const switchMode = (state: AppState, mode: AppMode) => {

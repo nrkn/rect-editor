@@ -1,5 +1,5 @@
 import { DefsManager } from '../lib/dom/defs'
-import { Size, Transform } from '../lib/geometry/types'
+import { Line, Size, Transform } from '../lib/geometry/types'
 
 export const appModes = [ 'pan', 'draw', 'select' ] as const 
 
@@ -18,6 +18,8 @@ export type AppState = {
   dom: AppDomEls
   options: AppOptions
   defsManager: DefsManager
+  dragLine: Line | null
+  creatingRectEl: SVGRectElement | null
 }
 
 export type AppDomEls = {

@@ -24,17 +24,15 @@ export const keyHandler = (state: AppState, key: string) => {
       scale = state.transform.scale + 0.25
     }
 
-    if (scale !== state.transform.scale) {
-      zoomAt(state, { x, y, scale })
-    }
+    zoomAt(state, { x, y, scale })
 
     return
   }
 
   if (isMove(key)) {
     const { cellSize } = options
-    let { width, height } = cellSize
 
+    let { width, height } = cellSize
     let { x, y, scale } = state.transform
 
     width *= scale
@@ -62,9 +60,15 @@ export const keyHandler = (state: AppState, key: string) => {
 
     return
   }
+
+  if( isDelete( key )){
+
+  }
 }
 
 const isResetZoom = (key: string) => key === '*'
+
+const isDelete = ( key: string ) => key === 'Delete'
 
 const isZoom = (key: string) => ['-', '+'].includes(key)
 
