@@ -80,6 +80,8 @@ export const initIOEvents = (state: AppState) => {
       state.transform.y += dY
 
       applyTransform(state)
+
+      return
     }
 
     if (state.mode === 'draw') {

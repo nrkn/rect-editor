@@ -549,6 +549,7 @@ exports.initIOEvents = (state) => {
             state.transform.x += dX;
             state.transform.y += dY;
             geometry_2.applyTransform(state);
+            return;
         }
         if (state.mode === 'draw') {
             if (!currentRectEl) {
