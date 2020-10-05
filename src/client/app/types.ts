@@ -3,11 +3,19 @@ import { Line, Rect, Size, Transform } from '../lib/geometry/types'
 
 export const appModes = [ 'pan', 'draw', 'select' ] as const 
 
-export const actionTypes = [ 'add', 'delete', 'edit' ] as const
-
 export type AppMode = typeof appModes[ number ]
 
-export type ActionType = typeof actionTypes[ number ]
+export type ActionTypeMap = {
+  add: AddAction
+  delete: DeleteAction
+  edit: EditAction
+}
+
+export type ActionType = keyof ActionTypeMap
+
+export const actionTypes: Readonly<ActionType[]> = [ 
+  'add', 'delete', 'edit' 
+] as const
 
 export type AppOptions = {
   gridSize: Size
@@ -38,26 +46,21 @@ export type AppDomEls = {
 type ActionBase = {
   type: ActionType
   rect: Rect
+  previous?: Rect
   id: string
 }
 
 export type AddAction = ActionBase & {
   type: 'add'
-  rect: Rect
-  id: string
 }
 
 export type DeleteAction = ActionBase & {
   type: 'delete'
-  rect: Rect
-  id: string
 }
 
 export type EditAction = ActionBase & {
   type: 'edit'
   previous: Rect
-  rect: Rect
-  id: string
 }
 
 export type Action = AddAction | DeleteAction | EditAction
@@ -67,8 +70,10 @@ export type ActionList = {
   nextIndex: number
 }
 
-export type ActionTypeMap = {
-  add: AddAction
-  delete: DeleteAction
-  edit: EditAction
+export type ActionHandler<K extends ActionType> = ( 
+  state: AppState, action: ActionTypeMap[ K ]
+) => void
+
+export type ActionHandlerMap = {
+  [K in ActionType]: ActionHandler<K>
 }
