@@ -355,7 +355,6 @@ exports.createRectEl = (id = util_2.randomId(), { x = 0, y = 0, width = 1, heigh
     return rectEl;
 };
 exports.newAction = (state, action) => {
-    // do the thing
     const { actions } = state;
     const { nextIndex } = actions;
     actions.list = [...actions.list.slice(0, nextIndex), action];
@@ -367,6 +366,7 @@ exports.undoAction = (state) => {
     if (list.length === 0)
         return;
     const action = list[actions.nextIndex - 1];
+    // wtf how to do this?
     undoActions[action.type](state, action);
     actions.nextIndex--;
 };
@@ -376,48 +376,35 @@ exports.redoAction = (state) => {
     if (list.length === 0 || nextIndex === list.length)
         return;
     const action = list[actions.nextIndex];
+    // wtf how to do this?
     redoActions[action.type](state, action);
     actions.nextIndex++;
 };
-// this is all fucked up - figure out how to type this correctly!
-const undoActions = {
-    add: (state, { id }) => {
-        const rectEl = util_1.strictSelect(`#${id}`, state.dom.groupEl);
-        rectEl.remove();
-    },
-    delete: (state, { id, rect }) => {
-        const rectEl = exports.createRectEl(id, rect);
-        /*
-          TODO - how to put it back in the right place in the dom list? Keep track
-          of previous/next siblings?
-        */
-        state.dom.groupEl.append(rectEl);
-    },
-    edit: (state, action) => {
-        const { id, previous } = action;
-        const rectEl = util_1.strictSelect(`#${id}`, state.dom.groupEl);
-        exports.setRectElRect(rectEl, previous);
-    }
+const actionAdd = (state, { id, rect }) => {
+    const rectEl = exports.createRectEl(id, rect);
+    /*
+      TODO - how to put it back in the right place in the dom list? Keep track
+      of previous/next siblings?
+    */
+    state.dom.groupEl.append(rectEl);
+};
+const actionDelete = (state, { id }) => {
+    const rectEl = util_1.strictSelect(`#${id}`, state.dom.groupEl);
+    rectEl.remove();
+};
+const actionEdit = (state, id, rect) => {
+    const rectEl = util_1.strictSelect(`#${id}`, state.dom.groupEl);
+    exports.setRectElRect(rectEl, rect);
 };
 const redoActions = {
-    add: (state, { id, rect }) => {
-        const rectEl = exports.createRectEl(id, rect);
-        /*
-          TODO - how to put it back in the right place in the dom list? Keep track
-          of previous/next siblings? also - this is same as undo delete - reuse
-          that code
-        */
-        state.dom.groupEl.append(rectEl);
-    },
-    delete: (state, { id }) => {
-        // nb same as undo add, reuse that code
-        const rectEl = util_1.strictSelect(`#${id}`, state.dom.groupEl);
-        rectEl.remove();
-    },
-    edit: (state, { id, rect }) => {
-        const rectEl = util_1.strictSelect(`#${id}`, state.dom.groupEl);
-        exports.setRectElRect(rectEl, rect);
-    }
+    add: actionAdd,
+    delete: actionDelete,
+    edit: (state, { id, rect }) => actionEdit(state, id, rect)
+};
+const undoActions = {
+    add: actionDelete,
+    delete: actionAdd,
+    edit: (state, { id, previous }) => actionEdit(state, id, previous)
 };
 
 },{"../lib/dom/s":20,"../lib/dom/util":21,"../lib/geometry/transform":26,"../lib/util":27,"./geometry":4,"./rects":10}],3:[function(require,module,exports){
@@ -850,6 +837,7 @@ exports.findRectAt = (state, point) => {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.initForm = void 0;
 const util_1 = require("../lib/dom/util");
+const actions_1 = require("./actions");
 const geometry_1 = require("./geometry");
 const predicates_1 = require("./predicates");
 exports.initForm = (state) => {
@@ -877,17 +865,23 @@ exports.initForm = (state) => {
     });
     const resetZoomButtonEl = util_1.strictSelect('#resetZoom', formEl);
     resetZoomButtonEl.addEventListener('click', () => geometry_1.zoomToFit(state));
+    const undoButtonEl = util_1.strictSelect('#undo', formEl);
+    undoButtonEl.addEventListener('click', () => actions_1.undoAction(state));
+    const redoButtonEl = util_1.strictSelect('#redo', formEl);
+    redoButtonEl.addEventListener('click', () => actions_1.redoAction(state));
     modeEl.value = 'pan';
     cellWidthEl.value = String(options.snap.width);
     cellHeightEl.value = String(options.snap.height);
 };
 
-},{"../lib/dom/util":21,"./geometry":4,"./predicates":8}],12:[function(require,module,exports){
+},{"../lib/dom/util":21,"./actions":2,"./geometry":4,"./predicates":8}],12:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.actionTypes = exports.appModes = void 0;
 exports.appModes = ['pan', 'draw', 'select'];
-exports.actionTypes = ['add', 'delete', 'edit'];
+exports.actionTypes = [
+    'add', 'delete', 'edit'
+];
 
 },{}],13:[function(require,module,exports){
 "use strict";

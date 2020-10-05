@@ -7,20 +7,26 @@ Drag and drop rectangle editor
 - Multi select 
   - hold shift to add to toggle selection of individual rects
   - drag to select all in drag area
-- Use an action list to allow undo/redo stack - things that are actions:
-  - creating a new rect
-  - moving/editing/deleting rects
-- If a rect selected, `Delete` key removes
-- If a selected rect is dragged, it moves
+- If rect(s) selected, `Delete` key removes
+  - need new action, deleteGroup
+- If rect(s) selected, drag to move
+  - need new action, editGroup
 - Selected rect should have resize handles, drag to resize
-- If handle is dragged with `Shift` key down, rect maintains aspect ratio
+  - Same for multiple selection?
+  - If handle is dragged with `Shift` key down, rect maintains aspect ratio
 - Selected rect should have a form to edit eg x, y, width, height
+  - Disabled if multiselect?
 - If tap in draw mode, location is x,y - modal asks for width and height
-- Way to change z-index of rects (bring forward, send to back etc)
-- Create rects in directions other than top left -> bottom right
-- width/height tooltip while creating/resizing
-- dx/dy tooltip while dragging
+  - Maybe have drop down, allow placing more than 1 
+    - If more than one, choose pattern, eg stack, column, row, grid
+- Arrange rect(s) (bring forward, send to back etc)
+  - Should be undo/redoable - new action or make code more z index aware?
+- Create rects by dragging in directions other than top left -> bottom right
+- Show width/height tooltip while creating/resizing
+- Show dx/dy tooltip while dragging
 - New mode, zoom
-- New / save / load
+- Copy/cut/paste - on paste, action add, on cut action delete
+- Undo/redo - when reinstating a rect(s), select it
+- General tidy up, things are a bit of a mess!
+- New project / save / load
 - Icons for buttons etc
-- Copy/paste

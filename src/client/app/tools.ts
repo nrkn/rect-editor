@@ -1,4 +1,5 @@
 import { strictFormElement, strictSelect } from '../lib/dom/util'
+import { redoAction, undoAction } from './actions'
 import { zoomToFit } from './geometry'
 import { isAppMode } from './predicates'
 import { getDrawRects } from './rects'
@@ -39,8 +40,19 @@ export const initForm = (state: AppState) => {
 
   resetZoomButtonEl.addEventListener('click', () => zoomToFit(state))
 
+  const undoButtonEl = strictSelect<HTMLButtonElement>(
+    '#undo', formEl
+  )
+
+  undoButtonEl.addEventListener('click', () => undoAction( state ) )
+
+  const redoButtonEl = strictSelect<HTMLButtonElement>(
+    '#redo', formEl
+  )
+
+  redoButtonEl.addEventListener( 'click', () => redoAction( state ) )
+
   modeEl.value = 'pan'
   cellWidthEl.value = String(options.snap.width)
   cellHeightEl.value = String(options.snap.height)
 }
-
