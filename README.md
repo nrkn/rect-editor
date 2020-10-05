@@ -4,9 +4,9 @@ Drag and drop rectangle editor
 
 ## TODO
 
-- If shift down while drawing, draw square (use max of w/h)
+- If `Shift` down while drawing, draw square (use max of w/h)
 - Multi select 
-  - hold shift to add to toggle selection of individual rects
+  - hold `Shift` to add to toggle selection of individual rects
   - drag to select all in drag area
 - If rect(s) selected, `Delete` key removes
   - need new action, deleteGroup
@@ -31,4 +31,8 @@ Drag and drop rectangle editor
 - General tidy up, things are a bit of a mess!
 - New project / save / load
 - Right Click menu
+- Double click to edit selection?
+- Prefabs - basically, like copy/paste except they get saved
+- Layers
+- Groups - basically just saved selections?
 - Icons for buttons etc
