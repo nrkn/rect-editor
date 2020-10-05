@@ -5,14 +5,15 @@ import { getViewBoxRect } from '../../lib/dom/geometry'
 import { lineToVector, snapLineToGrid } from '../../lib/geometry/line'
 import { findRectAt } from '../rects'
 import { AppState } from '../types'
-import { selectNone, selectRect, switchMode, zoomAt } from '../actions'
-import { applyTransform, localToGrid } from '../geometry'
+import { newAction, selectNone, selectRect, switchMode, zoomAt } from '../actions'
+import { applyTransform, localToGrid, svgRectToRect } from '../geometry'
 import { keyHandler } from './key'
+import { randomId } from '../../lib/util'
 
 export const initIOEvents = (state: AppState) => {
   const { dom, options } = state
   const { viewportEl, groupEl } = dom
-  const event = createInputEvents( { target: viewportEl, preventDefault: true } )
+  const event = createInputEvents({ target: viewportEl, preventDefault: true })
 
   viewportEl.addEventListener('wheel', e => {
     e.preventDefault()
@@ -26,13 +27,17 @@ export const initIOEvents = (state: AppState) => {
 
     const newScale = scale + deltaY * -0.1
 
-    zoomAt( state, { x, y, scale: newScale } )
+    zoomAt(state, { x, y, scale: newScale })
   })
 
   window.addEventListener('keydown', e => {
-    keyHandler( state, e.key )
+    state.keys[e.key] = true
+    keyHandler(state, e.key)
   })
 
+  window.addEventListener('keyup', e => {
+    state.keys[e.key] = false
+  })
 
   event.on('down', ({ position }) => {
     console.log('down', { position })
@@ -41,20 +46,31 @@ export const initIOEvents = (state: AppState) => {
   event.on('up', ({ position }) => {
     console.log('up', { position })
 
-    if( state.creatingRectEl ){
+    if (state.creatingRectEl) {
       const { width, height } = state.creatingRectEl
 
-      if( width.baseVal.value === 0 || height.baseVal.value === 0 ){
+      if (width.baseVal.value === 0 || height.baseVal.value === 0) {
         state.creatingRectEl.remove()
-      } 
+        state.creatingRectEl = null
 
-      selectNone( state )
-      selectRect( state, state.creatingRectEl )
+        return
+      }
+
+      selectNone(state)
+      selectRect(state, state.creatingRectEl)
+
+      newAction(state,
+        {
+          type: 'add',
+          id: state.creatingRectEl.id,
+          rect: svgRectToRect(state.creatingRectEl)
+        }
+      )
 
       state.creatingRectEl = null
     }
 
-    state.dragLine = null    
+    state.dragLine = null
   })
 
   event.on('move', ({ position, dragging }) => {
@@ -83,6 +99,7 @@ export const initIOEvents = (state: AppState) => {
     if (state.mode === 'draw') {
       if (!state.creatingRectEl) {
         state.creatingRectEl = rect({
+          id: randomId(),
           class: 'draw-rect',
           fill: 'rgba( 255, 255, 255, 0.75 )'
         })
@@ -92,33 +109,33 @@ export const initIOEvents = (state: AppState) => {
 
       const { x1, x2, y1, y2 } = state.dragLine
 
-      if( x1 >= x2 || y1 >= y2 ) return
+      if (x1 >= x2 || y1 >= y2) return
 
-      const line = snapLineToGrid( state.dragLine, options.snap )
+      const line = snapLineToGrid(state.dragLine, options.snap)
 
       const { x1: x, y1: y } = line
       const { x: width, y: height } = lineToVector(line)
 
-      attr( state.creatingRectEl, { x, y, width, height } )
+      attr(state.creatingRectEl, { x, y, width, height })
     }
   })
 
   event.on('tap', ({ position }) => {
-    selectNone( state )
-    
+    selectNone(state)
+
     const localPosition = normalizeLocal(state, position)
 
-    const selectedRectEl = findRectAt( state, localPosition )
+    const selectedRectEl = findRectAt(state, localPosition)
 
-    if( state.mode === 'draw' && selectedRectEl !== undefined ){
-      switchMode( state, 'select' )
+    if (state.mode === 'draw' && selectedRectEl !== undefined) {
+      switchMode(state, 'select')
     }
 
-    if( state.mode === 'select' ){
-      const selectedRectEl = findRectAt( state, localPosition )
+    if (state.mode === 'select') {
+      const selectedRectEl = findRectAt(state, localPosition)
 
-      if( selectedRectEl !== undefined ){
-        selectRect( state, selectedRectEl )
+      if (selectedRectEl !== undefined) {
+        selectRect(state, selectedRectEl)
       }
 
       return

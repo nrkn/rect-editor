@@ -2,7 +2,7 @@ import { g, rect, svg } from '../lib/dom/s'
 import { attr, strictSelect } from '../lib/dom/util'
 import { setViewBox } from '../lib/dom/geometry'
 import { zoomToFit } from './geometry'
-import { AppDomEls, AppMode, AppOptions, AppState } from './types'
+import { ActionList, AppDomEls, AppMode, AppOptions, AppState } from './types'
 import { createGridBg } from './raster'
 import { createDefsManager } from '../lib/dom/defs'
 import { initIOEvents } from './io'
@@ -47,9 +47,16 @@ const initState = (options: AppOptions) => {
   const dom: AppDomEls = { viewportEl, formEl, svgEl, groupEl }
   const dragLine = null
   const creatingRectEl = null
+  const keys = {}
+
+  const actions: ActionList = {
+    list: [],
+    nextIndex: 0
+  }
   
   const state: AppState = { 
-    mode, transform, dom, options, defsManager, dragLine, creatingRectEl
+    mode, transform, dom, options, defsManager, dragLine, creatingRectEl, keys,
+    actions
   }
 
   return state

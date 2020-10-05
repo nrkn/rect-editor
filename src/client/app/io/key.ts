@@ -1,4 +1,4 @@
-import { zoomAt } from '../actions'
+import { redoAction, undoAction, zoomAt } from '../actions'
 import { applyTransform, getLocalCenter, zoomToFit } from '../geometry'
 import { AppState } from '../types'
 
@@ -62,7 +62,23 @@ export const keyHandler = (state: AppState, key: string) => {
   }
 
   if( isDelete( key )){
+    // ...
 
+    return
+  }
+
+  if( isUndoRedo( key ) && state.keys.Control ){
+    console.log( 'Undo or Redo' )
+
+    if( state.keys.Shift ){
+      console.log( 'Redo' )
+      
+      redoAction( state )
+    } else {
+      console.log( 'Undo' )
+
+      undoAction( state )
+    }
   }
 }
 
@@ -74,3 +90,5 @@ const isZoom = (key: string) => ['-', '+'].includes(key)
 
 const isMove = (key: string) =>
   ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(key)
+
+const isUndoRedo = ( key: string ) => key.toLowerCase() === 'z'

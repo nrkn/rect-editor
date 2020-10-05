@@ -23,3 +23,4 @@ Drag and drop rectangle editor
 - New mode, zoom
 - New / save / load
 - Icons for buttons etc
+- Copy/paste

@@ -305,9 +305,11 @@ function isUndefined(arg) {
 },{}],2:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.zoomAt = exports.switchMode = exports.getSelection = exports.selectRect = exports.selectNone = void 0;
+exports.redoAction = exports.undoAction = exports.newAction = exports.createRectEl = exports.setRectElRect = exports.zoomAt = exports.switchMode = exports.getSelection = exports.selectRect = exports.selectNone = void 0;
+const s_1 = require("../lib/dom/s");
 const util_1 = require("../lib/dom/util");
 const transform_1 = require("../lib/geometry/transform");
+const util_2 = require("../lib/util");
 const geometry_1 = require("./geometry");
 const rects_1 = require("./rects");
 exports.selectNone = (state) => {
@@ -337,26 +339,107 @@ exports.zoomAt = (state, { scale, x, y }) => {
     Object.assign(state.transform, newTransform);
     geometry_1.applyTransform(state);
 };
+exports.setRectElRect = (rectEl, { x = 0, y = 0, width = 1, height = 1 } = {}) => {
+    rectEl.x.baseVal.value = x;
+    rectEl.y.baseVal.value = y;
+    rectEl.width.baseVal.value = width;
+    rectEl.height.baseVal.value = height;
+};
+exports.createRectEl = (id = util_2.randomId(), { x = 0, y = 0, width = 1, height = 1 } = {}) => {
+    const rectEl = s_1.rect({
+        id,
+        class: 'draw-rect',
+        fill: 'rgba( 255, 255, 255, 0.75 )'
+    });
+    exports.setRectElRect(rectEl, { x, y, width, height });
+    return rectEl;
+};
+exports.newAction = (state, action) => {
+    // do the thing
+    const { actions } = state;
+    const { nextIndex } = actions;
+    actions.list = [...actions.list.slice(0, nextIndex), action];
+    actions.nextIndex = actions.list.length;
+};
+exports.undoAction = (state) => {
+    const { actions } = state;
+    const { list } = actions;
+    if (list.length === 0)
+        return;
+    const action = list[actions.nextIndex - 1];
+    undoActions[action.type](state, action);
+    actions.nextIndex--;
+};
+exports.redoAction = (state) => {
+    const { actions } = state;
+    const { list, nextIndex } = actions;
+    if (list.length === 0 || nextIndex === list.length)
+        return;
+    const action = list[actions.nextIndex];
+    redoActions[action.type](state, action);
+    actions.nextIndex++;
+};
+// this is all fucked up - figure out how to type this correctly!
+const undoActions = {
+    add: (state, { id }) => {
+        const rectEl = util_1.strictSelect(`#${id}`, state.dom.groupEl);
+        rectEl.remove();
+    },
+    delete: (state, { id, rect }) => {
+        const rectEl = exports.createRectEl(id, rect);
+        /*
+          TODO - how to put it back in the right place in the dom list? Keep track
+          of previous/next siblings?
+        */
+        state.dom.groupEl.append(rectEl);
+    },
+    edit: (state, action) => {
+        const { id, previous } = action;
+        const rectEl = util_1.strictSelect(`#${id}`, state.dom.groupEl);
+        exports.setRectElRect(rectEl, previous);
+    }
+};
+const redoActions = {
+    add: (state, { id, rect }) => {
+        const rectEl = exports.createRectEl(id, rect);
+        /*
+          TODO - how to put it back in the right place in the dom list? Keep track
+          of previous/next siblings? also - this is same as undo delete - reuse
+          that code
+        */
+        state.dom.groupEl.append(rectEl);
+    },
+    delete: (state, { id }) => {
+        // nb same as undo add, reuse that code
+        const rectEl = util_1.strictSelect(`#${id}`, state.dom.groupEl);
+        rectEl.remove();
+    },
+    edit: (state, { id, rect }) => {
+        const rectEl = util_1.strictSelect(`#${id}`, state.dom.groupEl);
+        exports.setRectElRect(rectEl, rect);
+    }
+};
 
-},{"../lib/dom/util":21,"../lib/geometry/transform":26,"./geometry":4,"./rects":10}],3:[function(require,module,exports){
+},{"../lib/dom/s":20,"../lib/dom/util":21,"../lib/geometry/transform":26,"../lib/util":27,"./geometry":4,"./rects":10}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.populateForm = void 0;
 const h_1 = require("../../lib/dom/h");
 const types_1 = require("../types");
 exports.populateForm = (formEl) => {
-    formEl.append(...createUndoRedo(), createPointerModes(), h_1.button({ type: 'button', id: 'resetZoom' }, 'Reset Zoom'), createSizeEditor('Snap to Grid', 'cell'));
+    formEl.append(...createActionButtons(), createPointerModes(), createSizeEditor('Snap to Grid', 'cell'));
 };
-const createUndoRedo = () => {
+const createActionButtons = () => {
     return [
         h_1.button({ type: 'button', id: 'undo' }, 'Undo'),
-        h_1.button({ type: 'button', id: 'redo' }, 'Redo')
+        h_1.button({ type: 'button', id: 'redo' }, 'Redo'),
+        h_1.button({ type: 'button', id: 'resetZoom' }, 'Reset Zoom')
     ];
 };
 const createPointerModes = () => h_1.fieldset(h_1.legend('Pointer Mode'), ...types_1.appModes.map(createPointerMode));
 const createPointerMode = (mode) => h_1.div(h_1.label(h_1.input({ name: 'mode', type: 'radio', value: mode, checked: '' }), ` ${mode}`));
 const createSizeEditor = (title, prefix) => h_1.fieldset(h_1.legend(title), createIntegerEditor('Width', `${prefix}Width`), createIntegerEditor('Height', `${prefix}Height`));
-const createIntegerEditor = (title, name) => h_1.div(h_1.label(title, h_1.input({ name, type: 'number', value: 1, min: 1, step: 1 })));
+const createIntegerEditor = (title, name, step = 1, value = 1, min = 1) => h_1.div(h_1.label(title, h_1.input({ name, type: 'number', value, min, step })));
 
 },{"../../lib/dom/h":18,"../types":12}],4:[function(require,module,exports){
 "use strict";
@@ -416,7 +499,7 @@ exports.svgRectToRect = (el) => {
     return rect;
 };
 
-},{"../lib/dom/geometry":17,"../lib/dom/util":21,"object-fit-math":28}],5:[function(require,module,exports){
+},{"../lib/dom/geometry":17,"../lib/dom/util":21,"object-fit-math":29}],5:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createApp = void 0;
@@ -458,8 +541,14 @@ const initState = (options) => {
     const dom = { viewportEl, formEl, svgEl, groupEl };
     const dragLine = null;
     const creatingRectEl = null;
+    const keys = {};
+    const actions = {
+        list: [],
+        nextIndex: 0
+    };
     const state = {
-        mode, transform, dom, options, defsManager, dragLine, creatingRectEl
+        mode, transform, dom, options, defsManager, dragLine, creatingRectEl, keys,
+        actions
     };
     return state;
 };
@@ -512,6 +601,7 @@ const rects_1 = require("../rects");
 const actions_1 = require("../actions");
 const geometry_2 = require("../geometry");
 const key_1 = require("./key");
+const util_2 = require("../../lib/util");
 exports.initIOEvents = (state) => {
     const { dom, options } = state;
     const { viewportEl, groupEl } = dom;
@@ -527,7 +617,11 @@ exports.initIOEvents = (state) => {
         actions_1.zoomAt(state, { x, y, scale: newScale });
     });
     window.addEventListener('keydown', e => {
+        state.keys[e.key] = true;
         key_1.keyHandler(state, e.key);
+    });
+    window.addEventListener('keyup', e => {
+        state.keys[e.key] = false;
     });
     event.on('down', ({ position }) => {
         console.log('down', { position });
@@ -538,9 +632,16 @@ exports.initIOEvents = (state) => {
             const { width, height } = state.creatingRectEl;
             if (width.baseVal.value === 0 || height.baseVal.value === 0) {
                 state.creatingRectEl.remove();
+                state.creatingRectEl = null;
+                return;
             }
             actions_1.selectNone(state);
             actions_1.selectRect(state, state.creatingRectEl);
+            actions_1.newAction(state, {
+                type: 'add',
+                id: state.creatingRectEl.id,
+                rect: geometry_2.svgRectToRect(state.creatingRectEl)
+            });
             state.creatingRectEl = null;
         }
         state.dragLine = null;
@@ -566,6 +667,7 @@ exports.initIOEvents = (state) => {
         if (state.mode === 'draw') {
             if (!state.creatingRectEl) {
                 state.creatingRectEl = s_1.rect({
+                    id: util_2.randomId(),
                     class: 'draw-rect',
                     fill: 'rgba( 255, 255, 255, 0.75 )'
                 });
@@ -601,7 +703,7 @@ const normalizeLocal = (state, [x, y]) => {
     return geometry_2.localToGrid(x, y, state.transform, viewBoxRect);
 };
 
-},{"../../lib/create-events":14,"../../lib/dom/geometry":17,"../../lib/dom/s":20,"../../lib/dom/util":21,"../../lib/geometry/line":22,"../actions":2,"../geometry":4,"../rects":10,"./key":7}],7:[function(require,module,exports){
+},{"../../lib/create-events":14,"../../lib/dom/geometry":17,"../../lib/dom/s":20,"../../lib/dom/util":21,"../../lib/geometry/line":22,"../../lib/util":27,"../actions":2,"../geometry":4,"../rects":10,"./key":7}],7:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.keyHandler = void 0;
@@ -648,12 +750,26 @@ exports.keyHandler = (state, key) => {
         return;
     }
     if (isDelete(key)) {
+        // ...
+        return;
+    }
+    if (isUndoRedo(key) && state.keys.Control) {
+        console.log('Undo or Redo');
+        if (state.keys.Shift) {
+            console.log('Redo');
+            actions_1.redoAction(state);
+        }
+        else {
+            console.log('Undo');
+            actions_1.undoAction(state);
+        }
     }
 };
 const isResetZoom = (key) => key === '*';
 const isDelete = (key) => key === 'Delete';
 const isZoom = (key) => ['-', '+'].includes(key);
 const isMove = (key) => ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(key);
+const isUndoRedo = (key) => key.toLowerCase() === 'z';
 
 },{"../actions":2,"../geometry":4}],8:[function(require,module,exports){
 "use strict";
@@ -769,8 +885,9 @@ exports.initForm = (state) => {
 },{"../lib/dom/util":21,"./geometry":4,"./predicates":8}],12:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.appModes = void 0;
+exports.actionTypes = exports.appModes = void 0;
 exports.appModes = ['pan', 'draw', 'select'];
+exports.actionTypes = ['add', 'delete', 'edit'];
 
 },{}],13:[function(require,module,exports){
 "use strict";
@@ -1254,6 +1371,15 @@ exports.transformRelativeTo = (existing, newScale, origin) => {
 },{"./point":24}],27:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createSequence = exports.randomInt = exports.randomChar = exports.randomId = void 0;
+exports.randomId = () => exports.createSequence(16, exports.randomChar).join('');
+exports.randomChar = () => String.fromCharCode(exports.randomInt(26) + 97);
+exports.randomInt = (exclMax) => Math.floor(Math.random() * exclMax);
+exports.createSequence = (length, cb) => Array.from({ length }, (_v, index) => cb(index));
+
+},{}],28:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.fit = (parent, child, fitMode = 'fill') => {
     if (fitMode === 'scale-down') {
         if (child.width <= parent.width && child.height <= parent.height) {
@@ -1294,7 +1420,7 @@ const lengthToPixels = (length, parent, child) => length.endsWith('%') ?
     (parent - child) * (parseFloat(length) / 100) :
     parseFloat(length);
 
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var fitter_1 = require("./fitter");
@@ -1306,7 +1432,7 @@ exports.transformFittedPoint = transform_fitted_point_1.transformFittedPoint;
 var predicates_1 = require("./predicates");
 exports.isFit = predicates_1.isFit;
 
-},{"./fitter":27,"./predicates":29,"./transform-fitted-point":30}],29:[function(require,module,exports){
+},{"./fitter":28,"./predicates":30,"./transform-fitted-point":31}],30:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const fitModes = {
@@ -1318,7 +1444,7 @@ const fitModes = {
 };
 exports.isFit = (value) => value in fitModes;
 
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const fitter_1 = require("./fitter");
@@ -1332,4 +1458,4 @@ exports.transformFittedPoint = (fittedPoint, parent, child, fitMode = 'fill', le
     return childPoint;
 };
 
-},{"./fitter":27}]},{},[13]);
+},{"./fitter":28}]},{},[13]);
