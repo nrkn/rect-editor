@@ -4,6 +4,7 @@ Drag and drop rectangle editor
 
 ## TODO
 
+- If shift down while drawing, draw square (use max of w/h)
 - Multi select 
   - hold shift to add to toggle selection of individual rects
   - drag to select all in drag area
@@ -29,4 +30,5 @@ Drag and drop rectangle editor
 - Undo/redo - when reinstating a rect(s), select it
 - General tidy up, things are a bit of a mess!
 - New project / save / load
+- Right Click menu
 - Icons for buttons etc
