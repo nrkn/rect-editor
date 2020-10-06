@@ -81,3 +81,14 @@ export const svgRectToRect = ( el: SVGRectElement ) => {
 
   return rect
 }
+
+export const insideRect = ( 
+  { x, y, width, height }: Rect, strokeWidth = 1 
+): Rect => {
+  x += strokeWidth / 2
+  y += strokeWidth / 2
+  width -= strokeWidth
+  height -= strokeWidth
+
+  return { x, y, width, height }
+}

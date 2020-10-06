@@ -31,6 +31,16 @@ svg {
   background: #eee;
 }
 
-svg .selected {
-  fill: rgba( 64, 128, 255, 0.75 );
+/* svg app elements */
+
+svg .outline {
+  stroke-width: 1;
+  stroke:  rgba(64, 128, 255, 1);
+  fill: transparent;
+}
+
+svg .handle {
+  stroke-width: 1;
+  stroke:  rgba(64, 128, 255, 1);
+  fill: rgba( 255, 255, 255, 0.75 );
 }

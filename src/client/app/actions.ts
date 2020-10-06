@@ -3,7 +3,8 @@ import { strictFormElement, strictSelect } from '../lib/dom/util'
 import { transformRelativeTo } from '../lib/geometry/transform'
 import { Point, Rect, Size, Transform } from '../lib/geometry/types'
 import { randomId } from '../lib/util'
-import { applyTransform } from './geometry'
+import { createResizer } from './dom/resizer'
+import { applyTransform, svgRectToRect } from './geometry'
 import { getDrawRects } from './rects'
 import { Action, ActionHandlerMap, ActionType, ActionTypeMap, AppMode, AppState, EditAction } from './types'
 
@@ -11,10 +12,20 @@ export const selectNone = (state: AppState) => {
   const rectEls = getDrawRects(state)
 
   rectEls.forEach(rectEl => rectEl.classList.remove('selected'))
+
+  const resizeEls = state.dom.groupEl.querySelectorAll( '.resize' )
+
+  resizeEls.forEach( el => el.remove() )
 }
 
 export const selectRect = ( _state: AppState, rectEl: SVGRectElement ) => {
   rectEl.classList.add( 'selected' )
+
+  const rect = svgRectToRect( rectEl )
+
+  const resizeEl = createResizer( rect, rectEl.id )
+
+  rectEl.after( resizeEl )
 }
 
 export const getSelection = ( state: AppState ) => {

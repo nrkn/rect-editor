@@ -4,6 +4,7 @@ Drag and drop rectangle editor
 
 ## TODO
 
+- Create rects by dragging in directions other than top left -> bottom right
 - If `Shift` down while drawing, draw square (use max of w/h)
 - Multi select 
   - hold `Shift` to add to toggle selection of individual rects
@@ -20,9 +21,9 @@ Drag and drop rectangle editor
 - If tap in draw mode, location is x,y - modal asks for width and height
   - Maybe have drop down, allow placing more than 1 
     - If more than one, choose pattern, eg stack, column, row, grid
+- Set cursor type (on mouse move? or CSS?)
 - Arrange rect(s) (bring forward, send to back etc)
   - Should be undo/redoable - new action or make code more z index aware?
-- Create rects by dragging in directions other than top left -> bottom right
 - Show width/height tooltip while creating/resizing
 - Show dx/dy tooltip while dragging
 - New mode, zoom
