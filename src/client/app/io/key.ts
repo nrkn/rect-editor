@@ -1,4 +1,4 @@
-import { redoAction, undoAction, zoomAt } from '../actions'
+import { redoAction, selectAll, selectNone, switchMode, undoAction, zoomAt } from '../actions'
 import { applyTransform, getLocalCenter, zoomToFit } from '../geometry'
 import { AppState } from '../types'
 
@@ -8,7 +8,7 @@ export const keyHandler = (state: AppState, key: string) => {
   if (isResetZoom(key)) {
     zoomToFit(state)
 
-    return
+    return true
   }
 
   if (isZoom(key)) {
@@ -26,7 +26,7 @@ export const keyHandler = (state: AppState, key: string) => {
 
     zoomAt(state, { x, y, scale })
 
-    return
+    return true
   }
 
   if (isMove(key)) {
@@ -58,13 +58,13 @@ export const keyHandler = (state: AppState, key: string) => {
 
     applyTransform(state)
 
-    return
+    return true
   }
 
   if( isDelete( key )){
     // ...
 
-    return
+    return true
   }
 
   if( isUndoRedo( key ) && state.keys.Control ){
@@ -73,7 +73,23 @@ export const keyHandler = (state: AppState, key: string) => {
     } else {
       undoAction( state )
     }
+
+    return true
   }
+
+  if( isSelectAllNone( key ) && state.keys.Control ){
+    if( state.keys.Shift ){
+      selectNone( state )
+    } else {
+      selectAll( state )
+    }
+
+    switchMode( state, 'select' )
+
+    return true
+  }
+
+  return false
 }
 
 const isResetZoom = (key: string) => key === '*'
@@ -86,3 +102,5 @@ const isMove = (key: string) =>
   ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(key)
 
 const isUndoRedo = ( key: string ) => key.toLowerCase() === 'z'
+
+const isSelectAllNone = ( key: string ) => key.toLowerCase() === 'a'

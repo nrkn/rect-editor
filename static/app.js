@@ -305,7 +305,7 @@ function isUndefined(arg) {
 },{}],2:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.redoAction = exports.undoAction = exports.newAction = exports.createRectEl = exports.setRectElRect = exports.zoomAt = exports.switchMode = exports.getSelection = exports.isSelected = exports.toggleRect = exports.selectRect = exports.deselectRect = exports.selectNone = void 0;
+exports.redoAction = exports.undoAction = exports.newAction = exports.createRectEl = exports.setRectElRect = exports.zoomAt = exports.switchMode = exports.getSelection = exports.isSelected = exports.toggleRect = exports.selectRect = exports.deselectRect = exports.selectAll = exports.selectNone = void 0;
 const s_1 = require("../lib/dom/s");
 const util_1 = require("../lib/dom/util");
 const transform_1 = require("../lib/geometry/transform");
@@ -318,6 +318,11 @@ exports.selectNone = (state) => {
     rectEls.forEach(rectEl => rectEl.classList.remove('selected'));
     const resizeEls = state.dom.groupEl.querySelectorAll('.resizer');
     resizeEls.forEach(el => el.remove());
+};
+exports.selectAll = (state) => {
+    exports.selectNone(state);
+    const rectEls = rects_1.getDrawRects(state);
+    rectEls.forEach(rectEl => exports.selectRect(state, rectEl));
 };
 exports.deselectRect = (state, rectEl) => {
     rectEl.classList.remove('selected');
@@ -715,7 +720,9 @@ exports.initIOEvents = (state) => {
     });
     window.addEventListener('keydown', e => {
         state.keys[e.key] = true;
-        key_1.keyHandler(state, e.key);
+        const handled = key_1.keyHandler(state, e.key);
+        if (handled)
+            e.preventDefault();
     });
     window.addEventListener('keyup', e => {
         state.keys[e.key] = false;
@@ -861,7 +868,7 @@ exports.keyHandler = (state, key) => {
     const { options } = state;
     if (isResetZoom(key)) {
         geometry_1.zoomToFit(state);
-        return;
+        return true;
     }
     if (isZoom(key)) {
         const { x, y } = geometry_1.getLocalCenter(state);
@@ -873,7 +880,7 @@ exports.keyHandler = (state, key) => {
             scale = state.transform.scale + 0.25;
         }
         actions_1.zoomAt(state, { x, y, scale });
-        return;
+        return true;
     }
     if (isMove(key)) {
         const { cellSize } = options;
@@ -895,11 +902,11 @@ exports.keyHandler = (state, key) => {
         }
         Object.assign(state.transform, { x, y });
         geometry_1.applyTransform(state);
-        return;
+        return true;
     }
     if (isDelete(key)) {
         // ...
-        return;
+        return true;
     }
     if (isUndoRedo(key) && state.keys.Control) {
         if (state.keys.Shift) {
@@ -908,13 +915,26 @@ exports.keyHandler = (state, key) => {
         else {
             actions_1.undoAction(state);
         }
+        return true;
     }
+    if (isSelectAllNone(key) && state.keys.Control) {
+        if (state.keys.Shift) {
+            actions_1.selectNone(state);
+        }
+        else {
+            actions_1.selectAll(state);
+        }
+        actions_1.switchMode(state, 'select');
+        return true;
+    }
+    return false;
 };
 const isResetZoom = (key) => key === '*';
 const isDelete = (key) => key === 'Delete';
 const isZoom = (key) => ['-', '+'].includes(key);
 const isMove = (key) => ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(key);
 const isUndoRedo = (key) => key.toLowerCase() === 'z';
+const isSelectAllNone = (key) => key.toLowerCase() === 'a';
 
 },{"../actions":2,"../geometry":6}],10:[function(require,module,exports){
 "use strict";

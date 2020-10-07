@@ -33,7 +33,9 @@ export const initIOEvents = (state: AppState) => {
 
   window.addEventListener('keydown', e => {
     state.keys[e.key] = true
-    keyHandler(state, e.key)
+    const handled = keyHandler(state, e.key)
+
+    if( handled ) e.preventDefault()
   })
 
   window.addEventListener('keyup', e => {

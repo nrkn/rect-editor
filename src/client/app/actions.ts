@@ -21,6 +21,14 @@ export const selectNone = (state: AppState) => {
   resizeEls.forEach( el => el.remove() )
 }
 
+export const selectAll = ( state: AppState ) => {
+  selectNone( state )
+
+  const rectEls = getDrawRects(state)
+
+  rectEls.forEach(rectEl => selectRect( state, rectEl ) )
+}
+
 export const deselectRect = ( state: AppState, rectEl: SVGRectElement ) => {
   rectEl.classList.remove( 'selected' )
 
