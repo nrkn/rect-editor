@@ -305,7 +305,7 @@ function isUndefined(arg) {
 },{}],2:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.redoAction = exports.undoAction = exports.newAction = exports.createRectEl = exports.setRectElRect = exports.zoomAt = exports.switchMode = exports.getSelection = exports.isSelected = exports.selectRect = exports.selectNone = void 0;
+exports.redoAction = exports.undoAction = exports.newAction = exports.createRectEl = exports.setRectElRect = exports.zoomAt = exports.switchMode = exports.getSelection = exports.isSelected = exports.toggleRect = exports.selectRect = exports.deselectRect = exports.selectNone = void 0;
 const s_1 = require("../lib/dom/s");
 const util_1 = require("../lib/dom/util");
 const transform_1 = require("../lib/geometry/transform");
@@ -316,14 +316,28 @@ const rects_1 = require("./rects");
 exports.selectNone = (state) => {
     const rectEls = rects_1.getDrawRects(state);
     rectEls.forEach(rectEl => rectEl.classList.remove('selected'));
-    const resizeEls = state.dom.groupEl.querySelectorAll('.resize');
+    const resizeEls = state.dom.groupEl.querySelectorAll('.resizer');
     resizeEls.forEach(el => el.remove());
+};
+exports.deselectRect = (state, rectEl) => {
+    rectEl.classList.remove('selected');
+    const { id } = rectEl;
+    const resizerEl = util_1.strictSelect(`.resizer[data-id=${id}]`, state.dom.groupEl);
+    resizerEl.remove();
 };
 exports.selectRect = (state, rectEl) => {
     rectEl.classList.add('selected');
     const rect = geometry_1.svgRectToRect(rectEl);
     const resizeEl = resizer_1.createResizer(rect, rectEl.id);
     state.dom.groupEl.append(resizeEl);
+};
+exports.toggleRect = (state, rectEl) => {
+    if (rectEl.classList.contains('selected')) {
+        exports.deselectRect(state, rectEl);
+    }
+    else {
+        exports.selectRect(state, rectEl);
+    }
 };
 exports.isSelected = (rectEl) => rectEl.classList.contains('selected');
 exports.getSelection = (state) => {
@@ -463,7 +477,7 @@ exports.createResizer = (bounds, rectId) => {
     const outlineEl = s_1.rect({ class: 'outline', 'data-id': rectId });
     const outlineRect = geometry_1.insideRect(bounds);
     actions_1.setRectElRect(outlineEl, outlineRect);
-    const groupEl = s_1.g({ class: 'resize', 'data-id': rectId }, outlineEl, ...createHandles(bounds, rectId));
+    const groupEl = s_1.g({ class: 'resizer', 'data-id': rectId }, outlineEl, ...createHandles(bounds, rectId));
     return groupEl;
 };
 const createHandles = (rect, rectId) => {
@@ -802,16 +816,31 @@ exports.initIOEvents = (state) => {
         }
     });
     event.on('tap', ({ position }) => {
-        actions_1.selectNone(state);
         const localPosition = normalizeLocal(state, position);
         const selectedRectEl = rects_1.findRectAt(state, localPosition);
+        if (state.mode === 'pan') {
+            actions_1.selectNone(state);
+            return;
+        }
         if (state.mode === 'draw' && selectedRectEl !== undefined) {
+            actions_1.selectNone(state);
+            actions_1.selectRect(state, selectedRectEl);
             actions_1.switchMode(state, 'select');
+            return;
         }
         if (state.mode === 'select') {
             const selectedRectEl = rects_1.findRectAt(state, localPosition);
-            if (selectedRectEl !== undefined) {
-                actions_1.selectRect(state, selectedRectEl);
+            if (selectedRectEl === undefined) {
+                actions_1.selectNone(state);
+            }
+            else {
+                if (state.keys.Shift) {
+                    actions_1.toggleRect(state, selectedRectEl);
+                }
+                else {
+                    actions_1.selectNone(state);
+                    actions_1.selectRect(state, selectedRectEl);
+                }
             }
             return;
         }

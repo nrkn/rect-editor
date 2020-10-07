@@ -5,7 +5,7 @@ import { getViewBoxRect } from '../../lib/dom/geometry'
 import { lineToVector, normalizeLine, snapLineToGrid } from '../../lib/geometry/line'
 import { findRectAt } from '../rects'
 import { AppState } from '../types'
-import { isSelected, newAction, selectNone, selectRect, setRectElRect, switchMode, zoomAt } from '../actions'
+import { isSelected, newAction, selectNone, selectRect, setRectElRect, switchMode, toggleRect, zoomAt } from '../actions'
 import { applyTransform, localToGrid, svgRectToRect } from '../geometry'
 import { keyHandler } from './key'
 import { randomId } from '../../lib/util'
@@ -183,21 +183,36 @@ export const initIOEvents = (state: AppState) => {
   })
 
   event.on('tap', ({ position }) => {
-    selectNone(state)
-
     const localPosition = normalizeLocal(state, position)
 
     const selectedRectEl = findRectAt(state, localPosition)
 
+    if( state.mode === 'pan' ){
+      selectNone( state )
+
+      return 
+    }
+
     if (state.mode === 'draw' && selectedRectEl !== undefined) {
+      selectNone(state)
+      selectRect(state, selectedRectEl)
       switchMode(state, 'select')
+      
+      return 
     }
 
     if (state.mode === 'select') {
       const selectedRectEl = findRectAt(state, localPosition)
 
-      if (selectedRectEl !== undefined) {
-        selectRect(state, selectedRectEl)
+      if( selectedRectEl === undefined ){
+        selectNone( state )
+      } else {
+        if( state.keys.Shift ){
+          toggleRect( state, selectedRectEl)
+        } else {
+          selectNone( state )
+          selectRect(state, selectedRectEl)
+        }
       }
 
       return

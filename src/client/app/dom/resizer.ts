@@ -24,7 +24,7 @@ export const createResizer = (
   setRectElRect( outlineEl, outlineRect )
 
   const groupEl = g(
-    { class: 'resize', 'data-id': rectId },
+    { class: 'resizer', 'data-id': rectId },
     outlineEl,
     ...createHandles( bounds, rectId )
   )

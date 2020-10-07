@@ -6,16 +6,31 @@ import { randomId } from '../lib/util'
 import { createResizer } from './dom/resizer'
 import { applyTransform, svgRectToRect } from './geometry'
 import { getDrawRects } from './rects'
-import { Action, ActionElement, ActionHandlerMap, AppMode, AppState, EditActionElement } from './types'
+
+import { 
+  Action, ActionElement, ActionHandlerMap, AppMode, AppState, EditActionElement 
+} from './types'
 
 export const selectNone = (state: AppState) => {
   const rectEls = getDrawRects(state)
 
   rectEls.forEach(rectEl => rectEl.classList.remove('selected'))
 
-  const resizeEls = state.dom.groupEl.querySelectorAll( '.resize' )
+  const resizeEls = state.dom.groupEl.querySelectorAll( '.resizer' )
 
   resizeEls.forEach( el => el.remove() )
+}
+
+export const deselectRect = ( state: AppState, rectEl: SVGRectElement ) => {
+  rectEl.classList.remove( 'selected' )
+
+  const { id } = rectEl
+
+  const resizerEl = strictSelect(
+    `.resizer[data-id=${ id }]`, state.dom.groupEl
+  )
+
+  resizerEl.remove()
 }
 
 export const selectRect = ( state: AppState, rectEl: SVGRectElement ) => {
@@ -26,6 +41,14 @@ export const selectRect = ( state: AppState, rectEl: SVGRectElement ) => {
   const resizeEl = createResizer( rect, rectEl.id )
 
   state.dom.groupEl.append( resizeEl )
+}
+
+export const toggleRect = ( state: AppState, rectEl: SVGRectElement ) => {
+  if( rectEl.classList.contains( 'selected' ) ){
+    deselectRect( state, rectEl )
+  } else {
+    selectRect( state, rectEl )
+  }
 }
 
 export const isSelected = ( rectEl: SVGRectElement ) =>
