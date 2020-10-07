@@ -4,7 +4,6 @@ Drag and drop rectangle editor
 
 ## TODO
 
-- If `Shift` down while drawing, draw square (use max of w/h)
 - Multi select 
   - hold `Shift` to add to toggle selection of individual rects
   - drag to select all in drag area

@@ -378,6 +378,7 @@ exports.undoAction = (state) => {
     // wtf how to do this?
     undoActions[action.type](state, action);
     actions.nextIndex--;
+    exports.selectNone(state);
 };
 exports.redoAction = (state) => {
     const { actions } = state;
@@ -388,6 +389,7 @@ exports.redoAction = (state) => {
     // wtf how to do this?
     redoActions[action.type](state, action);
     actions.nextIndex++;
+    exports.selectNone(state);
 };
 const actionAdd = (state, { id, rect }) => {
     const rectEl = exports.createRectEl(id, rect);
@@ -405,15 +407,19 @@ const actionEdit = (state, id, rect) => {
     const rectEl = util_1.strictSelect(`#${id}`, state.dom.groupEl);
     exports.setRectElRect(rectEl, rect);
 };
+const addElements = (state, elements) => elements.forEach(el => actionAdd(state, el));
+const deleteElements = (state, elements) => elements.forEach(el => actionDelete(state, el));
+const editElementsUndo = (state, elements) => elements.forEach(el => actionEdit(state, el.id, el.previous));
+const editElementsRedo = (state, elements) => elements.forEach(el => actionEdit(state, el.id, el.rect));
 const redoActions = {
-    add: actionAdd,
-    delete: actionDelete,
-    edit: (state, { id, rect }) => actionEdit(state, id, rect)
+    add: (state, action) => addElements(state, action.elements),
+    delete: (state, action) => deleteElements(state, action.elements),
+    edit: (state, action) => editElementsRedo(state, action.elements)
 };
 const undoActions = {
-    add: actionDelete,
-    delete: actionAdd,
-    edit: (state, { id, previous }) => actionEdit(state, id, previous)
+    add: (state, action) => deleteElements(state, action.elements),
+    delete: (state, action) => addElements(state, action.elements),
+    edit: (state, action) => editElementsUndo(state, action.elements)
 };
 
 },{"../lib/dom/s":22,"../lib/dom/util":23,"../lib/geometry/transform":30,"../lib/util":32,"./dom/resizer":5,"./geometry":6,"./rects":12}],3:[function(require,module,exports){
@@ -714,8 +720,12 @@ exports.initIOEvents = (state) => {
             actions_1.selectRect(state, dragData.creatingRectEl);
             actions_1.newAction(state, {
                 type: 'add',
-                id: dragData.creatingRectEl.id,
-                rect: geometry_2.svgRectToRect(dragData.creatingRectEl)
+                elements: [
+                    {
+                        id: dragData.creatingRectEl.id,
+                        rect: geometry_2.svgRectToRect(dragData.creatingRectEl)
+                    }
+                ]
             });
             dragData.creatingRectEl = null;
         }

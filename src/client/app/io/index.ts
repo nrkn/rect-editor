@@ -61,8 +61,12 @@ export const initIOEvents = (state: AppState) => {
       newAction(state,
         {
           type: 'add',
-          id: dragData.creatingRectEl.id,
-          rect: svgRectToRect(dragData.creatingRectEl)
+          elements: [
+            {
+              id: dragData.creatingRectEl.id,
+              rect: svgRectToRect(dragData.creatingRectEl)   
+            }
+          ]
         }
       )
 

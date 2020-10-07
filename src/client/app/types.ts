@@ -53,11 +53,19 @@ export type AppDomEls = {
   groupEl: SVGGElement
 }
 
-type ActionBase = {
-  type: ActionType
+export type ActionElement = {
   rect: Rect
   previous?: Rect
-  id: string
+  id: string 
+}
+
+export type EditActionElement = ActionElement & {
+  previous: Rect
+}
+
+type ActionBase = {
+  type: ActionType
+  elements: ActionElement[]
 }
 
 export type AddAction = ActionBase & {
@@ -70,7 +78,7 @@ export type DeleteAction = ActionBase & {
 
 export type EditAction = ActionBase & {
   type: 'edit'
-  previous: Rect
+  elements: EditActionElement[]
 }
 
 export type Action = AddAction | DeleteAction | EditAction

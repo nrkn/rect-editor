@@ -1,12 +1,12 @@
 import { rect } from '../lib/dom/s'
 import { strictFormElement, strictSelect } from '../lib/dom/util'
 import { transformRelativeTo } from '../lib/geometry/transform'
-import { Point, Rect, Size, Transform } from '../lib/geometry/types'
+import { Rect, Transform } from '../lib/geometry/types'
 import { randomId } from '../lib/util'
 import { createResizer } from './dom/resizer'
 import { applyTransform, svgRectToRect } from './geometry'
 import { getDrawRects } from './rects'
-import { Action, ActionHandlerMap, ActionType, ActionTypeMap, AppMode, AppState, EditAction } from './types'
+import { Action, ActionElement, ActionHandlerMap, AppMode, AppState, EditActionElement } from './types'
 
 export const selectNone = (state: AppState) => {
   const rectEls = getDrawRects(state)
@@ -115,6 +115,8 @@ export const undoAction = ( state: AppState ) => {
   undoActions[ action.type ]( state, action as any )
 
   actions.nextIndex--
+
+  selectNone( state )
 }
 
 export const redoAction = ( state: AppState ) => {
@@ -129,9 +131,11 @@ export const redoAction = ( state: AppState ) => {
   redoActions[ action.type ]( state, action as any )
 
   actions.nextIndex++
+
+  selectNone( state )
 }
 
-const actionAdd = ( state: AppState, { id, rect }: Action ) => {
+const actionAdd = ( state: AppState, { id, rect }: ActionElement ) => {
   const rectEl = createRectEl( id, rect )
 
   /* 
@@ -142,7 +146,7 @@ const actionAdd = ( state: AppState, { id, rect }: Action ) => {
   state.dom.groupEl.append( rectEl )
 }
 
-const actionDelete = ( state: AppState, { id  }: Action ) => {
+const actionDelete = ( state: AppState, { id }: ActionElement ) => {
   const rectEl = strictSelect( `#${ id }`, state.dom.groupEl )
 
   rectEl.remove()  
@@ -156,14 +160,26 @@ const actionEdit = ( state: AppState, id: string, rect: Rect ) => {
   setRectElRect( rectEl, rect )
 }
 
+const addElements = ( state: AppState, elements: ActionElement[] ) => 
+  elements.forEach( el => actionAdd( state, el ) )
+
+  const deleteElements = ( state: AppState, elements: ActionElement[] ) =>
+  elements.forEach( el => actionDelete( state, el ) )
+
+const editElementsUndo = ( state: AppState, elements: EditActionElement[] ) =>
+  elements.forEach( el => actionEdit( state, el.id, el.previous ) )
+
+const editElementsRedo = ( state: AppState, elements: EditActionElement[] ) =>
+  elements.forEach( el => actionEdit( state, el.id, el.rect ) )
+
 const redoActions: ActionHandlerMap = {
-  add: actionAdd,
-  delete: actionDelete,
-  edit: ( state, { id, rect } ) => actionEdit( state, id, rect )
+  add: ( state, action ) => addElements( state, action.elements ),
+  delete: ( state, action ) => deleteElements( state, action.elements ),
+  edit: ( state, action ) => editElementsRedo( state, action.elements )
 }
 
 const undoActions: ActionHandlerMap = {
-  add: actionDelete,
-  delete: actionAdd,
-  edit: ( state, { id, previous } ) => actionEdit( state, id, previous )
+  add: ( state, action ) => deleteElements( state, action.elements ),
+  delete: ( state, action ) => addElements( state, action.elements ),
+  edit: ( state, action ) => editElementsUndo( state, action.elements )
 }
