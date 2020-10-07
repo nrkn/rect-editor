@@ -4,7 +4,6 @@ Drag and drop rectangle editor
 
 ## TODO
 
-- Create rects by dragging in directions other than top left -> bottom right
 - If `Shift` down while drawing, draw square (use max of w/h)
 - Multi select 
   - hold `Shift` to add to toggle selection of individual rects
@@ -37,4 +36,5 @@ Drag and drop rectangle editor
 - Prefabs - basically, like copy/paste except they get saved
 - Layers
 - Groups - basically just saved selections?
+- Align and distribute
 - Icons for buttons etc

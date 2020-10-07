@@ -750,12 +750,14 @@ exports.initIOEvents = (state) => {
                 });
                 groupEl.append(dragData.creatingRectEl);
             }
-            const { x1, x2, y1, y2 } = dragData.dragLine;
-            if (x1 >= x2 || y1 >= y2)
-                return;
-            const line = line_1.snapLineToGrid(dragData.dragLine, options.snap);
+            const line = line_1.normalizeLine(line_1.snapLineToGrid(dragData.dragLine, options.snap));
             const { x1: x, y1: y } = line;
-            const { x: width, y: height } = line_1.lineToVector(line);
+            let { x: width, y: height } = line_1.lineToVector(line);
+            if (state.keys.Shift) {
+                const max = Math.max(width, height);
+                width = max;
+                height = max;
+            }
             util_1.attr(dragData.creatingRectEl, { x, y, width, height });
             return;
         }
@@ -783,7 +785,7 @@ exports.initIOEvents = (state) => {
             console.log('new rect', newRectElRect);
             actions_1.setRectElRect(selectedRectEl, newRectElRect);
             // now translate selection as well
-            // lazy and bad lol
+            // TODO: this is lazy and bad lol
             actions_1.selectNone(state);
             actions_1.selectRect(state, selectedRectEl);
             return;

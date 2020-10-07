@@ -2,7 +2,7 @@ import { createInputEvents } from '../../lib/create-events'
 import { rect } from '../../lib/dom/s'
 import { attr, strictSelect } from '../../lib/dom/util'
 import { getViewBoxRect } from '../../lib/dom/geometry'
-import { lineToVector, snapLineToGrid } from '../../lib/geometry/line'
+import { lineToVector, normalizeLine, snapLineToGrid } from '../../lib/geometry/line'
 import { findRectAt } from '../rects'
 import { AppState } from '../types'
 import { isSelected, newAction, selectNone, selectRect, setRectElRect, switchMode, zoomAt } from '../actions'
@@ -109,14 +109,19 @@ export const initIOEvents = (state: AppState) => {
         groupEl.append(dragData.creatingRectEl)
       }
 
-      const { x1, x2, y1, y2 } = dragData.dragLine
-
-      if (x1 >= x2 || y1 >= y2) return
-
-      const line = snapLineToGrid(dragData.dragLine, options.snap)
+      const line = normalizeLine(
+        snapLineToGrid( dragData.dragLine, options.snap )        
+      )
 
       const { x1: x, y1: y } = line
-      const { x: width, y: height } = lineToVector(line)
+      let { x: width, y: height } = lineToVector(line)
+
+      if( state.keys.Shift ){
+        const max = Math.max( width, height )
+
+        width = max
+        height = max
+      }
 
       attr(dragData.creatingRectEl, { x, y, width, height })
 
