@@ -2,7 +2,7 @@ import { g, rect, svg } from '../lib/dom/s'
 import { attr, strictSelect } from '../lib/dom/util'
 import { setViewBox } from '../lib/dom/geometry'
 import { zoomToFit } from './geometry'
-import { ActionList, AppDomEls, AppMode, AppOptions, AppState } from './types'
+import { ActionList, AppDomEls, AppMode, AppOptions, AppState, DragData } from './types'
 import { createGridBg } from './raster'
 import { createDefsManager } from '../lib/dom/defs'
 import { initIOEvents } from './io'
@@ -45,8 +45,13 @@ const initState = (options: AppOptions) => {
 
   const mode: AppMode = 'pan'
   const dom: AppDomEls = { viewportEl, formEl, svgEl, groupEl }
-  const dragLine = null
-  const creatingRectEl = null
+
+  const dragData: DragData = {
+    dragLine: null,
+    creatingRectEl: null,
+    draggingRect: null
+  }
+
   const keys = {}
 
   const actions: ActionList = {
@@ -55,8 +60,7 @@ const initState = (options: AppOptions) => {
   }
   
   const state: AppState = { 
-    mode, transform, dom, options, defsManager, dragLine, creatingRectEl, keys,
-    actions
+    mode, transform, dom, options, defsManager, dragData, keys, actions
   }
 
   return state

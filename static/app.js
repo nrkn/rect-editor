@@ -305,7 +305,7 @@ function isUndefined(arg) {
 },{}],2:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.redoAction = exports.undoAction = exports.newAction = exports.createRectEl = exports.setRectElRect = exports.zoomAt = exports.switchMode = exports.getSelection = exports.selectRect = exports.selectNone = void 0;
+exports.redoAction = exports.undoAction = exports.newAction = exports.createRectEl = exports.setRectElRect = exports.zoomAt = exports.switchMode = exports.getSelection = exports.isSelected = exports.selectRect = exports.selectNone = void 0;
 const s_1 = require("../lib/dom/s");
 const util_1 = require("../lib/dom/util");
 const transform_1 = require("../lib/geometry/transform");
@@ -319,12 +319,13 @@ exports.selectNone = (state) => {
     const resizeEls = state.dom.groupEl.querySelectorAll('.resize');
     resizeEls.forEach(el => el.remove());
 };
-exports.selectRect = (_state, rectEl) => {
+exports.selectRect = (state, rectEl) => {
     rectEl.classList.add('selected');
     const rect = geometry_1.svgRectToRect(rectEl);
     const resizeEl = resizer_1.createResizer(rect, rectEl.id);
-    rectEl.after(resizeEl);
+    state.dom.groupEl.append(resizeEl);
 };
+exports.isSelected = (rectEl) => rectEl.classList.contains('selected');
 exports.getSelection = (state) => {
     const rectEls = rects_1.getDrawRects(state);
     return rectEls.filter(el => el.classList.contains('selected'));
@@ -345,7 +346,9 @@ exports.zoomAt = (state, { scale, x, y }) => {
     Object.assign(state.transform, newTransform);
     geometry_1.applyTransform(state);
 };
-exports.setRectElRect = (rectEl, { x = 0, y = 0, width = 1, height = 1 } = {}) => {
+exports.setRectElRect = (rectEl, newRect = {}) => {
+    const initialRect = geometry_1.svgRectToRect(rectEl);
+    const { x, y, width, height } = Object.assign({}, initialRect, newRect);
     rectEl.x.baseVal.value = x;
     rectEl.y.baseVal.value = y;
     rectEl.width.baseVal.value = width;
@@ -413,7 +416,13 @@ const undoActions = {
     edit: (state, { id, previous }) => actionEdit(state, id, previous)
 };
 
-},{"../lib/dom/s":21,"../lib/dom/util":22,"../lib/geometry/transform":28,"../lib/util":30,"./dom/resizer":4,"./geometry":5,"./rects":11}],3:[function(require,module,exports){
+},{"../lib/dom/s":22,"../lib/dom/util":23,"../lib/geometry/transform":30,"../lib/util":32,"./dom/resizer":5,"./geometry":6,"./rects":12}],3:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.handleSize = void 0;
+exports.handleSize = 3;
+
+},{}],4:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.populateForm = void 0;
@@ -434,23 +443,24 @@ const createPointerMode = (mode) => h_1.div(h_1.label(h_1.input({ name: 'mode', 
 const createSizeEditor = (title, prefix) => h_1.fieldset(h_1.legend(title), createIntegerEditor('Width', `${prefix}Width`), createIntegerEditor('Height', `${prefix}Height`));
 const createIntegerEditor = (title, name, step = 1, value = 1, min = 1) => h_1.div(h_1.label(title, h_1.input({ name, type: 'number', value, min, step })));
 
-},{"../../lib/dom/h":19,"../types":13}],4:[function(require,module,exports){
+},{"../../lib/dom/h":20,"../types":14}],5:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createResizer = void 0;
+exports.getHandlePositions = exports.createResizer = void 0;
 const s_1 = require("../../lib/dom/s");
-const position_1 = require("../../lib/geometry/position");
 const actions_1 = require("../actions");
 const geometry_1 = require("../geometry");
+const position_1 = require("../../lib/geometry/position");
 const types_1 = require("../../lib/geometry/types");
+const consts_1 = require("../consts");
 exports.createResizer = (bounds, rectId) => {
-    const outlineEl = s_1.rect({ class: 'outline' });
+    const outlineEl = s_1.rect({ class: 'outline', 'data-id': rectId });
     const outlineRect = geometry_1.insideRect(bounds);
     actions_1.setRectElRect(outlineEl, outlineRect);
-    const groupEl = s_1.g({ class: 'resize', 'data-for': rectId }, outlineEl, ...createHandles(bounds));
+    const groupEl = s_1.g({ class: 'resize', 'data-id': rectId }, outlineEl, ...createHandles(bounds, rectId));
     return groupEl;
 };
-const createHandles = (rect) => {
+const createHandles = (rect, rectId) => {
     const handles = [];
     types_1.yPositionNames.forEach(yName => {
         const y = position_1.getYPosition(rect, yName);
@@ -458,15 +468,15 @@ const createHandles = (rect) => {
             if (yName === 'yCenter' && xName === 'xCenter')
                 return;
             const x = position_1.getXPosition(rect, xName);
-            const handle = createHandle({ x, y }, xName, yName);
+            const handle = createHandle({ x, y }, xName, yName, rectId);
             handles.push(handle);
         });
     });
     return handles;
 };
-const createHandle = ({ x, y }, xName, yName) => {
-    const width = 4;
-    const height = 4;
+const createHandle = ({ x, y }, xName, yName, rectId) => {
+    const width = consts_1.handleSize;
+    const height = consts_1.handleSize;
     x -= width / 2;
     y -= height / 2;
     switch (xName) {
@@ -477,12 +487,28 @@ const createHandle = ({ x, y }, xName, yName) => {
         case 'top': y += 1;
         case 'bottom': y -= 0.5;
     }
-    const handleEl = s_1.rect({ class: ['handle', xName, yName].join(' ') });
+    const handleEl = s_1.rect({
+        class: ['handle', xName, yName].join(' '),
+        'data-id': rectId
+    });
     actions_1.setRectElRect(handleEl, { x, y, width, height });
     return handleEl;
 };
+exports.getHandlePositions = (handleEl) => {
+    const classes = [...handleEl.classList];
+    if (!classes.includes('handle'))
+        throw Error('Expected element classes to include handle');
+    const xPosition = position_1.findXPosition(classes);
+    if (xPosition === undefined)
+        throw Error(`Expected element to include one of ${types_1.xPositionNames.join(', ')}`);
+    const yPosition = position_1.findYPosition(classes);
+    if (yPosition === undefined)
+        throw Error(`Expected element to include one of ${types_1.yPositionNames.join(', ')}`);
+    const positions = [xPosition, yPosition];
+    return positions;
+};
 
-},{"../../lib/dom/s":21,"../../lib/geometry/position":26,"../../lib/geometry/types":29,"../actions":2,"../geometry":5}],5:[function(require,module,exports){
+},{"../../lib/dom/s":22,"../../lib/geometry/position":27,"../../lib/geometry/types":31,"../actions":2,"../consts":3,"../geometry":6}],6:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.insideRect = exports.svgRectToRect = exports.applyTransform = exports.ensureMinScale = exports.getLocalCenter = exports.zoomToFit = exports.localToGrid = void 0;
@@ -547,7 +573,7 @@ exports.insideRect = ({ x, y, width, height }, strokeWidth = 1) => {
     return { x, y, width, height };
 };
 
-},{"../lib/dom/geometry":18,"../lib/dom/util":22,"object-fit-math":32}],6:[function(require,module,exports){
+},{"../lib/dom/geometry":19,"../lib/dom/util":23,"object-fit-math":34}],7:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createApp = void 0;
@@ -587,16 +613,18 @@ const initState = (options) => {
     viewportEl.append(svgEl);
     const mode = 'pan';
     const dom = { viewportEl, formEl, svgEl, groupEl };
-    const dragLine = null;
-    const creatingRectEl = null;
+    const dragData = {
+        dragLine: null,
+        creatingRectEl: null,
+        draggingRect: null
+    };
     const keys = {};
     const actions = {
         list: [],
         nextIndex: 0
     };
     const state = {
-        mode, transform, dom, options, defsManager, dragLine, creatingRectEl, keys,
-        actions
+        mode, transform, dom, options, defsManager, dragData, keys, actions
     };
     return state;
 };
@@ -636,7 +664,7 @@ const initResize = (state) => {
     window.dispatchEvent(resizeEvent);
 };
 
-},{"../lib/dom/defs":17,"../lib/dom/geometry":18,"../lib/dom/s":21,"../lib/dom/util":22,"./dom/form-tools":3,"./geometry":5,"./io":7,"./raster":10,"./tools":12}],7:[function(require,module,exports){
+},{"../lib/dom/defs":18,"../lib/dom/geometry":19,"../lib/dom/s":22,"../lib/dom/util":23,"./dom/form-tools":4,"./geometry":6,"./io":8,"./raster":11,"./tools":13}],8:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.initIOEvents = void 0;
@@ -650,8 +678,9 @@ const actions_1 = require("../actions");
 const geometry_2 = require("../geometry");
 const key_1 = require("./key");
 const util_2 = require("../../lib/util");
+const rect_1 = require("../../lib/geometry/rect");
 exports.initIOEvents = (state) => {
-    const { dom, options } = state;
+    const { dom, options, dragData } = state;
     const { viewportEl, groupEl } = dom;
     const event = create_events_1.createInputEvents({ target: viewportEl, preventDefault: true });
     viewportEl.addEventListener('wheel', e => {
@@ -671,63 +700,93 @@ exports.initIOEvents = (state) => {
     window.addEventListener('keyup', e => {
         state.keys[e.key] = false;
     });
-    event.on('down', ({ position }) => {
-        console.log('down', { position });
+    event.on('down', () => {
     });
-    event.on('up', ({ position }) => {
-        console.log('up', { position });
-        if (state.creatingRectEl) {
-            const { width, height } = state.creatingRectEl;
+    event.on('up', () => {
+        if (dragData.creatingRectEl) {
+            const { width, height } = dragData.creatingRectEl;
             if (width.baseVal.value === 0 || height.baseVal.value === 0) {
-                state.creatingRectEl.remove();
-                state.creatingRectEl = null;
+                dragData.creatingRectEl.remove();
+                dragData.creatingRectEl = null;
                 return;
             }
             actions_1.selectNone(state);
-            actions_1.selectRect(state, state.creatingRectEl);
+            actions_1.selectRect(state, dragData.creatingRectEl);
             actions_1.newAction(state, {
                 type: 'add',
-                id: state.creatingRectEl.id,
-                rect: geometry_2.svgRectToRect(state.creatingRectEl)
+                id: dragData.creatingRectEl.id,
+                rect: geometry_2.svgRectToRect(dragData.creatingRectEl)
             });
-            state.creatingRectEl = null;
+            dragData.creatingRectEl = null;
         }
-        state.dragLine = null;
+        dragData.dragLine = null;
+        dragData.draggingRect = null;
     });
     event.on('move', ({ position, dragging }) => {
+        // set cursors here - or use CSS?
         if (!dragging)
             return;
-        const { x, y } = normalizeLocal(state, position);
-        if (state.dragLine) {
-            state.dragLine.x2 = x;
-            state.dragLine.y2 = y;
+        const { x: lx, y: ly } = normalizeLocal(state, position);
+        if (dragData.dragLine) {
+            dragData.dragLine.x2 = lx;
+            dragData.dragLine.y2 = ly;
         }
         else {
-            state.dragLine = { x1: x, y1: y, x2: x, y2: y };
+            dragData.dragLine = { x1: lx, y1: ly, x2: lx, y2: ly };
         }
         if (state.mode === 'pan') {
-            const { x: dX, y: dY } = line_1.lineToVector(state.dragLine);
+            const { x: dX, y: dY } = line_1.lineToVector(dragData.dragLine);
             state.transform.x += dX;
             state.transform.y += dY;
             geometry_2.applyTransform(state);
             return;
         }
         if (state.mode === 'draw') {
-            if (!state.creatingRectEl) {
-                state.creatingRectEl = s_1.rect({
+            if (!dragData.creatingRectEl) {
+                dragData.creatingRectEl = s_1.rect({
                     id: util_2.randomId(),
                     class: 'draw-rect',
                     fill: 'rgba( 255, 255, 255, 0.75 )'
                 });
-                groupEl.append(state.creatingRectEl);
+                groupEl.append(dragData.creatingRectEl);
             }
-            const { x1, x2, y1, y2 } = state.dragLine;
+            const { x1, x2, y1, y2 } = dragData.dragLine;
             if (x1 >= x2 || y1 >= y2)
                 return;
-            const line = line_1.snapLineToGrid(state.dragLine, options.snap);
+            const line = line_1.snapLineToGrid(dragData.dragLine, options.snap);
             const { x1: x, y1: y } = line;
             const { x: width, y: height } = line_1.lineToVector(line);
-            util_1.attr(state.creatingRectEl, { x, y, width, height });
+            util_1.attr(dragData.creatingRectEl, { x, y, width, height });
+            return;
+        }
+        if (state.mode === 'select') {
+            console.log('dragging in select mode');
+            if (!dragData.draggingRect) {
+                const selectedRectEl = rects_1.findRectAt(state, { x: lx, y: ly });
+                if (selectedRectEl === undefined)
+                    return;
+                console.log('found a rect');
+                if (!actions_1.isSelected(selectedRectEl))
+                    return;
+                console.log('found a selected rect');
+                const { id } = selectedRectEl;
+                const initialRect = geometry_2.svgRectToRect(selectedRectEl);
+                dragData.draggingRect = { initialRect, id };
+                return;
+            }
+            const selectedRectEl = util_1.strictSelect(`#${dragData.draggingRect.id}`);
+            const line = line_1.snapLineToGrid(dragData.dragLine, options.snap);
+            const delta = line_1.lineToVector(line);
+            const newRectElRect = rect_1.translateRect(dragData.draggingRect.initialRect, delta);
+            console.log('delta', delta);
+            console.log('initial rect', dragData.draggingRect.initialRect);
+            console.log('new rect', newRectElRect);
+            actions_1.setRectElRect(selectedRectEl, newRectElRect);
+            // now translate selection as well
+            // lazy and bad lol
+            actions_1.selectNone(state);
+            actions_1.selectRect(state, selectedRectEl);
+            return;
         }
     });
     event.on('tap', ({ position }) => {
@@ -751,7 +810,7 @@ const normalizeLocal = (state, [x, y]) => {
     return geometry_2.localToGrid(x, y, state.transform, viewBoxRect);
 };
 
-},{"../../lib/create-events":15,"../../lib/dom/geometry":18,"../../lib/dom/s":21,"../../lib/dom/util":22,"../../lib/geometry/line":23,"../../lib/util":30,"../actions":2,"../geometry":5,"../rects":11,"./key":8}],8:[function(require,module,exports){
+},{"../../lib/create-events":16,"../../lib/dom/geometry":19,"../../lib/dom/s":22,"../../lib/dom/util":23,"../../lib/geometry/line":24,"../../lib/geometry/rect":29,"../../lib/util":32,"../actions":2,"../geometry":6,"../rects":12,"./key":9}],9:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.keyHandler = void 0;
@@ -802,13 +861,10 @@ exports.keyHandler = (state, key) => {
         return;
     }
     if (isUndoRedo(key) && state.keys.Control) {
-        console.log('Undo or Redo');
         if (state.keys.Shift) {
-            console.log('Redo');
             actions_1.redoAction(state);
         }
         else {
-            console.log('Undo');
             actions_1.undoAction(state);
         }
     }
@@ -819,14 +875,14 @@ const isZoom = (key) => ['-', '+'].includes(key);
 const isMove = (key) => ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(key);
 const isUndoRedo = (key) => key.toLowerCase() === 'z';
 
-},{"../actions":2,"../geometry":5}],9:[function(require,module,exports){
+},{"../actions":2,"../geometry":6}],10:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isAppMode = void 0;
 const types_1 = require("./types");
 exports.isAppMode = (value) => types_1.appModes.includes(value);
 
-},{"./types":13}],10:[function(require,module,exports){
+},{"./types":14}],11:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createGridBg = void 0;
@@ -872,7 +928,7 @@ exports.createGridBg = (width, height) => {
     return canvas;
 };
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.findRectAt = exports.getDrawRects = void 0;
@@ -893,7 +949,7 @@ exports.findRectAt = (state, point) => {
     }
 };
 
-},{"../lib/geometry/rect":27,"./geometry":5}],12:[function(require,module,exports){
+},{"../lib/geometry/rect":29,"./geometry":6}],13:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.initForm = void 0;
@@ -935,7 +991,7 @@ exports.initForm = (state) => {
     cellHeightEl.value = String(options.snap.height);
 };
 
-},{"../lib/dom/util":22,"./actions":2,"./geometry":5,"./predicates":9}],13:[function(require,module,exports){
+},{"../lib/dom/util":23,"./actions":2,"./geometry":6,"./predicates":10}],14:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.actionTypes = exports.appModes = void 0;
@@ -944,13 +1000,13 @@ exports.actionTypes = [
     'add', 'delete', 'edit'
 ];
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const app_1 = require("./app");
 app_1.createApp();
 
-},{"./app":6}],15:[function(require,module,exports){
+},{"./app":7}],16:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createInputEvents = void 0;
@@ -1178,13 +1234,13 @@ function isDOMNode(obj) {
         (typeof obj.nodeType === 'number' && typeof obj.nodeName === 'string'));
 }
 
-},{"events":1}],16:[function(require,module,exports){
+},{"events":1}],17:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.svgNs = void 0;
 exports.svgNs = 'http://www.w3.org/2000/svg';
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createDefsManager = void 0;
@@ -1213,7 +1269,7 @@ exports.createDefsManager = (svgEl) => {
     return manager;
 };
 
-},{"./s":21,"./util":22}],18:[function(require,module,exports){
+},{"./s":22,"./util":23}],19:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setViewBox = exports.getViewBoxRect = exports.transformToSvg = void 0;
@@ -1224,7 +1280,7 @@ exports.setViewBox = (svg, { x, y, width, height }) => {
     util_1.attr(svg, { viewBox: [x, y, width, height].join(' ') });
 };
 
-},{"./util":22}],19:[function(require,module,exports){
+},{"./util":23}],20:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.button = exports.input = exports.label = exports.legend = exports.fieldset = exports.div = exports.htmlElementFactory = exports.text = exports.fragment = exports.h = void 0;
@@ -1259,7 +1315,7 @@ exports.label = exports.htmlElementFactory('label');
 exports.input = exports.htmlElementFactory('input');
 exports.button = exports.htmlElementFactory('button');
 
-},{"./predicates":20,"./util":22}],20:[function(require,module,exports){
+},{"./predicates":21,"./util":23}],21:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isSVGElement = exports.isElement = exports.isNode = void 0;
@@ -1268,7 +1324,7 @@ exports.isNode = (value) => value && typeof value['nodeType'] === 'number';
 exports.isElement = (value) => value && value['nodeType'] === 1;
 exports.isSVGElement = (value) => exports.isElement(value) && value.namespaceURI === consts_1.svgNs;
 
-},{"./consts":16}],21:[function(require,module,exports){
+},{"./consts":17}],22:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.pattern = exports.image = exports.defs = exports.circle = exports.rect = exports.g = exports.svg = exports.svgElementFactory = exports.s = void 0;
@@ -1296,10 +1352,10 @@ exports.defs = exports.svgElementFactory('defs');
 exports.image = exports.svgElementFactory('image');
 exports.pattern = exports.svgElementFactory('pattern');
 
-},{"./consts":16,"./predicates":20,"./util":22}],22:[function(require,module,exports){
+},{"./consts":17,"./predicates":21,"./util":23}],23:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.strictFormElement = exports.strictSelect = exports.attr = void 0;
+exports.strictGetData = exports.strictFormElement = exports.strictSelect = exports.attr = void 0;
 exports.attr = (el, ...attributeRecords) => {
     attributeRecords.forEach(attributes => {
         Object.keys(attributes).forEach(key => {
@@ -1322,8 +1378,14 @@ exports.strictFormElement = (formEl, name) => {
         return el;
     throw Error(`Expected an HTMLInputElement or RadioNodeList called ${name}`);
 };
+exports.strictGetData = (el, key) => {
+    const value = el.dataset[key];
+    if (value === undefined)
+        throw Error(`Expected element dataset to contain ${key}`);
+    return value;
+};
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.snapLineToGrid = exports.lineToArgs = exports.argsToLine = exports.normalizeLine = exports.lineToVector = void 0;
@@ -1349,13 +1411,13 @@ exports.snapLineToGrid = ({ x1, y1, x2, y2 }, { width: gridW, height: gridH }) =
     return { x1, y1, x2, y2 };
 };
 
-},{"./number":24}],24:[function(require,module,exports){
+},{"./number":25}],25:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.snapToGrid = void 0;
 exports.snapToGrid = (value, grid) => Math.floor(value / grid) * grid;
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.snapPointToGrid = exports.scalePoint = exports.translatePoint = void 0;
@@ -1374,10 +1436,11 @@ exports.snapPointToGrid = ({ x, y }, { width: gridW, height: gridH }) => {
     return { x, y };
 };
 
-},{"./number":24}],26:[function(require,module,exports){
+},{"./number":25}],27:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getYPosition = exports.getXPosition = void 0;
+exports.findYPosition = exports.findXPosition = exports.getYPosition = exports.getXPosition = void 0;
+const predicates_1 = require("./predicates");
 exports.getXPosition = ({ x, width }, position) => {
     switch (position) {
         case 'left': return x;
@@ -1392,8 +1455,30 @@ exports.getYPosition = ({ y, height }, position) => {
         case 'yCenter': return y + height / 2;
     }
 };
+exports.findXPosition = (values) => {
+    for (let i = 0; i < values.length; i++) {
+        const value = values[i];
+        if (predicates_1.isXPosition(value))
+            return value;
+    }
+};
+exports.findYPosition = (values) => {
+    for (let i = 0; i < values.length; i++) {
+        const value = values[i];
+        if (predicates_1.isYPosition(value))
+            return value;
+    }
+};
 
-},{}],27:[function(require,module,exports){
+},{"./predicates":28}],28:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.isYPosition = exports.isXPosition = void 0;
+const types_1 = require("./types");
+exports.isXPosition = (value) => types_1.xPositionNames.includes(value);
+exports.isYPosition = (value) => types_1.yPositionNames.includes(value);
+
+},{"./types":31}],29:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.rectContainsPoint = exports.scaleRect = exports.translateRect = exports.integerRect = void 0;
@@ -1405,7 +1490,7 @@ exports.integerRect = ({ x, y, width, height }) => {
     height = Math.floor(height);
     return { x, y, width, height };
 };
-exports.translateRect = (rect, x, y) => {
+exports.translateRect = (rect, { x, y }) => {
     const translatedPoint = point_1.translatePoint(rect, { x, y });
     return Object.assign({}, rect, translatedPoint);
 };
@@ -1428,7 +1513,7 @@ exports.rectContainsPoint = (rect, point) => {
     return true;
 };
 
-},{"./point":25}],28:[function(require,module,exports){
+},{"./point":26}],30:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.transformRelativeTo = void 0;
@@ -1442,7 +1527,7 @@ exports.transformRelativeTo = (existing, newScale, origin) => {
     return transformed;
 };
 
-},{"./point":25}],29:[function(require,module,exports){
+},{"./point":26}],31:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.positionNames = exports.yPositionNames = exports.xPositionNames = exports.sideNames = exports.centerNames = exports.ySideNames = exports.xSideNames = exports.YCENTER = exports.XCENTER = exports.BOTTOM = exports.TOP = exports.RIGHT = exports.LEFT = void 0;
@@ -1460,7 +1545,7 @@ exports.xPositionNames = [exports.LEFT, exports.XCENTER, exports.RIGHT];
 exports.yPositionNames = [exports.TOP, exports.YCENTER, exports.BOTTOM];
 exports.positionNames = [...exports.xPositionNames, ...exports.yPositionNames];
 
-},{}],30:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createSequence = exports.randomInt = exports.randomChar = exports.randomId = void 0;
@@ -1469,7 +1554,7 @@ exports.randomChar = () => String.fromCharCode(exports.randomInt(26) + 97);
 exports.randomInt = (exclMax) => Math.floor(Math.random() * exclMax);
 exports.createSequence = (length, cb) => Array.from({ length }, (_v, index) => cb(index));
 
-},{}],31:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.fit = (parent, child, fitMode = 'fill') => {
@@ -1512,7 +1597,7 @@ const lengthToPixels = (length, parent, child) => length.endsWith('%') ?
     (parent - child) * (parseFloat(length) / 100) :
     parseFloat(length);
 
-},{}],32:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var fitter_1 = require("./fitter");
@@ -1524,7 +1609,7 @@ exports.transformFittedPoint = transform_fitted_point_1.transformFittedPoint;
 var predicates_1 = require("./predicates");
 exports.isFit = predicates_1.isFit;
 
-},{"./fitter":31,"./predicates":33,"./transform-fitted-point":34}],33:[function(require,module,exports){
+},{"./fitter":33,"./predicates":35,"./transform-fitted-point":36}],35:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const fitModes = {
@@ -1536,7 +1621,7 @@ const fitModes = {
 };
 exports.isFit = (value) => value in fitModes;
 
-},{}],34:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const fitter_1 = require("./fitter");
@@ -1550,4 +1635,4 @@ exports.transformFittedPoint = (fittedPoint, parent, child, fitMode = 'fill', le
     return childPoint;
 };
 
-},{"./fitter":31}]},{},[14]);
+},{"./fitter":33}]},{},[15]);

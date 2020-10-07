@@ -24,14 +24,24 @@ export type AppOptions = {
   snap: Size
 }
 
+export type EditingRect = {
+  id: string
+  initialRect: Rect
+}
+
+export type DragData = {
+  dragLine: Line | null
+  creatingRectEl: SVGRectElement | null 
+  draggingRect: EditingRect | null 
+}
+
 export type AppState = {
   mode: AppMode
   transform: Transform
   dom: AppDomEls
   options: AppOptions
   defsManager: DefsManager
-  dragLine: Line | null
-  creatingRectEl: SVGRectElement | null
+  dragData: DragData
   keys: Record<string,boolean>
   actions: ActionList
 }

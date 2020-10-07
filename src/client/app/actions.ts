@@ -18,15 +18,18 @@ export const selectNone = (state: AppState) => {
   resizeEls.forEach( el => el.remove() )
 }
 
-export const selectRect = ( _state: AppState, rectEl: SVGRectElement ) => {
+export const selectRect = ( state: AppState, rectEl: SVGRectElement ) => {
   rectEl.classList.add( 'selected' )
 
   const rect = svgRectToRect( rectEl )
 
   const resizeEl = createResizer( rect, rectEl.id )
 
-  rectEl.after( resizeEl )
+  state.dom.groupEl.append( resizeEl )
 }
+
+export const isSelected = ( rectEl: SVGRectElement ) =>
+  rectEl.classList.contains( 'selected' )
 
 export const getSelection = ( state: AppState ) => {
   const rectEls = getDrawRects( state )
@@ -63,8 +66,14 @@ export const zoomAt = ( state: AppState, { scale, x, y }: Transform ) => {
 
 export const setRectElRect = ( 
   rectEl: SVGRectElement,
-  { x = 0, y = 0, width = 1, height = 1 }: Partial<Rect> = {}
+  newRect: Partial<Rect> = {}
 ) => {
+  const initialRect = svgRectToRect( rectEl )
+
+  const { x, y, width, height } = Object.assign(
+    {}, initialRect, newRect
+  )
+
   rectEl.x.baseVal.value = x
   rectEl.y.baseVal.value = y
   rectEl.width.baseVal.value = width

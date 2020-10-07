@@ -68,15 +68,9 @@ export const keyHandler = (state: AppState, key: string) => {
   }
 
   if( isUndoRedo( key ) && state.keys.Control ){
-    console.log( 'Undo or Redo' )
-
-    if( state.keys.Shift ){
-      console.log( 'Redo' )
-      
+    if( state.keys.Shift ){     
       redoAction( state )
     } else {
-      console.log( 'Undo' )
-
       undoAction( state )
     }
   }

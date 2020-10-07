@@ -1,17 +1,18 @@
 import { createInputEvents } from '../../lib/create-events'
 import { rect } from '../../lib/dom/s'
-import { attr } from '../../lib/dom/util'
+import { attr, strictSelect } from '../../lib/dom/util'
 import { getViewBoxRect } from '../../lib/dom/geometry'
 import { lineToVector, snapLineToGrid } from '../../lib/geometry/line'
 import { findRectAt } from '../rects'
 import { AppState } from '../types'
-import { newAction, selectNone, selectRect, switchMode, zoomAt } from '../actions'
+import { isSelected, newAction, selectNone, selectRect, setRectElRect, switchMode, zoomAt } from '../actions'
 import { applyTransform, localToGrid, svgRectToRect } from '../geometry'
 import { keyHandler } from './key'
 import { randomId } from '../../lib/util'
+import { translateRect } from '../../lib/geometry/rect'
 
 export const initIOEvents = (state: AppState) => {
-  const { dom, options } = state
+  const { dom, options, dragData } = state
   const { viewportEl, groupEl } = dom
   const event = createInputEvents({ target: viewportEl, preventDefault: true })
 
@@ -39,54 +40,55 @@ export const initIOEvents = (state: AppState) => {
     state.keys[e.key] = false
   })
 
-  event.on('down', ({ position }) => {
-    console.log('down', { position })
+  event.on('down', () => {
+    
   })
 
-  event.on('up', ({ position }) => {
-    console.log('up', { position })
-
-    if (state.creatingRectEl) {
-      const { width, height } = state.creatingRectEl
+  event.on('up', () => {   
+    if (dragData.creatingRectEl) {
+      const { width, height } = dragData.creatingRectEl
 
       if (width.baseVal.value === 0 || height.baseVal.value === 0) {
-        state.creatingRectEl.remove()
-        state.creatingRectEl = null
+        dragData.creatingRectEl.remove()
+        dragData.creatingRectEl = null
 
         return
       }
 
       selectNone(state)
-      selectRect(state, state.creatingRectEl)
+      selectRect(state, dragData.creatingRectEl)
 
       newAction(state,
         {
           type: 'add',
-          id: state.creatingRectEl.id,
-          rect: svgRectToRect(state.creatingRectEl)
+          id: dragData.creatingRectEl.id,
+          rect: svgRectToRect(dragData.creatingRectEl)
         }
       )
 
-      state.creatingRectEl = null
+      dragData.creatingRectEl = null
     }
 
-    state.dragLine = null
+    dragData.dragLine = null
+    dragData.draggingRect = null
   })
 
   event.on('move', ({ position, dragging }) => {
+    // set cursors here - or use CSS?
+    
     if (!dragging) return
 
-    const { x, y } = normalizeLocal(state, position)
+    const { x: lx, y: ly } = normalizeLocal(state, position)
 
-    if (state.dragLine) {
-      state.dragLine.x2 = x
-      state.dragLine.y2 = y
+    if (dragData.dragLine) {
+      dragData.dragLine.x2 = lx
+      dragData.dragLine.y2 = ly
     } else {
-      state.dragLine = { x1: x, y1: y, x2: x, y2: y }
+      dragData.dragLine = { x1: lx, y1: ly, x2: lx, y2: ly }
     }
 
     if (state.mode === 'pan') {
-      const { x: dX, y: dY } = lineToVector(state.dragLine)
+      const { x: dX, y: dY } = lineToVector(dragData.dragLine)
 
       state.transform.x += dX
       state.transform.y += dY
@@ -97,26 +99,77 @@ export const initIOEvents = (state: AppState) => {
     }
 
     if (state.mode === 'draw') {
-      if (!state.creatingRectEl) {
-        state.creatingRectEl = rect({
+      if (!dragData.creatingRectEl) {
+        dragData.creatingRectEl = rect({
           id: randomId(),
           class: 'draw-rect',
           fill: 'rgba( 255, 255, 255, 0.75 )'
         })
 
-        groupEl.append(state.creatingRectEl)
+        groupEl.append(dragData.creatingRectEl)
       }
 
-      const { x1, x2, y1, y2 } = state.dragLine
+      const { x1, x2, y1, y2 } = dragData.dragLine
 
       if (x1 >= x2 || y1 >= y2) return
 
-      const line = snapLineToGrid(state.dragLine, options.snap)
+      const line = snapLineToGrid(dragData.dragLine, options.snap)
 
       const { x1: x, y1: y } = line
       const { x: width, y: height } = lineToVector(line)
 
-      attr(state.creatingRectEl, { x, y, width, height })
+      attr(dragData.creatingRectEl, { x, y, width, height })
+
+      return
+    }
+
+    if( state.mode === 'select' ){
+      console.log( 'dragging in select mode' )
+
+      if( !dragData.draggingRect ){
+        const selectedRectEl = findRectAt( state, { x: lx, y: ly } )
+
+        if( selectedRectEl === undefined ) return
+        
+        console.log( 'found a rect' )
+        
+        if( !isSelected( selectedRectEl ) ) return
+
+        console.log( 'found a selected rect' )
+
+        const { id } = selectedRectEl
+
+        const initialRect = svgRectToRect( selectedRectEl )
+
+        dragData.draggingRect = { initialRect, id }
+
+        return
+      }
+
+      const selectedRectEl = strictSelect<SVGRectElement>( 
+        `#${ dragData.draggingRect.id }` 
+      )
+
+      const line = snapLineToGrid(dragData.dragLine, options.snap)
+
+      const delta = lineToVector(line)
+
+      const newRectElRect = translateRect( 
+        dragData.draggingRect.initialRect, delta 
+      )      
+
+      console.log( 'delta', delta )
+      console.log( 'initial rect', dragData.draggingRect.initialRect )
+      console.log( 'new rect', newRectElRect )
+      
+      setRectElRect( selectedRectEl, newRectElRect )      
+
+      // now translate selection as well
+      // TODO: this is lazy and bad lol
+      selectNone( state )
+      selectRect( state, selectedRectEl )
+
+      return
     }
   })
 

@@ -36,3 +36,12 @@ export const strictFormElement = (formEl: HTMLFormElement, name: string) => {
     `Expected an HTMLInputElement or RadioNodeList called ${name}`
   )
 }
+
+export const strictGetData = ( el: HTMLElement | SVGElement, key: string ) => {
+  const value = el.dataset[ key ]
+
+  if( value === undefined ) 
+    throw Error( `Expected element dataset to contain ${ key }` )
+  
+  return value
+}

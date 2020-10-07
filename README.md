@@ -24,6 +24,7 @@ Drag and drop rectangle editor
 - Set cursor type (on mouse move? or CSS?)
 - Arrange rect(s) (bring forward, send to back etc)
   - Should be undo/redoable - new action or make code more z index aware?
+- Arrow keys with a selection should move rects
 - Show width/height tooltip while creating/resizing
 - Show dx/dy tooltip while dragging
 - New mode, zoom

@@ -51,3 +51,6 @@ export type XPosition = typeof xPositionNames[ number ]
 export type YPosition = typeof yPositionNames[ number ] 
 
 export type Position = XPosition | YPosition
+
+export type Positions = [ XPosition, YPosition ]
+

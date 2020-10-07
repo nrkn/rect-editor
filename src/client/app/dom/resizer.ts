@@ -1,17 +1,22 @@
 import { g, rect } from '../../lib/dom/s'
-import { getXPosition, getYPosition } from '../../lib/geometry/position'
 import { setRectElRect } from '../actions'
 import { insideRect } from '../geometry'
 
 import { 
-  Point, Rect, XPosition, xPositionNames, YPosition, yPositionNames 
+  findXPosition, findYPosition, getXPosition, getYPosition 
+} from '../../lib/geometry/position'
+
+import { 
+  Point, Positions, Rect, XPosition, xPositionNames, YPosition, yPositionNames 
 } from '../../lib/geometry/types'
+
+import { handleSize } from '../consts'
 
 export const createResizer = ( 
   bounds: Rect, rectId: string 
 ) => {
   const outlineEl = rect(
-    { class: 'outline' }
+    { class: 'outline', 'data-id': rectId }
   )
 
   const outlineRect = insideRect( bounds )
@@ -19,15 +24,15 @@ export const createResizer = (
   setRectElRect( outlineEl, outlineRect )
 
   const groupEl = g(
-    { class: 'resize', 'data-for': rectId },
+    { class: 'resize', 'data-id': rectId },
     outlineEl,
-    ...createHandles( bounds )
+    ...createHandles( bounds, rectId )
   )
 
   return groupEl
 }
 
-const createHandles = ( rect: Rect ) => {
+const createHandles = ( rect: Rect, rectId: string ) => {
   const handles: SVGRectElement[] = []
 
   yPositionNames.forEach(
@@ -39,7 +44,7 @@ const createHandles = ( rect: Rect ) => {
 
           const x = getXPosition( rect, xName )
 
-          const handle = createHandle( { x, y }, xName, yName )
+          const handle = createHandle( { x, y }, xName, yName, rectId )
 
           handles.push( handle )
         }
@@ -50,10 +55,12 @@ const createHandles = ( rect: Rect ) => {
   return handles
 }
 
-const createHandle = ( { x, y }: Point, xName: XPosition, yName: YPosition ) => {
-  const width = 4
-  const height = 4
-  
+const createHandle = ( 
+  { x, y }: Point, xName: XPosition, yName: YPosition, rectId: string
+) => { 
+  const width = handleSize
+  const height = handleSize
+
   x -= width / 2 
   y -= height / 2
 
@@ -68,10 +75,38 @@ const createHandle = ( { x, y }: Point, xName: XPosition, yName: YPosition ) => 
   }
 
   const handleEl = rect(
-    { class: [ 'handle', xName, yName ].join( ' ' ) }
+    { 
+      class: [ 'handle', xName, yName ].join( ' ' ),
+      'data-id': rectId
+    }
   )
   
   setRectElRect( handleEl, { x, y, width, height } )
 
   return handleEl
+}
+
+export const getHandlePositions = ( handleEl: SVGRectElement ) => {
+  const classes = [ ...handleEl.classList ]
+
+  if( !classes.includes( 'handle' ) ) 
+    throw Error( 'Expected element classes to include handle' )
+
+  const xPosition = findXPosition( classes )
+
+  if( xPosition === undefined ) 
+    throw Error( 
+      `Expected element to include one of ${ xPositionNames.join( ', ' ) }`
+    )
+
+  const yPosition = findYPosition( classes )
+
+  if( yPosition === undefined ) 
+    throw Error( 
+      `Expected element to include one of ${ yPositionNames.join( ', ' ) }`
+    )
+  
+  const positions: Positions = [ xPosition, yPosition ]
+
+  return positions
 }

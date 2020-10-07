@@ -1,3 +1,4 @@
+import { isXPosition, isYPosition } from './predicates'
 import {
   Rect, XPosition, YPosition
 } from './types'
@@ -15,5 +16,21 @@ export const getYPosition = ({ y, height }: Rect, position: YPosition) => {
     case 'top': return y
     case 'bottom': return y + height
     case 'yCenter': return y + height / 2
+  }
+}
+
+export const findXPosition = ( values: string[] ) => {
+  for( let i = 0; i < values.length; i++ ){
+    const value = values[ i ]
+
+    if( isXPosition( value ) ) return value
+  }
+}
+
+export const findYPosition = ( values: string[] ) => {
+  for( let i = 0; i < values.length; i++ ){
+    const value = values[ i ]
+
+    if( isYPosition( value ) ) return value
   }
 }

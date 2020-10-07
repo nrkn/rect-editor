@@ -10,7 +10,7 @@ export const integerRect = ( { x, y, width, height }: Rect ): Rect => {
   return { x, y, width, height }
 }
 
-export const translateRect = ( rect: Rect, x: number, y: number ) => {
+export const translateRect = ( rect: Rect, { x, y }: Point ) => {
   const translatedPoint = translatePoint( rect, { x, y } )
 
   return Object.assign( {}, rect, translatedPoint )
