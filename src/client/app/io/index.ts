@@ -77,6 +77,7 @@ export const initIOEvents = (state: AppState) => {
 
     dragData.dragLine = null
     dragData.draggingRect = null
+    dragData.selectingRect = null
   })
 
   event.on('move', ({ position, dragging }) => {
@@ -135,18 +136,12 @@ export const initIOEvents = (state: AppState) => {
     }
 
     if( state.mode === 'select' ){
-      console.log( 'dragging in select mode' )
-
       if( !dragData.draggingRect ){
         const selectedRectEl = findRectAt( state, { x: lx, y: ly } )
 
         if( selectedRectEl === undefined ) return
-        
-        console.log( 'found a rect' )
-        
+               
         if( !isSelected( selectedRectEl ) ) return
-
-        console.log( 'found a selected rect' )
 
         const { id } = selectedRectEl
 
@@ -168,10 +163,6 @@ export const initIOEvents = (state: AppState) => {
       const newRectElRect = translateRect( 
         dragData.draggingRect.initialRect, delta 
       )      
-
-      console.log( 'delta', delta )
-      console.log( 'initial rect', dragData.draggingRect.initialRect )
-      console.log( 'new rect', newRectElRect )
       
       setRectElRect( selectedRectEl, newRectElRect )      
 

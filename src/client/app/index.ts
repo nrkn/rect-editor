@@ -49,7 +49,8 @@ const initState = (options: AppOptions) => {
   const dragData: DragData = {
     dragLine: null,
     creatingRectEl: null,
-    draggingRect: null
+    draggingRect: null,
+    selectingRect: null
   }
 
   const keys = {}

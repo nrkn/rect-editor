@@ -32,6 +32,7 @@ export type EditingRect = {
 export type DragData = {
   dragLine: Line | null
   creatingRectEl: SVGRectElement | null 
+  selectingRect: Rect | null
   draggingRect: EditingRect | null 
 }
 
