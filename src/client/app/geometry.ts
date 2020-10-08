@@ -1,4 +1,3 @@
-import { fitAndPosition } from 'object-fit-math'
 import { attr } from '../lib/dom/util'
 import { transformToSvg } from '../lib/dom/geometry'
 import { Point, Rect, Transform } from '../lib/geometry/types'
@@ -22,25 +21,6 @@ export const localToGrid = (
   y /= scale
 
   return { x, y }
-}
-
-export const zoomToFit = (state: AppState) => {
-  const { viewportEl } = state.dom
-  const { gridSize } = state.options
-
-  const parentSize = viewportEl.getBoundingClientRect()
-
-  const { x: fx, y: fy, width: fw } = fitAndPosition(
-    parentSize, gridSize, 'contain', '50%', '50%'
-  )
-
-  const scale = fw / gridSize.width
-  const x = fx / scale
-  const y = fy / scale
-
-  Object.assign(state.transform, { x, y, scale })
-
-  applyTransform(state)
 }
 
 export const getLocalCenter = (state: AppState): Point => {
@@ -67,19 +47,6 @@ export const applyTransform = (state: AppState) => {
   ensureMinScale( state )
 
   attr(groupEl, { transform: transformToSvg(transform) })
-}
-
-export const svgRectToRect = ( el: SVGRectElement ) => {
-  const { x: ex, y: ey, width: ew, height: eh } = el
-
-  const x = ex.baseVal.value
-  const y = ey.baseVal.value
-  const width = ew.baseVal.value
-  const height = eh.baseVal.value
-
-  const rect: Rect = { x, y, width, height }
-
-  return rect
 }
 
 export const insideRect = ( 

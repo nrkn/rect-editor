@@ -37,3 +37,9 @@ export const snapLineToGrid = (
 
   return { x1, y1, x2, y2 }
 }
+
+export const distance = ( line: Line ) => {
+  const { x, y } = lineToVector( line )
+
+  return Math.sqrt( x * x + y * y )
+}

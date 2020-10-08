@@ -1,9 +1,8 @@
 import { strictFormElement, strictSelect } from '../lib/dom/util'
-import { redoAction, undoAction } from './actions'
-import { zoomToFit } from './geometry'
-import { isAppMode } from './predicates'
-import { getDrawRects } from './rects'
-import { AppMode, AppState } from './types'
+import { isAppMode } from './actions/mode'
+import { zoomToFit } from './actions/zoom'
+import { redoCommand, undoCommand } from './commands'
+import { AppState } from './types'
 
 export const initForm = (state: AppState) => {
   const { options } = state
@@ -44,13 +43,13 @@ export const initForm = (state: AppState) => {
     '#undo', formEl
   )
 
-  undoButtonEl.addEventListener('click', () => undoAction( state ) )
+  undoButtonEl.addEventListener('click', () => undoCommand( state ) )
 
   const redoButtonEl = strictSelect<HTMLButtonElement>(
     '#redo', formEl
   )
 
-  redoButtonEl.addEventListener( 'click', () => redoAction( state ) )
+  redoButtonEl.addEventListener( 'click', () => redoCommand( state ) )
 
   modeEl.value = 'pan'
   cellWidthEl.value = String(options.snap.width)

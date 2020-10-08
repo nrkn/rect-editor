@@ -1,13 +1,14 @@
 import { g, rect, svg } from '../lib/dom/s'
 import { attr, strictSelect } from '../lib/dom/util'
 import { setViewBox } from '../lib/dom/geometry'
-import { zoomToFit } from './geometry'
-import { ActionList, AppDomEls, AppMode, AppOptions, AppState, DragData } from './types'
+import { AppDomEls, AppMode, AppOptions, AppState, DragData } from './types'
 import { createGridBg } from './raster'
 import { createDefsManager } from '../lib/dom/defs'
 import { initIOEvents } from './io'
 import { initForm } from './tools'
 import { populateForm } from './dom/form-tools'
+import { CommandList } from './commands/types'
+import { zoomToFit } from './actions/zoom'
 
 export const createApp = (opts: Partial<AppOptions> = {}) => {
   const options: AppOptions = Object.assign({}, defaultOptions, opts)
@@ -48,20 +49,20 @@ const initState = (options: AppOptions) => {
 
   const dragData: DragData = {
     dragLine: null,
-    creatingRectEl: null,
+    creatingElId: null,
     draggingRect: null,
     selectingRect: null
   }
 
   const keys = {}
 
-  const actions: ActionList = {
+  const commands: CommandList = {
     list: [],
     nextIndex: 0
   }
   
   const state: AppState = { 
-    mode, transform, dom, options, defsManager, dragData, keys, actions
+    mode, transform, dom, options, defsManager, dragData, keys, commands
   }
 
   return state

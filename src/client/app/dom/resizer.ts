@@ -1,5 +1,4 @@
 import { g, rect } from '../../lib/dom/s'
-import { setRectElRect } from '../actions'
 import { insideRect } from '../geometry'
 
 import { 
@@ -11,6 +10,7 @@ import {
 } from '../../lib/geometry/types'
 
 import { handleSize } from '../consts'
+import { setRectElRect } from './rects'
 
 export const createResizer = ( 
   bounds: Rect, rectId: string 

@@ -1,15 +1,21 @@
 import { createInputEvents } from '../../lib/create-events'
-import { rect } from '../../lib/dom/s'
 import { attr, strictSelect } from '../../lib/dom/util'
 import { getViewBoxRect } from '../../lib/dom/geometry'
 import { lineToVector, normalizeLine, snapLineToGrid } from '../../lib/geometry/line'
-import { findRectAt } from '../rects'
 import { AppState } from '../types'
-import { isSelected, newAction, selectNone, selectRect, setRectElRect, switchMode, toggleRect, zoomAt } from '../actions'
-import { applyTransform, localToGrid, svgRectToRect } from '../geometry'
-import { keyHandler } from './key'
+import { applyTransform, localToGrid } from '../geometry'
+import { keyHandler } from './key-handler'
 import { randomId } from '../../lib/util'
 import { translateRect } from '../../lib/geometry/rect'
+import { newCommand } from '../commands'
+import { switchMode } from '../actions/mode'
+import { zoomAt } from '../actions/zoom'
+
+import { 
+  selectNone, selectRect, isSelected, toggleRect 
+} from '../actions/select'
+
+import { createRectEl, findRectAt, setRectElRect, svgRectToRect } from '../dom/rects'
 
 export const initIOEvents = (state: AppState) => {
   const { dom, options, dragData } = state
@@ -35,7 +41,7 @@ export const initIOEvents = (state: AppState) => {
     state.keys[e.key] = true
     const handled = keyHandler(state, e.key)
 
-    if( handled ) e.preventDefault()
+    if (handled) e.preventDefault()
   })
 
   window.addEventListener('keyup', e => {
@@ -43,36 +49,40 @@ export const initIOEvents = (state: AppState) => {
   })
 
   event.on('down', () => {
-    
+
   })
 
-  event.on('up', () => {   
-    if (dragData.creatingRectEl) {
-      const { width, height } = dragData.creatingRectEl
+  event.on('up', () => {
+    if (dragData.creatingElId) {
+      const creatingEl = strictSelect<SVGRectElement>(
+        `#${dragData.creatingElId}`, state.dom.groupEl
+      )
+
+      const { width, height } = creatingEl
 
       if (width.baseVal.value === 0 || height.baseVal.value === 0) {
-        dragData.creatingRectEl.remove()
-        dragData.creatingRectEl = null
+        creatingEl.remove()
+        dragData.creatingElId = null
 
         return
       }
 
       selectNone(state)
-      selectRect(state, dragData.creatingRectEl)
+      selectRect(state, creatingEl)
 
-      newAction(state,
+      newCommand(state,
         {
           type: 'add',
           elements: [
             {
-              id: dragData.creatingRectEl.id,
-              rect: svgRectToRect(dragData.creatingRectEl)   
+              id: dragData.creatingElId,
+              rect: svgRectToRect(creatingEl)
             }
           ]
         }
       )
 
-      dragData.creatingRectEl = null
+      dragData.creatingElId = null
     }
 
     dragData.dragLine = null
@@ -82,7 +92,7 @@ export const initIOEvents = (state: AppState) => {
 
   event.on('move', ({ position, dragging }) => {
     // set cursors here - or use CSS?
-    
+
     if (!dragging) return
 
     const { x: lx, y: ly } = normalizeLocal(state, position)
@@ -106,70 +116,74 @@ export const initIOEvents = (state: AppState) => {
     }
 
     if (state.mode === 'draw') {
-      if (!dragData.creatingRectEl) {
-        dragData.creatingRectEl = rect({
-          id: randomId(),
-          class: 'draw-rect',
-          fill: 'rgba( 255, 255, 255, 0.75 )'
-        })
+      let creatingEl: SVGRectElement
 
-        groupEl.append(dragData.creatingRectEl)
+      if (dragData.creatingElId) {
+        creatingEl = strictSelect<SVGRectElement>(
+          `#${dragData.creatingElId}`, state.dom.groupEl
+        )        
+      } else {        
+        dragData.creatingElId = randomId()
+
+        creatingEl = createRectEl( dragData.creatingElId )
+
+        groupEl.append(creatingEl)
       }
 
       const line = normalizeLine(
-        snapLineToGrid( dragData.dragLine, options.snap )        
+        snapLineToGrid(dragData.dragLine, options.snap)
       )
 
       const { x1: x, y1: y } = line
       let { x: width, y: height } = lineToVector(line)
 
-      if( state.keys.Shift ){
-        const max = Math.max( width, height )
+      if (state.keys.Shift) {
+        const max = Math.max(width, height)
 
         width = max
         height = max
       }
 
-      attr(dragData.creatingRectEl, { x, y, width, height })
+      attr(creatingEl, { x, y, width, height })
 
       return
     }
 
-    if( state.mode === 'select' ){
-      if( !dragData.draggingRect ){
-        const selectedRectEl = findRectAt( state, { x: lx, y: ly } )
+    if (state.mode === 'select') {
+      if (!dragData.draggingRect) {
+        const selectedRectEl = findRectAt(state, { x: lx, y: ly })
 
-        if( selectedRectEl === undefined ) return
-               
-        if( !isSelected( selectedRectEl ) ) return
+        if (selectedRectEl === undefined) return
+
+        if (!isSelected(selectedRectEl)) return
 
         const { id } = selectedRectEl
 
-        const initialRect = svgRectToRect( selectedRectEl )
+        const initialRect = svgRectToRect(selectedRectEl)
 
         dragData.draggingRect = { initialRect, id }
 
         return
       }
 
-      const selectedRectEl = strictSelect<SVGRectElement>( 
-        `#${ dragData.draggingRect.id }` 
+      const selectedRectEl = strictSelect<SVGRectElement>(
+        `#${dragData.draggingRect.id}`
       )
 
       const line = snapLineToGrid(dragData.dragLine, options.snap)
 
       const delta = lineToVector(line)
 
-      const newRectElRect = translateRect( 
-        dragData.draggingRect.initialRect, delta 
-      )      
-      
-      setRectElRect( selectedRectEl, newRectElRect )      
+      const newRectElRect = translateRect(
+        dragData.draggingRect.initialRect, delta
+      )
+
+      setRectElRect(selectedRectEl, newRectElRect)
 
       // now translate selection as well
       // TODO: this is lazy and bad lol
-      selectNone( state )
-      selectRect( state, selectedRectEl )
+      selectNone(state)
+      selectRect(state, selectedRectEl)
 
       return
     }
@@ -180,30 +194,30 @@ export const initIOEvents = (state: AppState) => {
 
     const selectedRectEl = findRectAt(state, localPosition)
 
-    if( state.mode === 'pan' ){
-      selectNone( state )
+    if (state.mode === 'pan') {
+      selectNone(state)
 
-      return 
+      return
     }
 
     if (state.mode === 'draw' && selectedRectEl !== undefined) {
       selectNone(state)
       selectRect(state, selectedRectEl)
       switchMode(state, 'select')
-      
-      return 
+
+      return
     }
 
     if (state.mode === 'select') {
       const selectedRectEl = findRectAt(state, localPosition)
 
-      if( selectedRectEl === undefined ){
-        selectNone( state )
+      if (selectedRectEl === undefined) {
+        selectNone(state)
       } else {
-        if( state.keys.Shift ){
-          toggleRect( state, selectedRectEl)
+        if (state.keys.Shift) {
+          toggleRect(state, selectedRectEl)
         } else {
-          selectNone( state )
+          selectNone(state)
           selectRect(state, selectedRectEl)
         }
       }

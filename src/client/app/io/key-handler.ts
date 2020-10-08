@@ -1,5 +1,8 @@
-import { redoAction, selectAll, selectNone, switchMode, undoAction, zoomAt } from '../actions'
-import { applyTransform, getLocalCenter, zoomToFit } from '../geometry'
+import { switchMode } from '../actions/mode'
+import { selectAll, selectNone } from '../actions/select'
+import { zoomToFit, zoomAt } from '../actions/zoom'
+import { redoCommand, undoCommand } from '../commands'
+import { applyTransform, getLocalCenter } from '../geometry'
 import { AppState } from '../types'
 
 export const keyHandler = (state: AppState, key: string) => {
@@ -69,9 +72,9 @@ export const keyHandler = (state: AppState, key: string) => {
 
   if( isUndoRedo( key ) && state.keys.Control ){
     if( state.keys.Shift ){     
-      redoAction( state )
+      redoCommand( state )
     } else {
-      undoAction( state )
+      undoCommand( state )
     }
 
     return true
