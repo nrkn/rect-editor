@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events'
 
-export type PointTuple = [ number, number ]
+export type PointTuple = [number, number]
 
 export type Position = {
   position: PointTuple
@@ -12,15 +12,15 @@ export type Move = Position & {
 }
 
 export type InputEvents = {
-  down: ( arg: Position ) => void
-  up: ( arg: Position ) => void
-  move: ( arg: Move ) => void
-  tap: ( arg: Position ) => void
+  down: (arg: Position) => void
+  up: (arg: Position) => void
+  move: (arg: Move) => void
+  tap: (arg: Position) => void
 }
 
 export interface InputEventHandler extends EventEmitter {
   on<K extends keyof InputEvents>(
-    event: K, listener: InputEvents[ K ]
+    event: K, listener: InputEvents[K]
   ): this
 }
 
@@ -36,7 +36,7 @@ export type Options = {
 
 export type CreateInputEventArgs = Window | Node | Partial<Options> | null
 
-export const createInputEvents = (opt: CreateInputEventArgs ) => {
+export const createInputEvents = (opt: CreateInputEventArgs) => {
   if (opt == null) opt = window
 
   if (isDOMNode(opt)) opt = { target: opt }
@@ -50,7 +50,7 @@ export const createInputEvents = (opt: CreateInputEventArgs ) => {
     filtered = true,
     passive = true
   } = opt
-  
+
   const eventOpts = passive ? { passive: true } : undefined
 
   const emitter = new EventEmitter()
@@ -63,41 +63,41 @@ export const createInputEvents = (opt: CreateInputEventArgs ) => {
 
   attach();
 
-  emitter[ 'enable' ] = attach
-  emitter[ 'disable' ] = detach
+  emitter['enable'] = attach
+  emitter['disable'] = detach
 
   Object.defineProperties(emitter, {
     target: {
-      get () { return target }
+      get() { return target }
     },
     parent: {
-      get () { return parent }
+      get() { return parent }
     }
   })
 
   return emitter as InputEventHandler
 
-  function mousedown (event) {
+  function mousedown(event) {
     // mark the drag event as having started
     dragging = true
-    
+
     const touch = getCurrentEvent(event)
     const result = createEvent(event, touch, target)
-    
+
     lastPosition = result.position.slice()
     lastTime = Date.now()
-    
+
     emitter.emit('down', result)
   }
 
-  function mouseup (event) {
+  function mouseup(event) {
     const wasDragging = dragging
     const touch = getCurrentEvent(event)
 
     let valid = true
 
     if (
-      filtered && event.changedTouches && 
+      filtered && event.changedTouches &&
       (!touch || touch.identifier !== initialIdentifier)
     ) {
       // skip entirely if this touch doesn't match expected
@@ -118,11 +118,11 @@ export const createInputEvents = (opt: CreateInputEventArgs ) => {
         const nowTime = Date.now()
         const delta = nowTime - lastTime
         const dist = distance(result.position, lastPosition)
-        
+
         if (delta <= tapDelay && dist < tapDistanceThreshold) {
           emitter.emit('tap', result)
         }
-        
+
         lastPosition = null
       }
 
@@ -130,7 +130,7 @@ export const createInputEvents = (opt: CreateInputEventArgs ) => {
     }
   }
 
-  function mousemove (event) {
+  function mousemove(event) {
     const touch = getCurrentEvent(event)
 
     if (touch) {
@@ -143,7 +143,7 @@ export const createInputEvents = (opt: CreateInputEventArgs ) => {
           dragging = true
         }
       }
-      
+
       const result = createEvent(event, touch, target)
 
       if (dragging || result.inside) {
@@ -152,7 +152,7 @@ export const createInputEvents = (opt: CreateInputEventArgs ) => {
     }
   }
 
-  function attach () {
+  function attach() {
     if (attached) return
 
     attached = true
@@ -176,9 +176,9 @@ export const createInputEvents = (opt: CreateInputEventArgs ) => {
     }
   }
 
-  function detach () {
+  function detach() {
     if (!attached) return
-    
+
     attached = false
 
     target.removeEventListener('touchstart', mousedown)
@@ -195,13 +195,13 @@ export const createInputEvents = (opt: CreateInputEventArgs ) => {
     }
   }
 
-  function preventDefaultEvent (ev) {
+  function preventDefaultEvent(ev) {
     ev.preventDefault()
 
     return false
   }
 
-  function getCurrentEvent (event) {
+  function getCurrentEvent(event) {
     if (event.changedTouches) {
       const list = event.changedTouches
 
@@ -209,7 +209,7 @@ export const createInputEvents = (opt: CreateInputEventArgs ) => {
         if (initialIdentifier == null) {
           // first time tracking, mark identifier
           const first = getFirstTargetTouch(list) || list[0]
-          
+
           initialIdentifier = first.identifier
 
           return first
@@ -225,7 +225,7 @@ export const createInputEvents = (opt: CreateInputEventArgs ) => {
     }
   }
 
-  function getFirstTargetTouch (touches) {
+  function getFirstTargetTouch(touches) {
     for (let i = 0; i < touches.length; i++) {
       const t = touches[i]
 
@@ -235,7 +235,7 @@ export const createInputEvents = (opt: CreateInputEventArgs ) => {
     return null
   }
 
-  function getTouch (touches, id) {
+  function getTouch(touches, id) {
     for (let i = 0; i < touches.length; i++) {
       const t = touches[i]
 
@@ -243,11 +243,11 @@ export const createInputEvents = (opt: CreateInputEventArgs ) => {
         return t
       }
     }
-    
+
     return null
   }
 
-  function createEvent (event, touch, target) {
+  function createEvent(event, touch, target) {
     const bounds = getElementBounds(target)
     const position = getPosition(touch, target, bounds)
     const uv = getNormalizedPosition(position, bounds)
@@ -264,40 +264,40 @@ export const createInputEvents = (opt: CreateInputEventArgs ) => {
   }
 }
 
-function distance (a, b) {
+function distance(a, b) {
   const x = b[0] - a[0]
   const y = b[1] - a[1]
 
   return Math.sqrt(x * x + y * y)
 }
 
-function isInsideBounds (event, bounds) {
+function isInsideBounds(event, bounds) {
   const { clientX, clientY } = event
 
   return (
-    clientX >= bounds.left && 
+    clientX >= bounds.left &&
     clientX < bounds.right &&
-    clientY >= bounds.top && 
+    clientY >= bounds.top &&
     clientY < bounds.bottom
   )
 }
 
-function getNormalizedPosition (position, bounds) {
+function getNormalizedPosition(position, bounds) {
   return [
     position[0] / bounds.width,
     position[1] / bounds.height
   ]
 }
 
-function getPosition (event, _target, bounds) {
+function getPosition(event, _target, bounds) {
   const { clientX, clientY } = event
   const x = clientX - bounds.left
   const y = clientY - bounds.top
-  
-  return [ x, y ]
+
+  return [x, y]
 }
 
-function getElementBounds (element) {
+function getElementBounds(element) {
   if (
     element === window ||
     element === document ||
@@ -318,13 +318,13 @@ function getElementBounds (element) {
   }
 }
 
-function isDOMNode (obj: any): obj is Node | Window {
+function isDOMNode(obj: any): obj is Node | Window {
   if (!obj || obj == null) return false
 
   const winEl = typeof window !== 'undefined' ? window : null
 
   return (
-    obj === winEl || 
-    ( typeof obj.nodeType === 'number' && typeof obj.nodeName === 'string') 
+    obj === winEl ||
+    (typeof obj.nodeType === 'number' && typeof obj.nodeName === 'string')
   )
 }

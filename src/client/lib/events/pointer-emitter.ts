@@ -16,11 +16,10 @@ export const createPointerEmitter = (
   const move = createEmitter<PointerEvent>()
   const tap = createEmitter<PointerEvent>()
 
-  let initialIdentifier: any
   let isDragging = false
+  let isAttached = false  
   let lastTime: number
   let lastPosition: Point | null
-  let attached = false  
 
   const downListener = ( e: MouseEvent ) => {
     isDragging = true
@@ -38,8 +37,6 @@ export const createPointerEmitter = (
     const wasDragging = isDragging
 
     const event = createEvent( e )
-
-    initialIdentifier = null
 
     if( wasDragging || event.isInside ){
       up.emit( event )
@@ -78,7 +75,7 @@ export const createPointerEmitter = (
   }
 
   const enable = () => {
-    if( attached ) return
+    if( isAttached ) return
 
     target.addEventListener('mousedown', downListener )
     window.addEventListener('mouseup', upListener)
@@ -88,9 +85,13 @@ export const createPointerEmitter = (
       window.addEventListener( 
         'dragstart', preventDefaultListener, { passive: false } 
       )
+
+      document.addEventListener(
+        'touchmove', preventDefaultListener, { passive: false }
+      )      
     }
 
-    attached = true
+    isAttached = true
   }
 
   const preventDefaultListener = ( event: Event ) => {
@@ -100,7 +101,7 @@ export const createPointerEmitter = (
   }
 
   const disable = () => {
-    if( !attached ) return
+    if( !isAttached ) return
 
     target.removeEventListener('mousedown', downListener)
     window.removeEventListener('mouseup', upListener)
@@ -108,9 +109,10 @@ export const createPointerEmitter = (
 
     if (preventDefault) {
       window.removeEventListener('dragstart', preventDefaultListener)
+      document.removeEventListener('touchmove', preventDefaultListener)
     }
 
-    attached = false
+    isAttached = false
   }
 
   const createEvent = (  mouseEvent: MouseEvent ) => {
@@ -122,6 +124,8 @@ export const createPointerEmitter = (
 
     return event
   }
+
+  enable()
 
   return { up, down, move, tap, enable, disable }
 }
@@ -140,4 +144,3 @@ const defaultOptions: PointerEmitterOptions = {
   tapDistanceThreshold: 10,
   tapDelay: 300
 }
-
