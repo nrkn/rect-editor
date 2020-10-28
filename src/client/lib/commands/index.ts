@@ -1,20 +1,23 @@
-import { Command, CommandList } from './types'
+import { Commands, CommandList } from './types'
 
-export const createCommands = <TElement, TTypes>() => {
-  const commands: CommandList<TElement, TTypes> = {
+export const createCommands = <T>(): Commands<T> => {
+  const commands: CommandList<T> = {
     list: [],
     nextIndex: 0
   }
 
-  const add = ( command: Command<TElement, TTypes> ) => addCommand( commands, command )
+  const add = ( command: T ) => 
+    addCommand( commands, command )
+
   const nextUndo  = () => nextUndoCommand( commands )
   const nextRedo = () => nextRedoCommand( commands )  
 
   return { add, nextUndo, nextRedo }
 }
 
-const addCommand =  <TElement, TTypes>( 
-  commands: CommandList<TElement, TTypes>, command: Command<TElement, TTypes>
+const addCommand =  <T>( 
+  commands: CommandList<T>, 
+  command: T
 ) => {
   const { nextIndex } = commands
 
@@ -22,12 +25,12 @@ const addCommand =  <TElement, TTypes>(
   commands.nextIndex = commands.list.length
 }
 
-const nextUndoCommand = <TElement, TTypes>( 
-  commands: CommandList<TElement, TTypes>
+const nextUndoCommand = <T>( 
+  commands: CommandList<T>
 ) => {
   const { list } = commands
 
-  if( list.length === 0 ) return
+  if( list.length === 0 || commands.nextIndex === 0 ) return
 
   const command = list[ commands.nextIndex - 1 ]
 
@@ -36,8 +39,8 @@ const nextUndoCommand = <TElement, TTypes>(
   return command
 }
 
-const nextRedoCommand = <TElement, TTypes>(
-  commands: CommandList<TElement, TTypes>
+const nextRedoCommand = <T>(
+  commands: CommandList<T>
 ) => {
   const { list, nextIndex } = commands
 

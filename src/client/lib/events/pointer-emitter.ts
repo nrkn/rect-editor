@@ -110,11 +110,12 @@ export const createPointerEmitter = (
   }
 
   const createEvent = (  mouseEvent: MouseEvent ) => {
+    const { button } = mouseEvent
     const bounds = target.getBoundingClientRect()
     const position = getPosition( mouseEvent, bounds )
     const isInside = rectContainsPoint( bounds, position )
 
-    const event: PointerEvent = { position, isDragging, isInside }
+    const event: PointerEvent = { position, isDragging, isInside, button }
 
     return event
   }

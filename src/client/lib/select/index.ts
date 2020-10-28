@@ -1,41 +1,43 @@
 import { createEmitter } from '../events'
+import { clone } from '../util'
+import { SelectActions } from './types'
 
-export const createSelector = <T = string>( set: Set<T> ) => {
+export const createSelector = <T = string>() => {
+  const set = new Set<T>() 
   const selectEmitter = createEmitter<T[]>()
 
-  const select = ( ...values: T[] ) => {
-    values.forEach( v => set.add( v ) )
+  const actions: SelectActions<T> = {
+    add: values => {
+      values.forEach( v => set.add( v ) )
 
-    selectEmitter.emit( [ ...set ] )
+      selectEmitter.emit( [ ...set ] )
+    },
+    remove: values => {
+      values.forEach( v => set.delete( v ) )
+
+      selectEmitter.emit( [ ...set ] )
+    },
+    toggle: values => {
+      values.forEach( v => {
+        if( set.has( v ) ){
+          set.delete( v )
+        } else {
+          set.add( v )
+        }
+      })
+  
+      selectEmitter.emit( [ ...set ] )
+    },
+    clear: () => {
+      set.clear()
+
+      selectEmitter.emit( [] )
+    },
+    get: () => clone( [ ...set ] ),
+    any: () => set.size > 0
   }
 
-  const deselect = ( ...values: T[] ) => {
-    values.forEach( v => set.delete( v ) )
+  const { on } = selectEmitter
 
-    selectEmitter.emit( [ ...set ] )
-  }
-
-  const isSelected = ( value: T ) => set.has( value )
-
-  const selectNone = () => {
-    set.clear()
-
-    selectEmitter.emit( [] )
-  }
-
-  const toggleSelect = ( ...values: T[] ) => {
-    values.forEach( v => {
-      if( set.has( v ) ){
-        set.delete( v )
-      } else {
-        set.add( v )
-      }
-    })
-
-    selectEmitter.emit( [ ...set ] )
-  }
-
-  return { 
-    select, deselect, isSelected, selectNone, toggleSelect, selectEmitter 
-  }
+  return { actions, on }
 }

@@ -1,9 +1,10 @@
-export type Command<TElement, TTypes> = {
-  type: TTypes
-  elements: TElement[]
+export type CommandList<T> = {
+  list: T[]
+  nextIndex: number
 }
 
-export type CommandList<TElement = any, TTypes = string> = {
-  list: Command<TElement, TTypes>[]
-  nextIndex: number
+export type Commands<T> = {
+  add: (command: T) => void
+  nextUndo: () => T | undefined
+  nextRedo: () => T | undefined
 }

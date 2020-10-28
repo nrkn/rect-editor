@@ -8,10 +8,10 @@ export const createDefsManager = (svgEl: SVGSVGElement) => {
 
   svgEl.append(defsEl)
 
-  const names = new Set<string>()
+  const canvases = new Map<string,HTMLCanvasElement>()
 
-  const setPattern = (id: string, canvas: HTMLCanvasElement) => {
-    if (names.has(id)) {
+  const setPattern = (id: string, canvas: HTMLCanvasElement ) => {
+    if (canvases.has(id)) {
       const pattern = strictSelect(`#${id}`, defsEl)
 
       pattern.remove()
@@ -31,17 +31,20 @@ export const createDefsManager = (svgEl: SVGSVGElement) => {
 
     defsEl.append(patternEl)
 
-    names.add(id)
+    canvases.set( id, canvas )
   }
 
-  const getNames = () => [...names]
+  const get = ( id: string ) => canvases.get( id )
 
-  const manager: DefsManager = { getNames, setPattern }
+  const getNames = () => [...canvases.keys()]
+
+  const manager: DefsManager = { getNames, setPattern, get }
 
   return manager
 }
 
 export type DefsManager = {
   getNames: () => string[]
-  setPattern: (id: string, canvas: HTMLCanvasElement) => void
+  setPattern: (id: string, canvas: HTMLCanvasElement ) => void
+  get: ( id: string ) => HTMLCanvasElement | undefined
 }

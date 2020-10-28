@@ -44,3 +44,19 @@ svg .handle {
   stroke:  rgba(64, 128, 255, 1);
   fill: rgba( 255, 255, 255, 0.75 );
 }
+
+svg .rectEl {
+  fill: rgba( 0, 0, 0, 0.5 );
+}
+
+svg .rectEl.selected {
+  stroke-width: 1px;
+  stroke: #39f;
+}
+
+svg .selectRectEl {
+  stroke-width: 1px;
+  stroke: #39f;
+  stroke-dasharray: 1 1;
+  fill: transparent;
+}
