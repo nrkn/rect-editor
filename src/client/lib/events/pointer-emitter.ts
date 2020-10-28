@@ -1,5 +1,5 @@
 import { createEmitter } from '.'
-import { argsToLine, distance } from '../geometry/line'
+import { distance } from '../geometry/line'
 import { rectContainsPoint } from '../geometry/rect'
 import { Point } from '../geometry/types'
 import { PointerEmitterOptions, PointerEvent } from './types'
@@ -61,13 +61,7 @@ export const createPointerEmitter = (
   }
 
   const moveListener = ( e: MouseEvent ) => {
-    const event = createEvent( e )
-    const bounds = target.getBoundingClientRect()
-    const isInside = rectContainsPoint( bounds, event.position )
-
-    if (isInside) {
-      isDragging = true
-    }
+    const event = createEvent( e )    
 
     if( isDragging || event.isInside ){
       move.emit( event )
@@ -77,9 +71,9 @@ export const createPointerEmitter = (
   const enable = () => {
     if( isAttached ) return
 
-    target.addEventListener('mousedown', downListener )
-    window.addEventListener('mouseup', upListener)
-    window.addEventListener('mousemove', moveListener)
+    target.addEventListener('mousedown', downListener, { passive: true }  )
+    window.addEventListener('mouseup', upListener, { passive: true })
+    window.addEventListener('mousemove', moveListener, { passive: true })
 
     if( preventDefault ){
       window.addEventListener( 

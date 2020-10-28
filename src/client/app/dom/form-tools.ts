@@ -3,11 +3,15 @@ import { appModes, AppMode } from '../types'
 
 export const populateForm = (formEl: HTMLFormElement) => {
   formEl.append(
-    ...createActionButtons(),
-    createPointerModes(),
-    createSizeEditor('Snap to Grid', 'cell')
+    ...createToolbar()
   )
 }
+
+export const createToolbar = () => [
+  ...createActionButtons(),
+  createPointerModes(),
+  createSizeEditor('Snap to Grid', 'cell')
+]
 
 const createActionButtons = () => {
   return [

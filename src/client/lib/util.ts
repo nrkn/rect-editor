@@ -10,3 +10,6 @@ export const createSequence = <T>(
   length: number, cb: ( index: number ) => T 
 ) =>
   Array.from( { length }, ( _v, index ) => cb( index ) )
+
+export const clone = <T>( value: T ): T => 
+  JSON.parse( JSON.stringify( value ) )

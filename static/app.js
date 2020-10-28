@@ -160,12 +160,17 @@ exports.handleSize = 3;
 },{}],6:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.populateForm = void 0;
+exports.createToolbar = exports.populateForm = void 0;
 const h_1 = require("../../lib/dom/h");
 const types_1 = require("../types");
 exports.populateForm = (formEl) => {
-    formEl.append(...createActionButtons(), createPointerModes(), createSizeEditor('Snap to Grid', 'cell'));
+    formEl.append(...exports.createToolbar());
 };
+exports.createToolbar = () => [
+    ...createActionButtons(),
+    createPointerModes(),
+    createSizeEditor('Snap to Grid', 'cell')
+];
 const createActionButtons = () => {
     return [
         h_1.button({ type: 'button', id: 'undo' }, 'Undo'),
@@ -493,7 +498,7 @@ const pointer_emitter_1 = require("../../lib/events/pointer-emitter");
 exports.initIOEvents = (state) => {
     const { dom, options, dragData } = state;
     const { viewportEl, groupEl } = dom;
-    const pointerEmitter = pointer_emitter_1.createPointerEmitter(viewportEl);
+    const emitter = pointer_emitter_1.createPointerEmitter(viewportEl);
     viewportEl.addEventListener('wheel', e => {
         e.preventDefault();
         const { left, top } = viewportEl.getBoundingClientRect();
@@ -513,8 +518,9 @@ exports.initIOEvents = (state) => {
     window.addEventListener('keyup', e => {
         state.keys[e.key] = false;
     });
-    pointerEmitter.down.on(() => { });
-    pointerEmitter.up.on(() => {
+    emitter.down.on(() => {
+    });
+    emitter.up.on(() => {
         if (dragData.creatingElId) {
             const creatingEl = util_1.strictSelect(`#${dragData.creatingElId}`, state.dom.groupEl);
             const { width, height } = creatingEl;
@@ -540,7 +546,7 @@ exports.initIOEvents = (state) => {
         dragData.draggingRect = null;
         dragData.selectingRect = null;
     });
-    pointerEmitter.move.on(({ position, isDragging }) => {
+    emitter.move.on(({ position, isDragging }) => {
         // set cursors here - or use CSS?
         if (!isDragging)
             return;
@@ -604,7 +610,7 @@ exports.initIOEvents = (state) => {
             return;
         }
     });
-    pointerEmitter.tap.on(({ position }) => {
+    emitter.tap.on(({ position }) => {
         const localPosition = normalizeLocal(state, position);
         const selectedRectEl = rects_1.findRectAt(state, localPosition);
         if (state.mode === 'pan') {
@@ -824,7 +830,7 @@ exports.setViewBox = (svg, { x, y, width, height }) => {
 },{"./util":23}],20:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.button = exports.input = exports.label = exports.legend = exports.fieldset = exports.div = exports.htmlElementFactory = exports.text = exports.fragment = exports.h = void 0;
+exports.form = exports.button = exports.input = exports.label = exports.legend = exports.fieldset = exports.div = exports.htmlElementFactory = exports.text = exports.fragment = exports.h = void 0;
 const predicates_1 = require("./predicates");
 const util_1 = require("./util");
 exports.h = (name, ...args) => {
@@ -855,6 +861,7 @@ exports.legend = exports.htmlElementFactory('legend');
 exports.label = exports.htmlElementFactory('label');
 exports.input = exports.htmlElementFactory('input');
 exports.button = exports.htmlElementFactory('button');
+exports.form = exports.htmlElementFactory('form');
 
 },{"./predicates":21,"./util":23}],21:[function(require,module,exports){
 "use strict";
@@ -1004,11 +1011,6 @@ exports.createPointerEmitter = (target, options = {}) => {
     };
     const moveListener = (e) => {
         const event = createEvent(e);
-        const bounds = target.getBoundingClientRect();
-        const isInside = rect_1.rectContainsPoint(bounds, event.position);
-        if (isInside) {
-            isDragging = true;
-        }
         if (isDragging || event.isInside) {
             move.emit(event);
         }
@@ -1016,9 +1018,9 @@ exports.createPointerEmitter = (target, options = {}) => {
     const enable = () => {
         if (isAttached)
             return;
-        target.addEventListener('mousedown', downListener);
-        window.addEventListener('mouseup', upListener);
-        window.addEventListener('mousemove', moveListener);
+        target.addEventListener('mousedown', downListener, { passive: true });
+        window.addEventListener('mouseup', upListener, { passive: true });
+        window.addEventListener('mousemove', moveListener, { passive: true });
         if (preventDefault) {
             window.addEventListener('dragstart', preventDefaultListener, { passive: false });
             document.addEventListener('touchmove', preventDefaultListener, { passive: false });
@@ -1231,11 +1233,12 @@ exports.positionNames = [...exports.xPositionNames, ...exports.yPositionNames];
 },{}],34:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createSequence = exports.randomInt = exports.randomChar = exports.randomId = void 0;
+exports.clone = exports.createSequence = exports.randomInt = exports.randomChar = exports.randomId = void 0;
 exports.randomId = () => exports.createSequence(16, exports.randomChar).join('');
 exports.randomChar = () => String.fromCharCode(exports.randomInt(26) + 97);
 exports.randomInt = (exclMax) => Math.floor(Math.random() * exclMax);
 exports.createSequence = (length, cb) => Array.from({ length }, (_v, index) => cb(index));
+exports.clone = (value) => JSON.parse(JSON.stringify(value));
 
 },{}],35:[function(require,module,exports){
 "use strict";

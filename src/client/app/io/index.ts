@@ -1,4 +1,3 @@
-import { createInputEvents } from '../../lib/create-events'
 import { attr, strictSelect } from '../../lib/dom/util'
 import { getViewBoxRect } from '../../lib/dom/geometry'
 import { lineToVector, normalizeLine, snapLineToGrid } from '../../lib/geometry/line'
@@ -16,11 +15,14 @@ import {
 } from '../actions/select'
 
 import { createRectEl, findRectAt, setRectElRect, svgRectToRect } from '../dom/rects'
+import { createPointerEmitter } from '../../lib/events/pointer-emitter'
+import { Point } from '../../lib/geometry/types'
 
 export const initIOEvents = (state: AppState) => {
   const { dom, options, dragData } = state
   const { viewportEl, groupEl } = dom
-  const event = createInputEvents({ target: viewportEl, preventDefault: true })
+  
+  const emitter = createPointerEmitter( viewportEl )
 
   viewportEl.addEventListener('wheel', e => {
     e.preventDefault()
@@ -48,11 +50,10 @@ export const initIOEvents = (state: AppState) => {
     state.keys[e.key] = false
   })
 
-  event.on('down', () => {
-
+  emitter.down.on( () => {
   })
 
-  event.on('up', () => {
+  emitter.up.on( () => {
     if (dragData.creatingElId) {
       const creatingEl = strictSelect<SVGRectElement>(
         `#${dragData.creatingElId}`, state.dom.groupEl
@@ -89,11 +90,11 @@ export const initIOEvents = (state: AppState) => {
     dragData.draggingRect = null
     dragData.selectingRect = null
   })
-
-  event.on('move', ({ position, dragging }) => {
+  
+  emitter.move.on( ({ position, isDragging }) => {
     // set cursors here - or use CSS?
 
-    if (!dragging) return
+    if (!isDragging) return
 
     const { x: lx, y: ly } = normalizeLocal(state, position)
 
@@ -189,7 +190,7 @@ export const initIOEvents = (state: AppState) => {
     }
   })
 
-  event.on('tap', ({ position }) => {
+  emitter.tap.on( ({ position }) => {
     const localPosition = normalizeLocal(state, position)
 
     const selectedRectEl = findRectAt(state, localPosition)
@@ -227,7 +228,7 @@ export const initIOEvents = (state: AppState) => {
   })
 }
 
-const normalizeLocal = (state: AppState, [x, y]: [number, number]) => {
+const normalizeLocal = (state: AppState, { x, y }: Point ) => {  
   const viewBoxRect = getViewBoxRect(state.dom.svgEl)
 
   return localToGrid(

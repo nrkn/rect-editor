@@ -6,7 +6,9 @@
   "scripts": {
     "build": "rimraf dist && tsc",
     "build-client": "npm run build && browserify ./dist/client/index.js -o ./static/app.js",
-    "start": "npm run build-client && node ./dist/server/index"
+    "build-client-mvc": "npm run build && browserify ./dist/client/mvc.js -o ./static/mvc.js",
+    "start": "npm run build-client && node ./dist/server/index",
+    "start-mvc": "npm run build-client-mvc && node ./dist/server/index"
   },
   "keywords": [],
   "author": "",
