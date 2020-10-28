@@ -14,3 +14,16 @@ export const transformRelativeTo = (
 
   return transformed
 }
+
+export const translateAndScalePoint = (
+  { x, y }: Point,
+  { x: tx, y: ty, scale }: Transform
+): Point => {
+  x -= tx
+  y -= ty
+
+  x /= scale
+  y /= scale
+
+  return { x, y }
+}

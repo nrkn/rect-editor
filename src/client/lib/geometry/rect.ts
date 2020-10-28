@@ -1,3 +1,5 @@
+import { Size } from 'object-fit-math/dist/types'
+import { snapToGrid } from './number'
 import { translatePoint } from './point'
 import { Point, Rect } from './types'
 
@@ -36,4 +38,15 @@ export const rectContainsPoint = (
   if( point.y > ( rect.y + rect.height ) ) return false
 
   return true
+}
+
+export const snapRect = ( { x, y, width, height }: Rect, snapSize: Size ) => {
+  x = snapToGrid( x, snapSize.width )
+  y = snapToGrid( y, snapSize.height )
+  width = snapToGrid( width, snapSize.width )
+  height = snapToGrid( height, snapSize.height )
+
+  const rect: Rect = { x, y, width, height }
+
+  return rect
 }

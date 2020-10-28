@@ -19,6 +19,8 @@ export const normalizeLine = (
   return { x1, y1, x2, y2 }
 }
 
+export const getStart = ( { x1, y1 }: Line ): Point => ({ x: x1, y: y1 })
+
 export const argsToLine = ( 
   x1: number, y1: number, x2: number, y2: number 
 ): Line => ({ x1, y1, x2, y2 })

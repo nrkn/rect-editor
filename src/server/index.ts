@@ -1,6 +1,6 @@
 import * as express from 'express'
 
-const port = process.env.PORT || 3103
+const port = process.env.PORT || 3102
 const app = express()
 
 app.use(express.static('static', {}))
