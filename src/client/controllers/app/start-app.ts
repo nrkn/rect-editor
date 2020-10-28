@@ -1,6 +1,6 @@
 import { createDocumentActions } from '../document/document-actions'
 import { createDocumentController } from '../document/document-controller'
-import { startDocumentHandler } from '../document/document-handler'
+import { startDocumentHandler } from '../document/document-handler/document-handler'
 import { DocumentElements } from '../document/types'
 import { startTools } from '../tools/start-tools'
 import { createAppActions } from './app-actions'
@@ -28,7 +28,8 @@ export const startApp = ( options: AppOptions ) => {
   */
   startTools( appState, appActions, documentActions )
   startDocumentHandler( 
-    documentView.render, rectCollection, documentActions, appState 
+    documentView.render, documentView.elements, rectCollection, documentActions, 
+    appState 
   )
   startAppHandler( appView.elements, appState, appActions )
 

@@ -6,6 +6,13 @@ export type Size = { width: number, height: number }
 
 export type Rect = Point & Size
 
+export type PositionRect = {
+  left: number
+  top: number
+  right: number
+  bottom: number
+}
+
 export type Line = {
   x1: number
   y1: number
