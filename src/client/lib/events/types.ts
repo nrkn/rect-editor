@@ -12,20 +12,3 @@ export type TypedEventEmitter<T> = {
   off: ( listener: Listener<T> ) => void
   emit: ( event: T ) => void
 }
-
-export type PointerEvent = {
-  position: Point
-  isDragging: boolean
-  isInside: boolean
-  button: number
-}
-
-export type PointerEmitterOptions = {
-  preventDefault: boolean
-  tapDistanceThreshold: number
-  tapDelay: number
-}
-
-export type DragEmitterOptions = PointerEmitterOptions & {
-  transformPoint: ( point: Point ) => Point
-}

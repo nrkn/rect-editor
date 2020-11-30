@@ -7,4 +7,5 @@ export type SelectActions<T = string> = {
   clear: () => void
   any: () => boolean
   get: () => T[]
+  set: ModifySelection<T>
 }

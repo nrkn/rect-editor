@@ -4,19 +4,22 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "rimraf dist && tsc",
-    "build-client": "npm run build && browserify ./dist/client/index.js -o ./static/app.js",
-    "start": "npm run build-client && node ./dist/server/index"
+    "build-js": "rimraf dist && tsc",
+    "build-client": "rollup -c",
+    "minify": "terser --compress --mangle -- ./static/app.js > ./static/app.min.js",
+    "build": "npm run build-js && npm run build-client && npm run minify",
+    "start": "npm run build && http-server ./static"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "dependencies": {
     "@mojule/tree-node": "^0.1.0",
-    "express": "^4.17.1",
     "object-fit-math": "^1.0.0"
   },
   "devDependencies": {
-    "@types/express": "^4.17.8"
+    "@rollup/plugin-commonjs": "^16.0.0",
+    "@rollup/plugin-node-resolve": "^10.0.0",
+    "rollup": "^2.33.3"
   }
 }

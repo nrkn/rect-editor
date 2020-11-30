@@ -1,16 +1,22 @@
-export type Point = { x: number, y: number }
+import { 
+  LEFT, RIGHT, TOP, BOTTOM, XCENTER, YCENTER, xSideNames, ySideNames, 
+  centerNames, xPositionNames, yPositionNames 
+} from './consts'
 
-export type Transform = Point & { scale: number }
+export type Point = {
+  x: number
+  y: number
+}
 
-export type Size = { width: number, height: number }
+export type Size = {
+  width: number
+  height: number
+}
 
 export type Rect = Point & Size
 
-export type PositionRect = {
-  left: number
-  top: number
-  right: number
-  bottom: number
+export type ScaleTransform = Point & {
+  scale: number
 }
 
 export type Line = {
@@ -20,30 +26,12 @@ export type Line = {
   y2: number
 }
 
-export const LEFT = 'left'
-export const RIGHT = 'right'
-export const TOP = 'top'
-export const BOTTOM = 'bottom'
-export const XCENTER = 'xCenter'
-export const YCENTER = 'yCenter'
-
 export type Left = typeof LEFT
 export type Right = typeof RIGHT
 export type Top = typeof TOP
 export type Bottom = typeof BOTTOM
 export type XCenter = typeof XCENTER
 export type YCenter = typeof YCENTER
-
-export const xSideNames = [ LEFT, RIGHT ] as const
-export const ySideNames = [ TOP, BOTTOM ] as const
-export const centerNames = [ XCENTER, YCENTER ] as const
-
-export const sideNames = [ ...xSideNames, ...ySideNames ] as const
-
-export const xPositionNames = [ LEFT, XCENTER, RIGHT ] as const
-export const yPositionNames = [ TOP, YCENTER, BOTTOM ] as const
-
-export const positionNames = [ ...xPositionNames, ...yPositionNames ] as const
 
 export type XSide = typeof xSideNames[ number ]
 
@@ -60,4 +48,3 @@ export type YPosition = typeof yPositionNames[ number ]
 export type Position = XPosition | YPosition
 
 export type Positions = [ XPosition, YPosition ]
-

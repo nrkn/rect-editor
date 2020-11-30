@@ -1,26 +1,32 @@
-* {
+html {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
-html, body {
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  margin: 0;
-  padding: 0;
+*, *:before, *:after {
+  box-sizing: inherit;
 }
 
 body {
+  font-family: sans-serif;
+  margin: 0;
+}
+
+#app {
   display: grid;
-  grid-template-rows: auto 1fr auto;  
+  grid-template-rows: auto 1fr auto;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
 }
 
 main {
   display: grid;
   grid-template-columns: auto 1fr;
   overflow: hidden;
+}
+
+#tools label {
+  display: block;
 }
 
 #viewport {
@@ -31,30 +37,10 @@ svg {
   background: #eee;
 }
 
+
 /* svg app elements */
 
-svg .outline {
-  stroke-width: 1;
-  stroke:  rgba(64, 128, 255, 1);
-  fill: transparent;
-}
-
-svg .handle {
-  stroke-width: 1;
-  stroke:  rgba(64, 128, 255, 1);
-  fill: rgba( 255, 255, 255, 0.75 );
-}
-
-svg .rectEl {
-  fill: rgba( 0, 0, 0, 0.5 );
-}
-
-svg .rectEl.selected {
-  stroke-width: 1px;
-  stroke: #39f;
-}
-
-svg .selectRectEl {
+svg #selectRectEl {
   stroke-width: 1px;
   stroke: #39f;
   stroke-dasharray: 1 1;
