@@ -1,6 +1,8 @@
 export type ElementAttributes = Record<string,any>
 
-export type SArg = SVGElement | ElementAttributes
+export type StyleDefinitions = Record<string,any>
+
+export type SArg = SVGElement | string | ElementAttributes
 
 export type HArg = Node | string | ElementAttributes
 

@@ -1,33 +1,4 @@
-import { Size } from 'object-fit-math/dist/types'
-import { snapToGrid } from './number'
-import { translatePoint } from './point'
-import { Point, PositionRect, Rect } from './types'
-
-export const integerRect = ({ x, y, width, height }: Rect): Rect => {
-  x = Math.floor(x)
-  y = Math.floor(y)
-  width = Math.floor(width)
-  height = Math.floor(height)
-
-  return { x, y, width, height }
-}
-
-export const translateRect = (rect: Rect, { x, y }: Point) => {
-  const translatedPoint = translatePoint(rect, { x, y })
-
-  return Object.assign({}, rect, translatedPoint)
-}
-
-export const scaleRect = (
-  { x, y, width, height }: Rect, scale: number
-): Rect => {
-  x *= scale
-  y *= scale
-  width *= scale
-  height *= scale
-
-  return { x, y, width, height }
-}
+import { Point, Rect } from './types'
 
 export const rectContainsPoint = (
   rect: Rect, point: Point
@@ -40,25 +11,45 @@ export const rectContainsPoint = (
   return true
 }
 
-export const snapRect = ({ x, y, width, height }: Rect, snapSize: Size) => {
-  x = snapToGrid(x, snapSize.width)
-  y = snapToGrid(y, snapSize.height)
-  width = snapToGrid(width, snapSize.width)
-  height = snapToGrid(height, snapSize.height)
+export const insideRect = ( 
+  { x, y, width, height }: Rect, offset = 1 
+): Rect => {
+  x += offset / 2
+  y += offset / 2
+  width -= offset
+  height -= offset
 
-  const rect: Rect = { x, y, width, height }
-
-  return rect
+  return { x, y, width, height }
 }
 
-export const toPositionRect = ({ x, y, width, height }: Rect): PositionRect => {
-  const left = x
-  const top = y
-  const right = left + width
-  const bottom = top + height
+export const getBoundingRect = ( rects: Rect[] ): Rect | undefined => {
+  if( rects.length === 0 ) return
 
-  return { left, top, right, bottom }
+  const [ first, ...rest ] = rects
+
+  let { x: left, y: top } = first
+  let right = left + first.width
+  let bottom = top + first.height
+
+  rest.forEach( rect => {
+    const { x: rx, y: ry, width: rw, height: rh } = rect
+    const rr = rx + rw
+    const rb = ry + rh
+
+    if( rx < left ) left = rx
+    if( ry < top ) top = ry
+    if( rr > right ) right = rr
+    if( rb > bottom ) bottom = rb
+  })
+
+  const x = left
+  const y = top
+  const width = right - left
+  const height = bottom - top
+
+  return { x, y, width, height }
 }
+
 
 export const rectIntersection = (a: Rect, b: Rect): Rect | undefined => {
   const x = Math.max(a.x, b.x)

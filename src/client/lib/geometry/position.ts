@@ -1,7 +1,5 @@
 import { isXPosition, isYPosition } from './predicates'
-import {
-  Rect, XPosition, YPosition
-} from './types'
+import { Rect, XPosition, YPosition } from './types'
 
 export const getXPosition = ({ x, width }: Rect, position: XPosition) => {
   switch (position) {

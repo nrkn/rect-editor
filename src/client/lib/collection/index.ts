@@ -63,6 +63,8 @@ export const createCollection = <T extends ID>() => {
 
     undoCommand(tasks, events, command)
 
+    events.undo.emit()
+
     return true
   }
 
@@ -72,6 +74,8 @@ export const createCollection = <T extends ID>() => {
     if (command === undefined) return false
 
     redoCommand(tasks, events, command)
+
+    events.redo.emit()
 
     return true
   }
@@ -93,14 +97,18 @@ const initCollection = <T extends ID>() => {
     add: createEmitter<T[]>(),
     remove: createEmitter<string[]>(),
     update: createEmitter<T[]>(),
-    setOrder: createEmitter<string[]>()
+    setOrder: createEmitter<string[]>(),
+    undo: createEmitter<void>(),
+    redo: createEmitter<void>()
   }
 
   const on: CollectionListener<T> = {
     add: events.add.on,
     remove: events.remove.on,
     update: events.update.on,
-    setOrder: events.setOrder.on
+    setOrder: events.setOrder.on,
+    undo: events.undo.on,
+    redo: events.redo.on
   }
 
   const tasks = createTasks(elMap, root)

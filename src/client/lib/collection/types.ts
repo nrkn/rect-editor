@@ -22,7 +22,9 @@ export type CollectionListener<T extends ID> = {
   add: ( listener: Listener<T[]> ) => void
   remove: ( listener: Listener<string[]> ) => void
   update: ( listener: Listener<T[]> ) => void
-  setOrder: ( listender: Listener<string[]> ) => void
+  setOrder: ( listener: Listener<string[]> ) => void
+  undo: ( listener: Listener<void> ) => void
+  redo: ( listener: Listener<void> ) => void
 }
 
 export type AddCommand<T extends ID> = {

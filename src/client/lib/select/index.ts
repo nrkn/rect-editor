@@ -34,7 +34,11 @@ export const createSelector = <T = string>() => {
       selectEmitter.emit( [] )
     },
     get: () => clone( [ ...set ] ),
-    any: () => set.size > 0
+    set: values => {
+      set.clear()
+      actions.add( values )
+    },
+    any: () => set.size > 0,
   }
 
   const { on } = selectEmitter

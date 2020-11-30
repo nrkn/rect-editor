@@ -1,5 +1,5 @@
 import { svgNs } from './consts'
-import { isSVGElement } from './predicates'
+import { isElement, isSVGElement } from './predicates'
 import { SArg } from './types'
 import { attr } from './util'
 
@@ -9,8 +9,8 @@ export const s = <K extends keyof SVGElementTagNameMap>(
   const el = document.createElementNS(svgNs, name)
 
   args.forEach(arg => {
-    if (isSVGElement(arg)) {
-      el.appendChild(arg)
+    if (isSVGElement(arg) || isElement( arg ) || typeof arg === 'string' ) {
+      el.append(arg)
     } else {
       attr(el, arg)
     }
@@ -31,3 +31,9 @@ export const circle = svgElementFactory( 'circle' )
 export const defs = svgElementFactory( 'defs' )
 export const image = svgElementFactory( 'image' )
 export const pattern = svgElementFactory( 'pattern' )
+export const path = svgElementFactory( 'path' )
+export const line = svgElementFactory( 'line' )
+export const clipPath = svgElementFactory( 'clipPath' )
+export const use = svgElementFactory( 'use' )
+export const text = svgElementFactory( 'text' )
+export const style = svgElementFactory( 'style' )
