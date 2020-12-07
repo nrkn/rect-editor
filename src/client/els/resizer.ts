@@ -1,51 +1,38 @@
-import { insideRect } from '../lib/geometry/rect'
+import { insideRect, rectToStringRect } from '../lib/geometry/rect'
 import { rect, g } from '../lib/dom/s'
-import { setRectElRect } from '../lib/dom/util'
+import { setRectElRect, strictSelect } from '../lib/dom/util'
 import { yPositionNames, xPositionNames } from '../lib/geometry/consts'
-
-import { 
-  Rect, Point, Positions, XPosition, YPosition 
-} from '../lib/geometry/types'
-
-import { 
-  getYPosition, getXPosition, findXPosition, findYPosition 
-} from '../lib/geometry/position'
-
-const handleSize = 8
+import { Rect, Point, XPosition, YPosition } from '../lib/geometry/types'
+import { getYPosition, getXPosition} from '../lib/geometry/position'
 
 export const createResizer = ( 
-  bounds: Rect
+  bounds: Rect, handleSize: number
 ) => {
   const outlineEl = rect(
     { id: 'outline', stroke: 'rgba(64, 128, 255, 1)', fill: 'none' }
   )
 
-  const outlineRect = insideRect( bounds )
-
-  setRectElRect( outlineEl, outlineRect )
-
   const groupEl = g(
     { id: 'resizer' },
     outlineEl,
-    ...createHandles( bounds )
+    ...createHandles()
   )
+
+  updateResizer( bounds, handleSize, groupEl )
 
   return groupEl
 }
 
-const createHandles = ( rect: Rect ) => {
+const createHandles = () => {
   const handles: SVGRectElement[] = []
 
   yPositionNames.forEach(
     yName => {
-      const y = getYPosition( rect, yName )
       xPositionNames.forEach(
         xName => {
           if( yName === 'yCenter' && xName === 'xCenter' ) return
 
-          const x = getXPosition( rect, xName )
-
-          const handle = createHandle( { x, y }, xName, yName )
+          const handle = createHandle( xName, yName )
 
           handles.push( handle )
         }
@@ -57,8 +44,58 @@ const createHandles = ( rect: Rect ) => {
 }
 
 const createHandle = ( 
-  { x, y }: Point, xName: XPosition, yName: YPosition
+  xName: XPosition, yName: YPosition
 ) => { 
+  const handleEl = rect(
+    { 
+      class: [ 'handle', xName, yName ].join( ' ' ),
+      stroke: 'rgba(64, 128, 255, 1)',
+      fill: 'rgba( 255, 255, 255, 0.75 )'
+    }
+  )
+
+  return handleEl
+}
+
+export const updateResizer = ( 
+  bounds: Rect, handleSize: number, 
+  groupEl: SVGGElement = strictSelect<SVGGElement>( '#resizer' )
+) => {
+  const outlineEl = strictSelect<SVGRectElement>( '#outline', groupEl )
+  const outlineRect = insideRect( bounds )
+
+  Object.assign( groupEl.dataset, rectToStringRect( bounds ) )
+  setRectElRect( outlineEl, outlineRect )
+  updateHandles( groupEl, bounds, handleSize )
+}
+
+const updateHandles = ( 
+  groupEl: SVGGElement, bounds: Rect, handleSize: number 
+) => {
+  yPositionNames.forEach(
+    yName => {
+      const y = getYPosition( bounds, yName )
+      xPositionNames.forEach(
+        xName => {
+          if( yName === 'yCenter' && xName === 'xCenter' ) return
+
+          const x = getXPosition( bounds, xName )
+
+          const handleEl = strictSelect<SVGRectElement>( 
+            `.handle.${ xName }.${ yName }`, groupEl
+          ) 
+
+          updateHandle( handleEl, { x, y }, xName, yName, handleSize )
+        }
+      )
+    }
+  )
+}
+
+const updateHandle = (
+  handleEl: SVGRectElement, 
+  { x, y }: Point, xName: XPosition, yName: YPosition, handleSize: number
+) => {
   const width = handleSize
   const height = handleSize
 
@@ -74,41 +111,6 @@ const createHandle = (
     case 'top': y += 1
     case 'bottom': y -= 0.5
   }
-
-  const handleEl = rect(
-    { 
-      class: [ 'handle', xName, yName ].join( ' ' ),
-      stroke: 'rgba(64, 128, 255, 1)',
-      fill: 'rgba( 255, 255, 255, 0.75 )'
-    }
-  )
   
   setRectElRect( handleEl, { x, y, width, height } )
-
-  return handleEl
-}
-
-export const getHandlePositions = ( handleEl: SVGRectElement ) => {
-  const classes = [ ...handleEl.classList ]
-
-  if( !classes.includes( 'handle' ) ) 
-    throw Error( 'Expected element classes to include handle' )
-
-  const xPosition = findXPosition( classes )
-
-  if( xPosition === undefined ) 
-    throw Error( 
-      `Expected element to include one of ${ xPositionNames.join( ', ' ) }`
-    )
-
-  const yPosition = findYPosition( classes )
-
-  if( yPosition === undefined ) 
-    throw Error( 
-      `Expected element to include one of ${ yPositionNames.join( ', ' ) }`
-    )
-  
-  const positions: Positions = [ xPosition, yPosition ]
-
-  return positions
 }

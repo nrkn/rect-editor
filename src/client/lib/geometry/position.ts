@@ -1,5 +1,6 @@
 import { isXPosition, isYPosition } from './predicates'
-import { Rect, XPosition, YPosition } from './types'
+import { growRect, rectContainsPoint, rectToSidesRect } from './rect'
+import { Point, Positions, Rect, XPosition, YPosition } from './types'
 
 export const getXPosition = ({ x, width }: Rect, position: XPosition) => {
   switch (position) {
@@ -31,4 +32,38 @@ export const findYPosition = ( values: string[] ) => {
 
     if( isYPosition( value ) ) return value
   }
+}
+
+export const getEdgePositions = ( 
+  rect: Rect, growBy: number, point: Point
+) => {    
+  const outerRect = growRect( rect, growBy )
+  const innerRect = growRect( rect, -growBy )
+
+  if( !rectContainsPoint( outerRect, point ) ) return
+
+  const positions: Positions = [ 'xCenter', 'yCenter' ]
+
+  if( rectContainsPoint( innerRect, point ) ) return positions
+    
+  const outerSides = rectToSidesRect( outerRect )
+  const innerSides = rectToSidesRect( innerRect )
+
+  if( point.y >= outerSides.top && point.y <= innerSides.top ){
+    positions[ 1 ] = 'top'      
+  }
+
+  if( point.x >= innerSides.right && point.x <= outerSides.right ){
+    positions[ 0 ] = 'right'
+  }
+
+  if( point.y >= innerSides.bottom && point.y <= outerSides.bottom ){
+    positions[ 1 ] = 'bottom'
+  }
+
+  if( point.x >= outerSides.left && point.x <= innerSides.left ){
+    positions[ 0 ] = 'left'
+  }
+
+  return positions
 }

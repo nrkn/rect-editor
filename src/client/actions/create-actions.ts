@@ -1,5 +1,6 @@
-import { minScale } from '../consts'
-import { createResizer } from '../els/resizer'
+import { handleSize, minScale } from '../consts'
+import { updateInfoSelection } from '../els/info-selection'
+import { createResizer, updateResizer } from '../els/resizer'
 import { createCollection } from '../lib/collection'
 import { getRectElRect, strictSelect } from '../lib/dom/util'
 import { getBoundingRect } from '../lib/geometry/rect'
@@ -42,7 +43,7 @@ const createZoomToFit = (state: State) => {
 }
 
 const createZoomAt = (state: State) => {
-  const action = (transform: ScaleTransform) => {
+  const action = (transform: ScaleTransform) => {    
     const viewTransform = state.viewTransform()
 
     state.viewTransform(zoomAt(viewTransform, transform, minScale))
@@ -56,11 +57,14 @@ const handleSelect = () => {
   const rectsEl = strictSelect<SVGGElement>('#rects')
 
   const handler = (ids: string[]) => {
-    const existing = document.querySelector('#resizer')
+    const existing = document.querySelector<SVGGElement>('#resizer')
 
-    if (existing) existing.remove()
+    if (ids.length === 0){
+      existing?.remove()
+      updateInfoSelection()
 
-    if (ids.length === 0) return
+      return
+    }
 
     const rectEls = ids.map( 
       id => strictSelect<SVGRectElement>( `#${ id }`, rectsEl ) 
@@ -70,11 +74,21 @@ const handleSelect = () => {
 
     const bounds = getBoundingRect( rectElRects )
 
-    if( bounds === undefined ) return
+    updateInfoSelection( bounds )
 
-    const resizerEl = createResizer( bounds )
+    if( bounds === undefined ){
+      existing?.remove()
 
-    bodyEl.append( resizerEl )
+      return
+    }
+
+    if (existing){
+      updateResizer( bounds, handleSize, existing )
+    } else {
+      const resizerEl = createResizer( bounds, handleSize )
+
+      bodyEl.append( resizerEl ) 
+    }
   }
 
   return handler

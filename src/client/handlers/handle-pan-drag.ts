@@ -40,6 +40,8 @@ export const handlePanDrag = (state: State) => {
       transform.x += dX
       transform.y += dY
 
+      // if we are 
+
       state.viewTransform(transform)
     },
     { predicate }

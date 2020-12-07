@@ -15,6 +15,10 @@ export type Size = {
 
 export type Rect = Point & Size
 
+export type StringRect = {
+  [ key in keyof Rect ]: string
+}
+
 export type ScaleTransform = Point & {
   scale: number
 }
@@ -48,3 +52,5 @@ export type YPosition = typeof yPositionNames[ number ]
 export type Position = XPosition | YPosition
 
 export type Positions = [ XPosition, YPosition ]
+
+export type SidesRect = Record<Side,number>

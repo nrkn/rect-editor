@@ -3,29 +3,37 @@ import { Actions, State } from '../types'
 import { handleDrawClick } from './handle-draw-click'
 import { handleDrawDrag } from './handle-draw-drag'
 import { handleKeys } from './handle-keys'
+import { handleMove } from './handle-move'
 import { handleMoveDrag } from './handle-move-drag'
 import { handlePanDrag } from './handle-pan-drag'
+import { handleResizeDrag } from './handle-resize-drag'
 import { handleSelectClick } from './handle-select-click'
 import { handleSelectDrag } from './handle-select-drag'
+import { handleSnapGrid } from './handle-snap-grid'
 
 export const createHandlers = (state: State, actions: Actions) => {
-  handleKeys(state,actions)
+  handleKeys(state, actions)
 
-  handleResize(state)  
+  handleResize(state)
   handleResetZoom(actions)
   handleWheel(state, actions)
 
   handlePanDrag(state)
 
-  handleSelectClick(state,actions)
-  handleSelectDrag(state,actions)
-  handleMoveDrag(state,actions)
+  handleSelectClick(state, actions)
+  handleSelectDrag(state, actions)
+  handleMoveDrag(state, actions)
 
-  handleDrawClick(state)
-  handleDrawDrag(state,actions)
+  handleDrawClick(state, actions)
+  handleDrawDrag(state, actions)
 
   handleUndo(actions)
   handleRedo(actions)
+
+  handleMove(state, actions)
+  handleResizeDrag(state,actions)
+
+  handleSnapGrid()
 }
 
 const handleResize = (state: State) => {
@@ -50,7 +58,7 @@ const handleResetZoom = (actions: Actions) => {
   })
 }
 
-const handleUndo = ( actions: Actions ) => {
+const handleUndo = (actions: Actions) => {
   const buttonEl = strictSelect('#undo')
 
   buttonEl.addEventListener('click', e => {
@@ -60,7 +68,7 @@ const handleUndo = ( actions: Actions ) => {
   })
 }
 
-const handleRedo = ( actions: Actions ) => {
+const handleRedo = (actions: Actions) => {
   const buttonEl = strictSelect('#redo')
 
   buttonEl.addEventListener('click', e => {

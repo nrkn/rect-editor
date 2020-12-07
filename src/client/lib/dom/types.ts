@@ -1,3 +1,5 @@
+import { cursorStates } from './consts'
+
 export type ElementAttributes = Record<string,any>
 
 export type StyleDefinitions = Record<string,any>
@@ -17,3 +19,5 @@ export interface StrictSelect {
     selectors: string, el?: ParentNode
   ): E
 }
+
+export type CursorStates = typeof cursorStates[ number ]

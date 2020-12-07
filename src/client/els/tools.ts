@@ -1,11 +1,13 @@
-import { button, fieldset, form, input, label, legend } from '../lib/dom/h'
+import { button, div, fieldset, form, input, label, legend } from '../lib/dom/h'
 import { appModes } from '../consts'
 
 export const createToolsEls = () => {
   const toolsFormEl = form(
-    button({ id: 'undo', type: 'button' }, 'Undo'),
-    button({ id: 'redo', type: 'button' }, 'Redo'),
-    button({ id: 'reset-zoom', type: 'button' }, 'Reset Zoom'),
+    div(
+      button({ id: 'undo', type: 'button' }, 'Undo'),
+      button({ id: 'redo', type: 'button' }, 'Redo'),
+      button({ id: 'reset-zoom', type: 'button' }, 'Reset Zoom')  
+    ),
     fieldset(
       legend('Pointer Mode'),
       ...appModes.map(

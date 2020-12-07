@@ -5,9 +5,10 @@ import { Rect } from '../lib/geometry/types'
 import { Actions, State } from '../types'
 import { handleRectDrag } from './handle-rect-drag'
 import { DragEventType } from './types'
-import { createSelectGetDragType, createTranslatePoint } from './util'
+import { createSelectGetDragType, createTranslatePoint, getPosition, getResizerPositions } from './util'
 
 export const handleSelectDrag = (state: State, actions: Actions) => {
+  const viewportEl = strictSelect<HTMLElement>('#viewport')
   const rectsEl = strictSelect<SVGGElement>('#rects')
 
   const predicate = (e: MouseEvent, type: DragEventType) => {
@@ -16,6 +17,12 @@ export const handleSelectDrag = (state: State, actions: Actions) => {
     if (type === 'start') {
       if (e.button !== 0) return false
       if (getSelectDragType(e) === 'move') return false
+
+      const bounds = viewportEl.getBoundingClientRect()
+      const point = transformPoint( getPosition( e, bounds ) )
+      const positions = getResizerPositions( point )
+  
+      if( positions !== undefined ) return false      
     }
 
     return true

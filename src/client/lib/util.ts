@@ -1,3 +1,5 @@
+import { getKeys } from './dom/util'
+
 export const randomId = () =>
   createSequence(16, randomChar).join('')
 
@@ -27,3 +29,4 @@ export const assertUnique = <T>(map: Map<T, any>, key: T) => {
 
 export const clone = <T>(value: T): T =>
   JSON.parse(JSON.stringify(value))
+

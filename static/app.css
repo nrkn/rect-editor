@@ -11,6 +11,10 @@ body {
   margin: 0;
 }
 
+fieldset {
+  border: 1px solid #ccc;
+}
+
 #app {
   display: grid;
   grid-template-rows: auto 1fr auto;
@@ -19,18 +23,75 @@ body {
   overflow: hidden;
 }
 
+#app > header, #app > footer {
+  padding: 1rem;
+}
+
+#app > footer {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  gap: 1rem;
+}
+
+#app > footer p {
+  margin: auto 0;
+}
+
+#tools {
+  padding: 0 1rem;
+}
+
+#tools form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+#tools label {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
+#tools fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+#tools input[type="number"] {
+  width: 4rem;
+  text-align: right;
+  margin-left: auto;
+}
+
 main {
   display: grid;
   grid-template-columns: auto 1fr;
   overflow: hidden;
 }
 
-#tools label {
-  display: block;
-}
-
 #viewport {
   overflow: hidden;
+}
+
+#info {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+#info fieldset {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+#info input {
+  border: 1px solid #eee;
+  width: 3rem;
+  text-align: right;
 }
 
 svg {

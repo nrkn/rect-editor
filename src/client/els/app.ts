@@ -1,4 +1,4 @@
-import { div, footer, header, main, section } from '../lib/dom/h'
+import { div, footer, header, main, section, p, pre } from '../lib/dom/h'
 
 export const createAppEls = () => {  
   const appEl = div(
@@ -8,7 +8,9 @@ export const createAppEls = () => {
       section({ id: 'tools' }),
       section({ id: 'viewport' }),
     ),
-    footer( '© 2020 Nik Coughlin' )
+    footer( 
+      p( '© 2020 Nik Coughlin' )
+    )
   )
 
   return appEl

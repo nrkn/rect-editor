@@ -1,4 +1,5 @@
 import { minScale } from '../consts'
+import { updateGridPattern } from '../els/grid-pattern'
 import { attr, strictFormRadioNodes, strictSelect } from '../lib/dom/util'
 import { ScaleTransform, Size } from '../lib/geometry/types'
 import { AppMode, State } from '../types'
@@ -44,6 +45,8 @@ const createSnapToGrid = () => {
       
       widthInputEl.valueAsNumber = width
       heightInputEl.valueAsNumber = height
+
+      updateGridPattern( value )
     }
 
     const width = widthInputEl.valueAsNumber

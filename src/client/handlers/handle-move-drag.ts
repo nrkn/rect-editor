@@ -2,9 +2,14 @@ import { attr, getRectElRect, strictSelect } from '../lib/dom/util'
 import { State, Actions, AppRect } from '../types'
 import { handleDrag } from './handle-drag'
 import { DragCallback, DragEventType } from './types'
-import { createSelectGetDragType, createTranslatePoint } from './util'
+import {
+  createSelectGetDragType, createSnapTranslatePoint, getAppRects, getPosition,
+  getResizerPositions
+} from './util'
 
 export const handleMoveDrag = (state: State, actions: Actions) => {
+  const viewportEl = strictSelect<HTMLElement>('#viewport')
+
   const predicate = (e: MouseEvent, type: DragEventType) => {
     if (state.mode() !== 'select') return false
 
@@ -12,12 +17,24 @@ export const handleMoveDrag = (state: State, actions: Actions) => {
       if (e.button !== 0) return false
 
       if (getSelectDragType(e) !== 'move') return false
+
+      const bounds = viewportEl.getBoundingClientRect()
+      const point = transformPoint(getPosition(e, bounds))
+      const positions = getResizerPositions(point)
+
+      if (positions === undefined) return true
+
+      const [xPosition, yPosition] = positions
+
+      if (xPosition === 'xCenter' && yPosition === 'yCenter') return true
+
+      return false
     }
 
     return true
   }
 
-  const transformPoint = createTranslatePoint(state)
+  const transformPoint = createSnapTranslatePoint(state)
   const getSelectDragType = createSelectGetDragType(actions, transformPoint)
 
   const onDrag: DragCallback = (_start, end, prev) => {
@@ -46,28 +63,15 @@ export const handleMoveDrag = (state: State, actions: Actions) => {
 
   const onEnd: DragCallback = () => {
     const ids = actions.selection.get()
+    const appRects = getAppRects(ids)
 
-    const rectEls = ids.map(
-      id => strictSelect<SVGRectElement>(`#${id}`)
-    )
-
-    const appRects = rectEls.map( el => {
-      const { id } = el
-      const rect = getRectElRect( el )
-
-      const appRect: AppRect = Object.assign( { id }, rect )
-
-      return appRect
-    })
-
-    actions.rects.update( appRects )
-
+    actions.rects.update(appRects)
     actions.selection.set(ids)
   }
 
   return handleDrag(
     state,
     onDrag,
-    { predicate, onEnd }
+    { transformPoint, predicate, onEnd }
   )
 }

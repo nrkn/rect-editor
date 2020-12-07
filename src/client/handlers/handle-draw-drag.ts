@@ -7,9 +7,19 @@ import { DragEventType } from './types'
 import { createSnapTranslatePoint } from './util'
 
 export const handleDrawDrag = (state: State, actions: Actions) => {
+  let dragging = false
+
   const predicate = ( e: MouseEvent, type: DragEventType ) => {
     if( state.mode() !== 'draw' ) return false
     if( type === 'start' && e.button !== 0 ) return false
+
+    if( type === 'start' ){
+      dragging = true
+    }
+
+    if( !dragging ) return false
+
+    actions.selection.clear()
 
     return true
   }
@@ -23,8 +33,7 @@ export const handleDrawDrag = (state: State, actions: Actions) => {
 
     const appRect = Object.assign( { id }, dragRect )
     
-    actions.rects.add([ appRect ])
-    actions.selection.set([ id ])
+    actions.rects.add([ appRect ])    
   }
 
   handleRectDrag( 
