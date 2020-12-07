@@ -90,6 +90,16 @@ export const handleResizeDrag = (state: State, actions: Actions) => {
     scaleX = Math.abs( newWidth / bounds.width )
     scaleY = Math.abs( newHeight / bounds.height )
 
+    if( state.keys.Shift ){
+      if( xPosition === 'left' || xPosition === 'right' ){
+        scaleY = scaleX
+      }
+      
+      if( yPosition === 'top' || yPosition === 'bottom' ){
+        scaleX = scaleY
+      }
+    }
+
     appRects.forEach(appRect => {
       const el = strictSelect(`#${ appRect.id }`)
 
