@@ -6,8 +6,9 @@
   "scripts": {
     "build-js": "rimraf dist && tsc",
     "build-client": "rollup -c",
+    "build-sandbox": "rollup -c rollup.config.sandbox.js",
     "minify": "terser --compress --mangle -- ./static/app.js > ./static/app.min.js",
-    "build": "npm run build-js && npm run build-client && npm run minify",
+    "build": "npm run build-js && npm run build-client && npm run build-sandbox && npm run minify",
     "start": "npm run build && http-server ./static"
   },
   "keywords": [],

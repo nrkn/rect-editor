@@ -1,4 +1,6 @@
+import { updateDeltaEl } from '../els/info-delta'
 import { strictSelect } from '../lib/dom/util'
+import { deltaPoint } from '../lib/geometry/point'
 import { Point } from '../lib/geometry/types'
 import { State } from '../types'
 import { DragCallback, DragOptions } from './types'
@@ -39,6 +41,7 @@ export const handleDrag = (
     prev = end
     end = transformPoint( getPosition( e, bounds ) )
 
+    updateDeltaEl(deltaPoint(end,start))
     onDrag( start, end, prev )
   })
 
@@ -46,6 +49,7 @@ export const handleDrag = (
     if ( !predicate( e, 'end' ) ) return
     if( start === null || prev === null || end === null  ) return
 
+    updateDeltaEl()
     onEnd( start, end, prev )
 
     start = null

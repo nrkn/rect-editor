@@ -24,3 +24,11 @@ export const snapPointToGrid = (
 
   return { x, y }
 }
+
+export const deltaPoint = (
+  { x: x1, y: y1 }: Point,
+  { x: x2, y: y2 }: Point
+): Point => ({
+  x: x1 - x2,
+  y: y1 - y2
+})

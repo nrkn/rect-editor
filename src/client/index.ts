@@ -1,7 +1,6 @@
 import { createActions } from './actions/create-actions'
 import { createAppEls } from './els/app'
 import { createDocumentEl } from './els/document'
-import { updateGridPattern } from './els/grid-pattern'
 import { createInfo } from './els/info'
 import { createToolsEls } from './els/tools'
 import { createHandlers } from './handlers/create-handlers'
@@ -34,7 +33,6 @@ const actions = createActions(state)
 createHandlers(state, actions)
 
 actions.zoomToFit()
-
 
 const stateSerialized = JSON.stringify(
   state,

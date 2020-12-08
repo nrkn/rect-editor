@@ -5,7 +5,7 @@ import { handleDrag } from './handle-drag'
 import { DragCallback, DragEventType } from './types'
 
 import { 
-  getBoundingRect, rectToSidesRect, sidesRectToRect 
+  getBoundingRect, rectToSidesRect, scaleRectFrom, sidesRectToRect 
 } from '../lib/geometry/rect'
 
 import {
@@ -50,7 +50,6 @@ export const handleResizeDrag = (state: State, actions: Actions) => {
       return
     }
 
-    const [xPosition, yPosition] = positions
     const ids = actions.selection.get()
     const appRects = getAppRects(ids)
     const bounds = getBoundingRect(appRects)
@@ -59,92 +58,18 @@ export const handleResizeDrag = (state: State, actions: Actions) => {
       return
     }
 
-    let scaleX = 1
-    let scaleY = 1
-    let translateX = 0
-    let translateY = 0
-
-    let newWidth = bounds.width
-    let newHeight = bounds.height
-
-    if (xPosition === 'left') {
-      newWidth -= dX
-      translateX = dX
-    }
-
-    if( xPosition==='right'){
-      newWidth += dX
-    }
-
-    if( yPosition === 'top'){
-      newHeight -= dY
-      translateY = dY
-    }
-
-    if( yPosition === 'bottom' ){
-      newHeight += dY
-    }
-
-    if( newWidth === 0 || newHeight === 0  ) return
-
-    scaleX = Math.abs( newWidth / bounds.width )
-    scaleY = Math.abs( newHeight / bounds.height )
-
-    if( state.keys.Shift ){
-      if( xPosition === 'left' || xPosition === 'right' ){
-        scaleY = scaleX
-      }
-      
-      if( yPosition === 'top' || yPosition === 'bottom' ){
-        scaleX = scaleY
-      }
-    }
-
     appRects.forEach(appRect => {
       const el = strictSelect(`#${ appRect.id }`)
 
-      let { top, right, bottom, left } = rectToSidesRect( appRect )
+      if( positions === null ) return
 
-      if( newWidth < 0 ){
-        left = right
-        right = left + appRect.width
+      const scaledRect = scaleRectFrom( 
+        bounds, appRect, { x: dX, y: dY }, positions 
+      )
 
-        if( xPosition === 'right'){
-          positions![ 0 ] = 'left'
-        } else if( xPosition === 'left' ){
-          positions![ 0 ] = 'right'
-        }
-      }
+      if( scaledRect === undefined ) return
 
-      if( newHeight < 0 ){
-        top = bottom
-        bottom = top + appRect.height
-
-        if( yPosition === 'top'){
-          positions![ 1 ] = 'bottom'
-        } else if( yPosition === 'bottom' ){
-          positions![ 1 ] = 'top'
-        }
-      }
-
-      top -= bounds.y
-      right -= bounds.x
-      bottom -= bounds.y
-      left -= bounds.x
-      
-      top *= scaleY
-      right *= scaleX
-      bottom *= scaleY
-      left *= scaleX
-
-      top += bounds.y + translateY
-      right += bounds.x + translateX
-      bottom += bounds.y + translateY
-      left += bounds.x + translateX
-
-      const transformedRect = sidesRectToRect({ top, right, bottom, left })
-
-      attr( el, transformedRect)
+      attr( el, scaledRect )
     })
 
     actions.selection.set(ids)

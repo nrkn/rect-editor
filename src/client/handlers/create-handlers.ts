@@ -36,7 +36,7 @@ export const createHandlers = (state: State, actions: Actions) => {
   handleSnapGrid()
 }
 
-const handleResize = (state: State) => {
+export const handleResize = (state: State) => {
   const viewportEl = strictSelect('#viewport')
 
   document.body.addEventListener('resize', () => {
@@ -48,7 +48,7 @@ const handleResize = (state: State) => {
   document.body.dispatchEvent(new Event('resize'))
 }
 
-const handleResetZoom = (actions: Actions) => {
+export const handleResetZoom = (actions: Actions) => {
   const buttonEl = strictSelect('#reset-zoom')
 
   buttonEl.addEventListener('click', e => {
@@ -58,7 +58,7 @@ const handleResetZoom = (actions: Actions) => {
   })
 }
 
-const handleUndo = (actions: Actions) => {
+export const handleUndo = (actions: Actions) => {
   const buttonEl = strictSelect('#undo')
 
   buttonEl.addEventListener('click', e => {
@@ -68,7 +68,7 @@ const handleUndo = (actions: Actions) => {
   })
 }
 
-const handleRedo = (actions: Actions) => {
+export const handleRedo = (actions: Actions) => {
   const buttonEl = strictSelect('#redo')
 
   buttonEl.addEventListener('click', e => {
@@ -78,7 +78,7 @@ const handleRedo = (actions: Actions) => {
   })
 }
 
-const handleWheel = (state: State, actions: Actions) => {
+export const handleWheel = (state: State, actions: Actions) => {
   const viewportEl = strictSelect<HTMLElement>('#viewport')
 
   viewportEl.addEventListener('wheel', e => {

@@ -1,3 +1,4 @@
+import { updateDeltaEl } from '../els/info-delta'
 import { lineToVector, createLine } from '../lib/geometry/line'
 import { State } from '../types'
 import { handleDrag } from './handle-drag'
@@ -35,12 +36,11 @@ export const handlePanDrag = (state: State) => {
     (start, end) => {
       const transform = state.viewTransform()
 
-      const { x: dX, y: dY } = lineToVector(createLine(start, end))
+      const v = lineToVector(createLine(start, end))
 
-      transform.x += dX
-      transform.y += dY
+      transform.x += v.x
+      transform.y += v.y
 
-      // if we are 
 
       state.viewTransform(transform)
     },

@@ -1,4 +1,4 @@
-import { fieldset, input, label, legend } from '../lib/dom/h'
+import { fieldset, legend } from '../lib/dom/h'
 import { createInfoLabel } from './util'
 
 export const createPositionEl = () => {

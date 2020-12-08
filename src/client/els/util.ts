@@ -1,7 +1,7 @@
 import { label, input } from '../lib/dom/h'
 
 export const createInfoLabel = (
-  caption: string, id: string
+  caption: string, id = caption
 ) =>
   label(
     `${caption} `,
