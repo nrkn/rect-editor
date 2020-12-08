@@ -1,7 +1,9 @@
 import { strictSelect } from '../lib/dom/util'
-import { Actions, State } from '../types'
+import { State } from '../types'
 
-export const handleLayers = (state: State, actions: Actions) => {
+export const handleLayers = (state: State ) => {
+  const { get: getSelection, set: setSelection } = state.selector.actions
+
   const fieldsetEl = strictSelect<HTMLFieldSetElement>('#layers fieldset')
 
   const toFrontEl = strictSelect<HTMLButtonElement>('#toFront', fieldsetEl)
@@ -20,7 +22,7 @@ export const handleLayers = (state: State, actions: Actions) => {
       el => el.value
     )
 
-    actions.selection.set(ids)
+    setSelection( ids )
   })
 
   const addClickEvent = (
@@ -29,15 +31,15 @@ export const handleLayers = (state: State, actions: Actions) => {
     el.addEventListener('click', e => {
       e.preventDefault()
 
-      const ids = actions.selection.get()
+      const ids = getSelection()
 
       action( ids )
     })
   }
 
   // the list is stored with topmost last
-  addClickEvent( toFrontEl, actions.rects.toEnd )
-  addClickEvent( forwardEl, actions.rects.forward )
-  addClickEvent( backwardEl, actions.rects.back )
-  addClickEvent( toBackEl, actions.rects.toStart ) 
+  addClickEvent( toFrontEl, state.rects.toEnd )
+  addClickEvent( forwardEl, state.rects.forward )
+  addClickEvent( backwardEl, state.rects.back )
+  addClickEvent( toBackEl, state.rects.toStart ) 
 }

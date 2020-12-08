@@ -1,9 +1,17 @@
 import { rectContainsPoint } from '../lib/geometry/rect'
-import { Actions, State } from '../types'
+import { State } from '../types'
 import { handleClick } from './handle-click'
-import { createTranslatePoint, getAllRects, svgRectToRect } from './util'
+import { selectActions } from '../state/select-actions'
 
-export const handleSelectClick = ( state: State, actions: Actions ) => {
+import { 
+  createTranslatePoint, getAllRects, svgRectToRect 
+} from './util'
+
+export const handleSelectClick = ( state: State ) => {
+  const { 
+    clearSelection, toggleSelected, setSelected 
+  } = selectActions( state )
+
   handleClick( createTranslatePoint( state ), ( button, point ) => {
     if( state.mode() !== 'select' ) return
     if( button !== 0 ) return
@@ -17,7 +25,7 @@ export const handleSelectClick = ( state: State, actions: Actions ) => {
     })
 
     if( clickedRects.length === 0 ){
-      actions.selection.clear()
+      clearSelection()
       
       return
     }
@@ -27,9 +35,9 @@ export const handleSelectClick = ( state: State, actions: Actions ) => {
     const { id } = last
 
     if( state.keys.Shift ){
-      actions.selection.toggle([ id ])
+      toggleSelected([ id ])
     } else {
-      actions.selection.set([ id ])
+      setSelected([ id ])
     }
   })
 }

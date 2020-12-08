@@ -2,12 +2,18 @@ import { rect } from '../lib/dom/s'
 import { getRectElRect, strictSelect } from '../lib/dom/util'
 import { rectIntersection } from '../lib/geometry/rect'
 import { Rect } from '../lib/geometry/types'
-import { Actions, State } from '../types'
+import { State } from '../types'
 import { handleRectDrag } from './handle-rect-drag'
 import { DragEventType } from './types'
-import { createSelectGetDragType, createTranslatePoint, getPosition, getResizerPositions } from './util'
 
-export const handleSelectDrag = (state: State, actions: Actions) => {
+import { 
+  createSelectGetDragType, createTranslatePoint, getPosition, 
+  getResizerPositions} from './util'
+import { selectActions } from "../state/select-actions"
+
+export const handleSelectDrag = (state: State) => {
+  const { toggleSelected, setSelected } = selectActions( state )
+
   const viewportEl = strictSelect<HTMLElement>('#viewport')
   const rectsEl = strictSelect<SVGGElement>('#rects')
 
@@ -30,7 +36,7 @@ export const handleSelectDrag = (state: State, actions: Actions) => {
 
   const transformPoint = createTranslatePoint(state)
 
-  const getSelectDragType = createSelectGetDragType(actions, transformPoint)
+  const getSelectDragType = createSelectGetDragType(state, transformPoint)
 
   const createSelectDragRect = () => rect({ stroke: '#39f', fill: 'none' })
 
@@ -47,9 +53,9 @@ export const handleSelectDrag = (state: State, actions: Actions) => {
     })
 
     if (state.keys.shift) {
-      actions.selection.toggle(ids)
+      toggleSelected( ids )
     } else {
-      actions.selection.set(ids)
+      setSelected( ids )
     }
   }
 

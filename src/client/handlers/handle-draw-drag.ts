@@ -2,12 +2,15 @@ import { getCurrentStyle } from '../els/util'
 import { rect } from '../lib/dom/s'
 import { Rect } from '../lib/geometry/types'
 import { randomId } from '../lib/util'
-import { Actions, State } from '../types'
+import { State } from '../types'
 import { handleRectDrag } from './handle-rect-drag'
 import { DragEventType } from './types'
 import { createSnapTranslatePoint } from './util'
+import { selectActions } from '../state/select-actions'
 
-export const handleDrawDrag = (state: State, actions: Actions) => {
+export const handleDrawDrag = (state: State) => {
+  const { clearSelection } = selectActions( state )
+
   let dragging = false
 
   const predicate = ( e: MouseEvent, type: DragEventType ) => {
@@ -20,7 +23,7 @@ export const handleDrawDrag = (state: State, actions: Actions) => {
 
     if( !dragging ) return false
 
-    actions.selection.clear()
+    clearSelection()
 
     return true
   }
@@ -37,7 +40,7 @@ export const handleDrawDrag = (state: State, actions: Actions) => {
       dragRect 
     )
     
-    actions.rects.add([ appRect ])    
+    state.rects.add([ appRect ])    
   }
 
   handleRectDrag( 

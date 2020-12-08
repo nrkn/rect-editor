@@ -1,13 +1,16 @@
 import { attr, getRectElRect, strictSelect } from '../lib/dom/util'
-import { State, Actions, AppRect } from '../types'
+import { State } from '../types'
 import { handleDrag } from './handle-drag'
 import { DragCallback, DragEventType } from './types'
+
 import {
   createSelectGetDragType, createSnapTranslatePoint, getAppRects, getPosition,
   getResizerPositions
 } from './util'
 
-export const handleMoveDrag = (state: State, actions: Actions) => {
+export const handleMoveDrag = (state: State) => {
+  const { get: getSelection, set: setSelection } = state.selector.actions
+
   const viewportEl = strictSelect<HTMLElement>('#viewport')
 
   const predicate = (e: MouseEvent, type: DragEventType) => {
@@ -35,7 +38,7 @@ export const handleMoveDrag = (state: State, actions: Actions) => {
   }
 
   const transformPoint = createSnapTranslatePoint(state)
-  const getSelectDragType = createSelectGetDragType(actions, transformPoint)
+  const getSelectDragType = createSelectGetDragType(state, transformPoint)
 
   const onDrag: DragCallback = (_start, end, prev) => {
     const dX = end.x - prev.x
@@ -43,7 +46,7 @@ export const handleMoveDrag = (state: State, actions: Actions) => {
 
     if (dX === 0 && dY === 0) return
 
-    const ids = actions.selection.get()
+    const ids = getSelection()
 
     const rectEls = ids.map(
       id => strictSelect<SVGRectElement>(`#${id}`)
@@ -58,15 +61,16 @@ export const handleMoveDrag = (state: State, actions: Actions) => {
       attr(el, { x, y })
     })
 
-    actions.selection.set(ids)
+    setSelection(ids)
   }
 
   const onEnd: DragCallback = () => {
-    const ids = actions.selection.get()
+    const ids = getSelection()
     const appRects = getAppRects(ids)
 
-    actions.rects.update(appRects)
-    actions.selection.set(ids)
+    state.rects.update(appRects)
+
+    setSelection(ids)
   }
 
   return handleDrag(

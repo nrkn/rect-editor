@@ -1,3 +1,5 @@
+import { Disposable, Listener } from '../events/types'
+
 export type ModifySelection<T = string> = ( values: T[] ) => void
 
 export type SelectActions<T = string> = {
@@ -8,4 +10,9 @@ export type SelectActions<T = string> = {
   any: () => boolean
   get: () => T[]
   set: ModifySelection<T>
+}
+
+export type Selector<T = string> = {
+  actions: SelectActions<T>
+  on: (listener: Listener<T[]>) => Disposable
 }

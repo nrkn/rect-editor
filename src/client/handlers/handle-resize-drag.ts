@@ -1,19 +1,22 @@
 import { attr, strictSelect } from '../lib/dom/util'
 import { Positions } from '../lib/geometry/types'
-import { State, Actions } from '../types'
+import { State } from '../types'
 import { handleDrag } from './handle-drag'
 import { DragCallback, DragEventType } from './types'
 
 import { 
-  getBoundingRect, rectToSidesRect, scaleRectFrom, sidesRectToRect 
+  getBoundingRect, scaleRectFrom
 } from '../lib/geometry/rect'
 
-import {
-  createSnapTranslatePoint, getAppRects, getPosition, getResizerPositions
-} from './util'
-import { deltaPoint, snapPointToGrid } from '../lib/geometry/point'
+import { deltaPoint } from '../lib/geometry/point'
 
-export const handleResizeDrag = (state: State, actions: Actions) => {
+import {
+  createSnapTranslatePoint, getAppRects, getPosition, getResizerPositions} from './util'
+import { selectActions } from "../state/select-actions"
+
+export const handleResizeDrag = (state: State ) => {
+  const { getSelected, setSelected } = selectActions( state )
+  
   const viewportEl = strictSelect<HTMLElement>('#viewport')
   let positions: Positions | null = null
 
@@ -53,7 +56,7 @@ export const handleResizeDrag = (state: State, actions: Actions) => {
       return
     }
 
-    const ids = actions.selection.get()
+    const ids = getSelected()
     const appRects = getAppRects(ids)
     const bounds = getBoundingRect(appRects)
 
@@ -75,17 +78,17 @@ export const handleResizeDrag = (state: State, actions: Actions) => {
       attr( el, scaledRect )
     })
 
-    actions.selection.set(ids)
+    setSelected(ids)
   }
 
   const onEnd: DragCallback = () => {
     positions = null
 
-    const ids = actions.selection.get()
+    const ids = getSelected()
     const appRects = getAppRects(ids)
 
-    actions.rects.update(appRects)
-    actions.selection.set(ids)
+    state.rects.update(appRects)
+    setSelected( ids )
   }
 
   return handleDrag(

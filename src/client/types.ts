@@ -1,7 +1,7 @@
 import { appModes } from './consts'
 import { Collection } from './lib/collection/types'
 import { Rect, ScaleTransform, Size } from './lib/geometry/types'
-import { SelectActions } from './lib/select/types'
+import { SelectActions, Selector } from './lib/select/types'
 
 export type AppMode = typeof appModes[ number ]
 
@@ -21,14 +21,11 @@ export type State = {
   viewSize: StateFn<Size>
   viewTransform: StateFn<ScaleTransform>
   documentSize: StateFn<Size>
+  rects: Collection<AppRect>
+  selector: Selector
   keys: Record<string,boolean>
-}
-
-export type Actions = {
   zoomToFit: () => void
   zoomAt: ( transform: ScaleTransform ) => void  
-  rects: Collection<AppRect>
-  selection: SelectActions
 }
 
 export type AppRect = Rect & { 

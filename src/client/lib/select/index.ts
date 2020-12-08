@@ -1,6 +1,6 @@
 import { createEmitter } from '../events'
 import { clone } from '../util'
-import { SelectActions } from './types'
+import { SelectActions, Selector } from './types'
 
 export const createSelector = <T = string>() => {
   const set = new Set<T>() 
@@ -43,5 +43,7 @@ export const createSelector = <T = string>() => {
 
   const { on } = selectEmitter
 
-  return { actions, on }
+  const selector: Selector<T> = { actions, on }
+
+  return selector
 }

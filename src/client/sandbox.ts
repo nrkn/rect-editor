@@ -1,4 +1,3 @@
-import { createActions } from './actions/create-actions'
 import { createAppEls } from './els/app'
 import { createDocumentEl } from './els/document'
 import { createInfo } from './els/info'
@@ -35,19 +34,17 @@ state.mode('pan')
 state.snap({ width: 25, height: 25 })
 state.documentSize({ width: 1000, height: 1000 })
 
-const actions = createActions(state)
-
 handleResize(state)
-handleResetZoom(actions)
+handleResetZoom(state)
 
-handleUndo(actions)
-handleRedo(actions)
+handleUndo(state)
+handleRedo(state)
 
 handleSnapGrid()
 
-actions.zoomToFit()
+state.zoomToFit()
 
-actions.rects.add(
+state.rects.add(
   [
     { id: 'a', x: 250, y: 250, width: 250, height: 250, 'data-style': 'none' },
     { id: 'b', x: 500, y: 500, width: 250, height: 250, 'data-style': 'none' },

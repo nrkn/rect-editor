@@ -1,5 +1,5 @@
 import { strictSelect } from '../lib/dom/util'
-import { Actions, State } from '../types'
+import { State } from '../types'
 import { handleDrawClick } from './handle-draw-click'
 import { handleDrawDrag } from './handle-draw-drag'
 import { handleKeys } from './handle-keys'
@@ -7,39 +7,45 @@ import { handleLayers } from './handle-layers'
 import { handleMove } from './handle-move'
 import { handleMoveDrag } from './handle-move-drag'
 import { handlePanDrag } from './handle-pan-drag'
+import { handleRectCollection } from './handle-rect-collection'
 import { handleResizeDrag } from './handle-resize-drag'
 import { handleSelectClick } from './handle-select-click'
 import { handleSelectDrag } from './handle-select-drag'
+import { handleSelectionChanged } from './handle-selection-changed'
 import { handleSnapGrid } from './handle-snap-grid'
 import { handleStyles } from './handle-styles'
 
-export const createHandlers = (state: State, actions: Actions) => {
-  handleKeys(state, actions)
+export const createHandlers = (state: State) => {
+  handleKeys(state)
 
   handleResize(state)
-  handleResetZoom(actions)
-  handleWheel(state, actions)
+  handleResetZoom(state)
+  handleWheel(state)
 
   handlePanDrag(state)
 
-  handleSelectClick(state, actions)
-  handleSelectDrag(state, actions)
-  handleMoveDrag(state, actions)
+  handleSelectClick(state)
+  handleSelectDrag(state)
+  handleMoveDrag(state)
 
-  handleDrawClick(state, actions)
-  handleDrawDrag(state, actions)
+  handleDrawClick(state)
+  handleDrawDrag(state)
 
-  handleUndo(actions)
-  handleRedo(actions)
+  handleUndo(state)
+  handleRedo(state)
 
-  handleMove(state, actions)
-  handleResizeDrag(state, actions)
+  handleMove(state)
+  handleResizeDrag(state)
 
   handleSnapGrid()
 
-  handleStyles(actions)
+  handleStyles(state)
 
-  handleLayers(state, actions)
+  handleLayers(state)
+
+  handleRectCollection(state)
+
+  handleSelectionChanged(state)
 }
 
 export const handleResize = (state: State) => {
@@ -54,37 +60,37 @@ export const handleResize = (state: State) => {
   document.body.dispatchEvent(new Event('resize'))
 }
 
-export const handleResetZoom = (actions: Actions) => {
+export const handleResetZoom = (state: State) => {
   const buttonEl = strictSelect('#reset-zoom')
 
   buttonEl.addEventListener('click', e => {
     e.preventDefault()
 
-    actions.zoomToFit()
+    state.zoomToFit()
   })
 }
 
-export const handleUndo = (actions: Actions) => {
+export const handleUndo = (state: State) => {
   const buttonEl = strictSelect('#undo')
 
   buttonEl.addEventListener('click', e => {
     e.preventDefault()
 
-    actions.rects.undo()
+    state.rects.undo()
   })
 }
 
-export const handleRedo = (actions: Actions) => {
+export const handleRedo = (state: State) => {
   const buttonEl = strictSelect('#redo')
 
   buttonEl.addEventListener('click', e => {
     e.preventDefault()
 
-    actions.rects.redo()
+    state.rects.redo()
   })
 }
 
-export const handleWheel = (state: State, actions: Actions) => {
+export const handleWheel = (state: State) => {
   const viewportEl = strictSelect<HTMLElement>('#viewport')
 
   viewportEl.addEventListener('wheel', e => {
@@ -99,6 +105,6 @@ export const handleWheel = (state: State, actions: Actions) => {
 
     const newScale = scale + deltaY * -0.1
 
-    actions.zoomAt({ x, y, scale: newScale })
+    state.zoomAt({ x, y, scale: newScale })
   })
 }

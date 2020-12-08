@@ -1,8 +1,12 @@
 import { minScale } from '../consts'
 import { updateGridPattern } from '../els/grid-pattern'
+import { createCollection } from '../lib/collection'
 import { attr, strictFormRadioNodes, strictSelect } from '../lib/dom/util'
+import { zoomAt } from '../lib/geometry/scale'
+import { zoomToFit } from '../lib/geometry/size'
 import { ScaleTransform, Size } from '../lib/geometry/types'
-import { AppMode, State } from '../types'
+import { createSelector } from '../lib/select'
+import { AppMode, AppRect, State, StateFn } from '../types'
 
 export const createState = () => {
   const mode = createMode()
@@ -10,10 +14,16 @@ export const createState = () => {
   const viewSize = createViewSize()
   const viewTransform = createViewTransform()
   const documentSize = createDocumentSize()
+  const rects = createCollection<AppRect>()
+  const selector = createSelector()
   const keys: Record<string,boolean> = {}
+  const zoomToFit = createZoomToFit( viewSize, documentSize, viewTransform )
+  const zoomAt = createZoomAt( viewTransform )
 
   const state: State = { 
-    mode, snap, viewSize, viewTransform, documentSize, keys 
+    mode, snap, viewSize, viewTransform, documentSize, 
+    rects, selector, keys,
+    zoomToFit, zoomAt
   }
 
   return state
@@ -124,4 +134,27 @@ const createViewTransform = () => {
   }
 
   return viewTransform
+}
+
+const createZoomToFit = (
+  viewSize: StateFn<Size>, documentSize: StateFn<Size>,
+  viewTransform: StateFn<ScaleTransform>
+) => {
+  const action = () =>
+    viewTransform(
+      zoomToFit(viewSize(), documentSize())
+    )
+
+  return action
+}
+
+const createZoomAt = (
+  viewTransform: StateFn<ScaleTransform>
+) => {
+  const action = (transform: ScaleTransform) =>
+    viewTransform(
+      zoomAt(viewTransform(), transform, minScale)
+    )
+
+  return action
 }

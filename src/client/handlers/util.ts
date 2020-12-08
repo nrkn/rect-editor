@@ -5,7 +5,7 @@ import { getEdgePositions } from '../lib/geometry/position'
 import { rectContainsPoint, stringRectToRect } from '../lib/geometry/rect'
 import { translateAndScalePoint } from '../lib/geometry/scale'
 import { Point, Rect, StringRect } from '../lib/geometry/types'
-import { Actions, AppRect, State } from '../types'
+import { AppRect, State } from '../types'
 
 export const getPosition = (event: MouseEvent, bounds: DOMRect) => {
   const { clientX, clientY } = event
@@ -50,8 +50,10 @@ export const getAllRects = () => {
 export const getAllRectIds = () => getAllRects().map(el => el.id)
 
 export const createSelectGetDragType = (
-  actions: Actions, transformPoint: (p: Point) => Point
+  state: State, transformPoint: (p: Point) => Point
 ) => {
+  const { any: anySelected, get: getSelectedIds } = state.selector.actions
+
   const viewportEl = strictSelect<HTMLElement>('#viewport')
   const rectsEl = strictSelect<SVGGElement>('#rects')
 
@@ -60,8 +62,8 @@ export const createSelectGetDragType = (
     const start = transformPoint(getPosition(e, bounds))
 
     // it's drag to move if the start point is in a selected rect
-    if (actions.selection.any()) {
-      const ids = actions.selection.get()
+    if (anySelected()) {
+      const ids = getSelectedIds()
 
       const selectedRects = ids.map(
         id => getRectElRect(strictSelect(`#${id}`, rectsEl))
@@ -115,3 +117,4 @@ export const getAppRects = (
 
   return appRects
 }
+

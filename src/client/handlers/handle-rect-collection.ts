@@ -1,25 +1,25 @@
 import { updateLayers } from '../els/layers'
 import { createAppRectEl, updateAppRectEl } from '../els/rect'
-import { Collection } from '../lib/collection/types'
-import { attr, strictSelect } from '../lib/dom/util'
-import { Actions, AppRect, State } from '../types'
+import { strictSelect } from '../lib/dom/util'
+import { State } from '../types'
+import { selectActions } from '../state/select-actions'
 
-export const rectHandlers = (
-  collection: Collection<AppRect>,
-  state: State,
-  actions: Actions
+export const handleRectCollection = (
+  state: State
 ) => {
+  const { rects } = state
+  const { clearSelection } = selectActions( state )
   const rectsEl = strictSelect<SVGGElement>('#rects')
 
-  collection.on.add(
+  rects.on.add(
     rects => {
       rectsEl.append(...rects.map(createAppRectEl))
 
-      updateLayers(state,actions)
+      updateLayers(state)
     }
   )
 
-  collection.on.remove(
+  rects.on.remove(
     ids => {
       ids.forEach(
         id => {
@@ -29,21 +29,21 @@ export const rectHandlers = (
         }
       )
 
-      updateLayers(state,actions)
+      updateLayers(state)
     }
   )
 
-  collection.on.update(
+  rects.on.update(
     rects => {
       rects.forEach(
         rect => updateAppRectEl(rect)
       )
 
-      updateLayers(state,actions)
+      updateLayers(state)
     }
   )
 
-  collection.on.setOrder(
+  rects.on.setOrder(
     ids => {
       ids.forEach(
         id => {
@@ -53,10 +53,10 @@ export const rectHandlers = (
         }
       )
 
-      updateLayers(state,actions)
+      updateLayers(state)
     }
   )
 
-  collection.on.undo(() => actions.selection.clear())
-  collection.on.redo(() => actions.selection.clear())
+  rects.on.undo( clearSelection )
+  rects.on.redo( clearSelection )
 }

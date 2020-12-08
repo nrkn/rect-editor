@@ -1,7 +1,8 @@
 import { getAllRectIds, getAppRects } from '../handlers/util'
+import { selectActions } from "../state/select-actions"
 import { button, fieldset, input, label, legend, li, ol } from '../lib/dom/h'
 import { attr, strictSelect } from '../lib/dom/util'
-import { Actions, AppRect, State } from '../types'
+import { AppRect, State } from '../types'
 import { dataStyleToFill } from './rect'
 
 export const createLayers = () => {
@@ -20,14 +21,16 @@ export const createLayers = () => {
   )
 }
 
-export const updateLayers = ( state: State, actions: Actions) => {  
+export const updateLayers = ( state: State ) => {  
+  const { getSelected, isAnySelected } = selectActions( state )
+
   const fieldsetEl = strictSelect('#layers fieldset')
   const listEl = strictSelect('ol', fieldsetEl)
 
   listEl.innerHTML = ''
 
   const allIds = getAllRectIds()
-  const selectedIds = actions.selection.get()
+  const selectedIds = getSelected()
   const appRects = getAppRects( allIds ).reverse()  
 
   if( appRects.length === 0 ){
@@ -52,7 +55,7 @@ export const updateLayers = ( state: State, actions: Actions) => {
 
   const buttonEls = [ ...fieldsetEl.querySelectorAll( 'button' ) ]    
 
-  const canMove = state.mode() === 'select' && actions.selection.any()
+  const canMove = state.mode() === 'select' && isAnySelected()
   
   buttonEls.forEach( el => el.disabled = !canMove )
 }

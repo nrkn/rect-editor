@@ -4,12 +4,11 @@ import { getKeys, strictSelect } from '../lib/dom/util'
 import { getEdgePositions } from '../lib/geometry/position'
 import { stringRectToRect } from '../lib/geometry/rect'
 import { Point, Positions, StringRect } from '../lib/geometry/types'
-import { State, Actions } from '../types'
+import { State } from '../types'
 import { createTranslatePoint, getPosition } from './util'
 
 export const handleMove = ( 
-  state: State, 
-  _actions: Actions, 
+  state: State,
   transformPoint = createTranslatePoint( state ) 
 ) => {
   const viewportEl = strictSelect<HTMLElement>('#viewport')
