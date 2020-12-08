@@ -10,6 +10,7 @@ import { handleResizeDrag } from './handle-resize-drag'
 import { handleSelectClick } from './handle-select-click'
 import { handleSelectDrag } from './handle-select-drag'
 import { handleSnapGrid } from './handle-snap-grid'
+import { handleStyles } from './handle-styles'
 
 export const createHandlers = (state: State, actions: Actions) => {
   handleKeys(state, actions)
@@ -34,6 +35,8 @@ export const createHandlers = (state: State, actions: Actions) => {
   handleResizeDrag(state,actions)
 
   handleSnapGrid()
+
+  handleStyles(actions)
 }
 
 export const handleResize = (state: State) => {

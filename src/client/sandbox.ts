@@ -49,8 +49,8 @@ actions.zoomToFit()
 
 actions.rects.add(
   [
-    { id: 'a', x: 250, y: 250, width: 250, height: 250 },
-    { id: 'b', x: 500, y: 500, width: 250, height: 250 },
+    { id: 'a', x: 250, y: 250, width: 250, height: 250, 'data-style': 'none' },
+    { id: 'b', x: 500, y: 500, width: 250, height: 250, 'data-style': 'none' },
   ]
 )
 
@@ -90,7 +90,7 @@ toolsEl.append(editScaleEl)
 toolsEl.addEventListener('change', () => {
   const xOrigin = selectXOrigin.value as XPosition
   const yOrigin = selectYOrigin.value as YPosition
-  
+
   const dx = dxEl.valueAsNumber * state.snap().width
   const dy = dyEl.valueAsNumber * state.snap().height
 

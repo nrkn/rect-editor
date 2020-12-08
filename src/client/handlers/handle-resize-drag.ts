@@ -11,6 +11,7 @@ import {
 import {
   createSnapTranslatePoint, getAppRects, getPosition, getResizerPositions
 } from './util'
+import { deltaPoint, snapPointToGrid } from '../lib/geometry/point'
 
 export const handleResizeDrag = (state: State, actions: Actions) => {
   const viewportEl = strictSelect<HTMLElement>('#viewport')
@@ -43,8 +44,10 @@ export const handleResizeDrag = (state: State, actions: Actions) => {
     if (positions === null)
       throw Error('Expected positions')
 
-    const dX = end.x - prev.x
-    const dY = end.y - prev.y
+    const delta = deltaPoint( end, prev )
+
+    const dX = delta.x
+    const dY = delta.y
 
     if (dX === 0 && dY === 0){
       return

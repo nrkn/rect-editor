@@ -47,14 +47,14 @@ fieldset {
   gap: 1rem;
 }
 
-#tools label {
+#pointerMode label, #snapToGrid label {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   gap: 0.25rem;
 }
 
-#tools fieldset {
+#pointerMode fieldset, #snapToGrid fieldset {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -64,6 +64,18 @@ fieldset {
   width: 4rem;
   text-align: right;
   margin-left: auto;
+}
+
+#styles {
+  display: grid;
+  grid-template-columns: repeat( 5, auto );
+  gap: 0.5rem
+}
+
+#styles label {
+  border: 1px solid #ccc;
+  display: inline-block;
+  padding: 0.25rem;
 }
 
 main {

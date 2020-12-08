@@ -95,10 +95,12 @@ export const getAppRects = (
   const rectEls = getRectEls( ids, parent )
 
   const appRects = rectEls.map(el => {
+    const style = el.dataset.style || 'none'
+
     const { id } = el
     const rect = getRectElRect(el)
 
-    const appRect: AppRect = Object.assign({ id }, rect)
+    const appRect: AppRect = Object.assign({ id, 'data-style': style }, rect)
 
     return appRect
   })

@@ -1,4 +1,4 @@
-import { createAppRectEl } from '../els/rect'
+import { createAppRectEl, updateAppRectEl } from '../els/rect'
 import { Collection } from '../lib/collection/types'
 import { attr, strictSelect } from '../lib/dom/util'
 import { Actions, AppRect } from '../types'
@@ -29,11 +29,7 @@ export const rectHandlers = (
   collection.on.update(
     rects =>
       rects.forEach(
-        rect => {
-          const el = strictSelect(`#${rect.id}`)
-
-          attr(el, rect)
-        }
+        rect => updateAppRectEl( rect )
       )
   )
 

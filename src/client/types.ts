@@ -23,4 +23,7 @@ export type Actions = {
   selection: SelectActions
 }
 
-export type AppRect = Rect & { id: string }
+export type AppRect = Rect & { 
+  id: string 
+  'data-style': string
+}
