@@ -34,7 +34,15 @@ export const svgRectToRect = (rectEl: SVGRectElement) => {
 
 export const getAllRects = () => {
   const rectsEl = strictSelect<SVGGElement>('#rects')
-  const rectEls = [...rectsEl.querySelectorAll('rect')]
+  const rectEls = [...rectsEl.querySelectorAll('rect')].filter( el => {
+    if( el.id === '' ){
+      console.warn( '<rect> in rects has no ID', el )
+      
+      return false
+    }
+
+    return true
+  })
 
   return rectEls
 }

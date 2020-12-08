@@ -23,11 +23,11 @@ export const createActions = (state: State) => {
     zoomToFit, zoomAt, rects, selection
   }
 
-  const selectHandler = handleSelect( actions )
+  rectHandlers(rects,state,actions)
+
+  const selectHandler = handleSelect( state, actions )
 
   selector.on( selectHandler )
-
-  rectHandlers(rects,actions)
 
   return actions
 }
@@ -54,7 +54,7 @@ const createZoomAt = (state: State) => {
   return action
 }
 
-const handleSelect = ( actions: Actions ) => {
+const handleSelect = ( state: State, actions: Actions ) => {
   const bodyEl = strictSelect<SVGGElement>( '#body' )
   const rectsEl = strictSelect<SVGGElement>('#rects')
 
@@ -92,7 +92,7 @@ const handleSelect = ( actions: Actions ) => {
       bodyEl.append( resizerEl ) 
     }
 
-    //updateLayers( actions )
+    updateLayers( state, actions )
   }
 
   return handler

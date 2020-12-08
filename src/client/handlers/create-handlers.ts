@@ -3,6 +3,7 @@ import { Actions, State } from '../types'
 import { handleDrawClick } from './handle-draw-click'
 import { handleDrawDrag } from './handle-draw-drag'
 import { handleKeys } from './handle-keys'
+import { handleLayers } from './handle-layers'
 import { handleMove } from './handle-move'
 import { handleMoveDrag } from './handle-move-drag'
 import { handlePanDrag } from './handle-pan-drag'
@@ -32,11 +33,13 @@ export const createHandlers = (state: State, actions: Actions) => {
   handleRedo(actions)
 
   handleMove(state, actions)
-  handleResizeDrag(state,actions)
+  handleResizeDrag(state, actions)
 
   handleSnapGrid()
 
   handleStyles(actions)
+
+  handleLayers(state, actions)
 }
 
 export const handleResize = (state: State) => {

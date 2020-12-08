@@ -16,25 +16,25 @@ const layersEl = createLayers()
 
 const toolsSectionEl = strictSelect('#tools', appEl)
 const viewportSectionEl = strictSelect('#viewport', appEl)
-const layerSectionEl = strictSelect('#layers',appEl) 
-const footerEl = strictSelect('footer',appEl)
+const layerSectionEl = strictSelect('#layers', appEl)
+const footerEl = strictSelect('footer', appEl)
 
 toolsSectionEl.append(toolsEl)
 viewportSectionEl.append(documentEl)
 layerSectionEl.append(layersEl)
-footerEl.append( infoEl )
+footerEl.append(infoEl)
 
 document.body.append(appEl)
 
 const state = createState()
 
-state.mode('pan')
-state.snap( { width: 16, height: 16 })
+state.mode('draw')
+state.snap({ width: 16, height: 16 })
 state.documentSize({ width: 1000, height: 1000 })
 
 const actions = createActions(state)
 
-updateLayers(actions)
+updateLayers(state, actions)
 createHandlers(state, actions)
 
 actions.zoomToFit()

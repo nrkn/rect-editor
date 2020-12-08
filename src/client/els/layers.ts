@@ -1,12 +1,16 @@
 import { getAllRectIds, getAppRects } from '../handlers/util'
-import { fieldset, input, label, legend, li, ol } from '../lib/dom/h'
+import { button, fieldset, input, label, legend, li, ol } from '../lib/dom/h'
 import { attr, strictSelect } from '../lib/dom/util'
-import { Actions, AppRect } from '../types'
+import { Actions, AppRect, State } from '../types'
 import { dataStyleToFill } from './rect'
 
 export const createLayers = () => {
   return fieldset(
     legend('Layers'),
+    button( { id: 'toFront', type: 'button', disabled: ''}, 'To Front' ),
+    button( { id: 'forward', type: 'button', disabled: ''}, 'Forward' ),
+    button( { id: 'backward', type: 'button', disabled: ''}, 'Backward' ),
+    button( { id: 'toBack', type: 'button', disabled: ''}, 'To Back' ),
     ol(
       li( 
         label(          
@@ -16,14 +20,15 @@ export const createLayers = () => {
   )
 }
 
-export const updateLayers = (actions: Actions) => {
+export const updateLayers = ( state: State, actions: Actions) => {  
   const fieldsetEl = strictSelect('#layers fieldset')
   const listEl = strictSelect('ol', fieldsetEl)
 
   listEl.innerHTML = ''
 
-  const appRects = getAppRects(getAllRectIds()).reverse()
+  const allIds = getAllRectIds()
   const selectedIds = actions.selection.get()
+  const appRects = getAppRects( allIds ).reverse()  
 
   if( appRects.length === 0 ){
     listEl.append(
@@ -36,21 +41,35 @@ export const updateLayers = (actions: Actions) => {
 
   listEl.append(
     ...appRects.map(
-      r =>
-        createLayerEl(r, selectedIds.includes(r.id))
+      r => {
+        const isChecked = selectedIds.includes( r.id )
+
+        return createLayerEl(r, isChecked)
+      }
+        
     )
   )
+
+  const buttonEls = [ ...fieldsetEl.querySelectorAll( 'button' ) ]    
+
+  const canMove = state.mode() === 'select' && actions.selection.any()
+  
+  buttonEls.forEach( el => el.disabled = !canMove )
 }
 
-const createLayerEl = (appRect: AppRect, checked = false) => {
+const createLayerEl = (appRect: AppRect, isChecked = false) => {
+  const inputEl = input(
+    { type: 'checkbox', name: 'selectedLayers', value: appRect.id }
+  )
+
   const el = li(
     label(
       { style: `background: ${dataStyleToFill(appRect['data-style'])}` },
-      input({ type: 'checkbox', name: 'selectedLayers', value: appRect.id })
+      inputEl
     )
   )
 
-  if (checked) attr(el, { checked: '' })
+  if (isChecked) attr(inputEl, { checked: '' })
 
   return el
 }

@@ -86,8 +86,7 @@ fieldset {
 #layers label {
   border: 1px solid #ccc;
   display: block;
-  width: 8rem;
-  line-height: 3rem;
+  line-height: 2rem;
 }
 
 main {

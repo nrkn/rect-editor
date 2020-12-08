@@ -21,7 +21,7 @@ export const handleRectDrag = (
     rectEl = createDragRect()
     dragRect = { x: 0, y: 0, width: 0, height: 0 }
 
-    rectsEl.append(rectEl)
+    rectsEl.after(rectEl)
   }
 
   const onDrag = (start: Point, end: Point) => {

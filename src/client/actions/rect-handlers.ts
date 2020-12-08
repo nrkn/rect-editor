@@ -2,10 +2,11 @@ import { updateLayers } from '../els/layers'
 import { createAppRectEl, updateAppRectEl } from '../els/rect'
 import { Collection } from '../lib/collection/types'
 import { attr, strictSelect } from '../lib/dom/util'
-import { Actions, AppRect } from '../types'
+import { Actions, AppRect, State } from '../types'
 
 export const rectHandlers = (
   collection: Collection<AppRect>,
+  state: State,
   actions: Actions
 ) => {
   const rectsEl = strictSelect<SVGGElement>('#rects')
@@ -14,7 +15,7 @@ export const rectHandlers = (
     rects => {
       rectsEl.append(...rects.map(createAppRectEl))
 
-      updateLayers(actions)
+      updateLayers(state,actions)
     }
   )
 
@@ -28,7 +29,7 @@ export const rectHandlers = (
         }
       )
 
-      updateLayers(actions)
+      updateLayers(state,actions)
     }
   )
 
@@ -38,7 +39,7 @@ export const rectHandlers = (
         rect => updateAppRectEl(rect)
       )
 
-      updateLayers(actions)
+      updateLayers(state,actions)
     }
   )
 
@@ -52,7 +53,7 @@ export const rectHandlers = (
         }
       )
 
-      updateLayers(actions)
+      updateLayers(state,actions)
     }
   )
 
