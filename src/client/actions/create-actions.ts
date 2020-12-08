@@ -1,5 +1,6 @@
 import { handleSize, minScale } from '../consts'
 import { updateInfoSelection } from '../els/info-selection'
+import { updateLayers } from '../els/layers'
 import { createResizer, updateResizer } from '../els/resizer'
 import { createCollection } from '../lib/collection'
 import { getRectElRect, strictSelect } from '../lib/dom/util'
@@ -17,13 +18,14 @@ export const createActions = (state: State) => {
   const rects = createCollection<AppRect>()
   const selector = createSelector()
   const { actions: selection } = selector
-  const selectHandler = handleSelect()
-
-  selector.on( selectHandler )
   
   const actions: Actions = {
     zoomToFit, zoomAt, rects, selection
   }
+
+  const selectHandler = handleSelect( actions )
+
+  selector.on( selectHandler )
 
   rectHandlers(rects,actions)
 
@@ -52,7 +54,7 @@ const createZoomAt = (state: State) => {
   return action
 }
 
-const handleSelect = () => {
+const handleSelect = ( actions: Actions ) => {
   const bodyEl = strictSelect<SVGGElement>( '#body' )
   const rectsEl = strictSelect<SVGGElement>('#rects')
 
@@ -89,6 +91,8 @@ const handleSelect = () => {
 
       bodyEl.append( resizerEl ) 
     }
+
+    //updateLayers( actions )
   }
 
   return handler

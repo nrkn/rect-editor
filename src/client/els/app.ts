@@ -7,6 +7,7 @@ export const createAppEls = () => {
     main(
       section({ id: 'tools' }),
       section({ id: 'viewport' }),
+      section({ id: 'layers' } )
     ),
     footer( 
       p( '© 2020 Nik Coughlin' )

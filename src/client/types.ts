@@ -7,6 +7,14 @@ export type AppMode = typeof appModes[ number ]
 
 export type StateFn<T> = ( value?: T ) => T
 
+export type StateData = {
+  mode: StateFn<AppMode>
+  snap: StateFn<Size>,
+  viewSize: StateFn<Size>
+  viewTransform: StateFn<ScaleTransform>
+  documentSize: StateFn<Size>
+}
+
 export type State = {
   mode: StateFn<AppMode>
   snap: StateFn<Size>,
@@ -26,4 +34,10 @@ export type Actions = {
 export type AppRect = Rect & { 
   id: string 
   'data-style': string
+}
+
+export type DocumentData = {
+  snap: Size
+  documentSize: Size
+  rects: AppRect[]
 }

@@ -78,9 +78,21 @@ fieldset {
   padding: 0.25rem;
 }
 
+#layers ol {
+  list-style: none;
+  padding-left: 0;
+}
+
+#layers label {
+  border: 1px solid #ccc;
+  display: block;
+  width: 8rem;
+  line-height: 3rem;
+}
+
 main {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: auto 1fr auto;
   overflow: hidden;
 }
 

@@ -18,11 +18,17 @@ export const updateAppRectEl = (
 ) => {
   let { 'data-style': style } = appRect
 
+  const fill = dataStyleToFill(style)
+
+  attr(appRectEl, appRect, { fill })
+
+  appRectEl.dataset.style = style
+}
+
+export const dataStyleToFill = (style: string) => {
   if (style.startsWith('color')) {
-    const fill = style.replace('color ', '')
-
-    attr(appRectEl, appRect, { fill })
-
-    appRectEl.dataset.style = style
+    return style.replace('color ', '')
   }
+
+  return 'none'
 }
