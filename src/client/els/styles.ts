@@ -6,11 +6,11 @@ export const createStyles = () => {
   const stylesEl = fieldset(
     { id: 'styles' },
     legend( 'Styles'),
-    createFillStyle( 'rgba(255,255,255,0.5)', true ),
-    createFillStyle( 'rgba(191,191,191,0.5)'),
-    createFillStyle( 'rgba(127,127,127,0.5)'),
-    createFillStyle( 'rgba(63,63,63,0.5)'),
-    createFillStyle( 'rgba(0,0,0,0.5)'),
+    createFillStyle( 'rgba(255,255,255,0.75)', true ),
+    createFillStyle( 'rgba(191,191,191,0.75)'),
+    createFillStyle( 'rgba(127,127,127,0.75)'),
+    createFillStyle( 'rgba(63,63,63,0.75)'),
+    createFillStyle( 'rgba(0,0,0,0.75)'),
     ...hslas.map( s => createFillStyle( s ) )
   )  
 
@@ -25,7 +25,7 @@ const degs = createSequence(
   i =>  `${ Math.floor( i * deg ) }deg`
 )
 
-const hslas = degs.map( deg => `hsla(${ deg },100%,50%,0.5)`)
+const hslas = degs.map( deg => `hsla(${ deg },100%,50%,0.75)`)
 
 const createFillStyle = ( color: string, checked = false ) => {
   const radioEl = input(
