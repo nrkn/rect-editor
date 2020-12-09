@@ -39,7 +39,7 @@ export const handleAppRectDrag = (
 
     rectEl.remove()
 
-    if (dragRect.width >= 1 && dragRect.height >= 1 ){            
+    if (dragRect.width > 0 && dragRect.height > 0 ){            
       onEndRect( dragRect )
     } 
 
@@ -47,7 +47,9 @@ export const handleAppRectDrag = (
     dragRect = null
   }
 
-  handleAppDrag( name, state, onDrag, { onStart, onEnd, transformPoint, predicate } )
+  handleAppDrag( 
+    name, state, onDrag, { onStart, onEnd, transformPoint, predicate } 
+  )
 }
 
 const getDragRect = (start: Point, end: Point) => {

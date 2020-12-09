@@ -5,7 +5,7 @@ import { Line, Rect, Size } from '../lib/geometry/types'
 export const createGridPattern = () =>
   pattern(
     { id: 'gridPattern', patternUnits: "userSpaceOnUse" },
-    rect({ fill: '#ddd' }),
+    rect({ fill: '#eee' }),
     line({ stroke: '#39f' }),
     line({ stroke: '#39f' })
   )

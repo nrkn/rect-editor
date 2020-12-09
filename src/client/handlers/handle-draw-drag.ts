@@ -19,11 +19,10 @@ export const handleDrawDrag = (state: State) => {
 
     if( type === 'start' ){
       dragging = true
+      clearSelection()
     }
 
     if( !dragging ) return false
-
-    clearSelection()
 
     return true
   }
