@@ -6,15 +6,7 @@ import { rectContainsPoint, stringRectToRect } from '../lib/geometry/rect'
 import { translateAndScalePoint } from '../lib/geometry/scale'
 import { Point, Rect, StringRect } from '../lib/geometry/types'
 import { AppRect, State } from '../types'
-
-export const getPosition = (event: MouseEvent, bounds: DOMRect) => {
-  const { clientX, clientY } = event
-  const x = clientX - bounds.left
-  const y = clientY - bounds.top
-  const point: Point = { x, y }
-
-  return point
-}
+import { getPosition } from '../lib/handlers/util'
 
 export const createTranslatePoint = (state: State) =>
   (p: Point) => translateAndScalePoint(p, state.viewTransform())

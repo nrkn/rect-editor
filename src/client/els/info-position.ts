@@ -4,7 +4,7 @@ import { createInfoLabel } from './util'
 export const createPositionEl = () => {
   const fieldsetEl = fieldset(
     { id: 'position' },
-    legend( 'Position' ),
+    legend( 'Cursor Position' ),
     createInfoLabel( 'x', 'positionX' ),
     createInfoLabel( 'y', 'positionY' )
   )

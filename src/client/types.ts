@@ -24,6 +24,7 @@ export type State = {
   rects: Collection<AppRect>
   selector: Selector
   keys: Record<string,boolean>
+  dirty: boolean
   zoomToFit: () => void
   zoomAt: ( transform: ScaleTransform ) => void  
 }

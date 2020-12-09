@@ -1,11 +1,12 @@
-import { attr, strictSelect } from '../lib/dom/util'
-import { createLine, normalizeLine } from '../lib/geometry/line'
-import { Point, Rect } from '../lib/geometry/types'
-import { State } from '../types'
-import { handleDrag } from './handle-drag'
-import { DragPredicate, DragTransformPoint } from './types'
+import { attr, strictSelect } from '../../lib/dom/util'
+import { createLine, normalizeLine } from '../../lib/geometry/line'
+import { Point, Rect } from '../../lib/geometry/types'
+import { DragPredicate, DragTransformPoint } from '../../lib/handlers/types'
+import { State } from '../../types'
+import { handleAppDrag } from './handle-app-drag'
 
-export const handleRectDrag = (
+export const handleAppRectDrag = (
+  name: string,
   state: State,
   predicate: DragPredicate, 
   transformPoint: DragTransformPoint,
@@ -46,7 +47,7 @@ export const handleRectDrag = (
     dragRect = null
   }
 
-  handleDrag( state, onDrag, { onStart, onEnd, transformPoint, predicate } )
+  handleAppDrag( name, state, onDrag, { onStart, onEnd, transformPoint, predicate } )
 }
 
 const getDragRect = (start: Point, end: Point) => {

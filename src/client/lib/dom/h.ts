@@ -1,6 +1,6 @@
-import { isNode } from "./predicates"
-import { HArg } from "./types"
-import { attr } from "./util"
+import { isNode } from './predicates'
+import { HArg } from './types'
+import { attr } from './util'
 
 export const h = <K extends keyof HTMLElementTagNameMap>(
   name: K, ...args: HArg[]

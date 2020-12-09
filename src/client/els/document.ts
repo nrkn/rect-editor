@@ -1,4 +1,4 @@
-import { defs, g, line, rect, svg } from "../lib/dom/s"
+import { defs, g, line, rect, svg } from '../lib/dom/s'
 import { createGridPattern } from './grid-pattern'
 
 export const createDocumentEl = () => {

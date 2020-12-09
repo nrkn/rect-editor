@@ -5,9 +5,10 @@ import { getEdgePositions } from '../lib/geometry/position'
 import { stringRectToRect } from '../lib/geometry/rect'
 import { Point, Positions, StringRect } from '../lib/geometry/types'
 import { State } from '../types'
-import { createTranslatePoint, getPosition } from './util'
+import { createTranslatePoint } from './util'
+import { getPosition } from '../lib/handlers/util'
 
-export const handleMove = ( 
+export const handleCursorMove = ( 
   state: State,
   transformPoint = createTranslatePoint( state ) 
 ) => {

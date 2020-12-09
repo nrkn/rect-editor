@@ -3,13 +3,14 @@ import { getRectElRect, strictSelect } from '../lib/dom/util'
 import { rectIntersection } from '../lib/geometry/rect'
 import { Rect } from '../lib/geometry/types'
 import { State } from '../types'
-import { handleRectDrag } from './handle-rect-drag'
-import { DragEventType } from './types'
+import { handleAppRectDrag } from './util/handle-app-rect-drag'
+import { getPosition } from '../lib/handlers/util'
+import { selectActions } from '../state/select-actions'
 
 import { 
-  createSelectGetDragType, createTranslatePoint, getPosition, 
-  getResizerPositions} from './util'
-import { selectActions } from "../state/select-actions"
+  createSelectGetDragType, createTranslatePoint, getResizerPositions
+} from './util'
+import { DragEventType } from '../lib/handlers/types'
 
 export const handleSelectDrag = (state: State) => {
   const { toggleSelected, setSelected } = selectActions( state )
@@ -59,7 +60,7 @@ export const handleSelectDrag = (state: State) => {
     }
   }
 
-  handleRectDrag(
-    state, predicate, transformPoint, createSelectDragRect, onEndRect
+  handleAppRectDrag(
+    'select', state, predicate, transformPoint, createSelectDragRect, onEndRect
   )
 }

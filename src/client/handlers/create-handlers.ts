@@ -4,8 +4,8 @@ import { handleDrawClick } from './handle-draw-click'
 import { handleDrawDrag } from './handle-draw-drag'
 import { handleKeys } from './handle-keys'
 import { handleLayers } from './handle-layers'
-import { handleMove } from './handle-move'
-import { handleMoveDrag } from './handle-move-drag'
+import { handleCursorMove } from './handle-cursor-move'
+import { handleMoveDrag } from './handle-select-move-drag'
 import { handlePanDrag } from './handle-pan-drag'
 import { handleRectCollection } from './handle-rect-collection'
 import { handleResizeDrag } from './handle-resize-drag'
@@ -14,11 +14,12 @@ import { handleSelectDrag } from './handle-select-drag'
 import { handleSelectionChanged } from './handle-selection-changed'
 import { handleSnapGrid } from './handle-snap-grid'
 import { handleStyles } from './handle-styles'
+import { handleViewportResize } from './handle-viewport-resize'
 
 export const createHandlers = (state: State) => {
   handleKeys(state)
 
-  handleResize(state)
+  handleViewportResize(state)
   handleResetZoom(state)
   handleWheel(state)
 
@@ -34,7 +35,7 @@ export const createHandlers = (state: State) => {
   handleUndo(state)
   handleRedo(state)
 
-  handleMove(state)
+  handleCursorMove(state)
   handleResizeDrag(state)
 
   handleSnapGrid()
@@ -46,18 +47,6 @@ export const createHandlers = (state: State) => {
   handleRectCollection(state)
 
   handleSelectionChanged(state)
-}
-
-export const handleResize = (state: State) => {
-  const viewportEl = strictSelect('#viewport')
-
-  document.body.addEventListener('resize', () => {
-    const { width, height } = viewportEl.getBoundingClientRect()
-
-    state.viewSize({ width, height })
-  })
-
-  document.body.dispatchEvent(new Event('resize'))
 }
 
 export const handleResetZoom = (state: State) => {

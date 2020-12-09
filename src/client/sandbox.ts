@@ -2,14 +2,15 @@ import { createAppEls } from './els/app'
 import { createDocumentEl } from './els/document'
 import { createInfo } from './els/info'
 import { createToolsEls } from './els/tools'
-import { createHandlers, handleRedo, handleResetZoom, handleResize, handleUndo } from './handlers/create-handlers'
+import { handleRedo, handleResetZoom, handleUndo } from './handlers/create-handlers'
+import { handleViewportResize } from "./handlers/handle-viewport-resize"
 import { handleSnapGrid } from './handlers/handle-snap-grid'
 import { getAllRects, getAppRects } from './handlers/util'
-import { fieldset, form, input, label, legend, option, select } from './lib/dom/h'
+import { fieldset, input, label, legend, option, select } from './lib/dom/h'
 import { line, rect } from './lib/dom/s'
 import { attr, strictSelect } from './lib/dom/util'
-import { positionNames, xPositionNames, yPositionNames } from './lib/geometry/consts'
-import { flipRectInBounds, growSidesRectByDelta, rectToSidesRect, scaleRectFrom, scaleRectFromBounds, sidesRectToRect } from './lib/geometry/rect'
+import { xPositionNames, yPositionNames } from './lib/geometry/consts'
+import { flipRectInBounds, growSidesRectByDelta, rectToSidesRect, scaleRectFromBounds, sidesRectToRect } from './lib/geometry/rect'
 import { Rect, XPosition, YPosition } from './lib/geometry/types'
 import { createState } from './state/create-state'
 
@@ -34,7 +35,7 @@ state.mode('pan')
 state.snap({ width: 25, height: 25 })
 state.documentSize({ width: 1000, height: 1000 })
 
-handleResize(state)
+handleViewportResize(state)
 handleResetZoom(state)
 
 handleUndo(state)

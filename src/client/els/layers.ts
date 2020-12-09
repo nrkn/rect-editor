@@ -1,5 +1,5 @@
 import { getAllRectIds, getAppRects } from '../handlers/util'
-import { selectActions } from "../state/select-actions"
+import { selectActions } from '../state/select-actions'
 import { button, fieldset, input, label, legend, li, ol } from '../lib/dom/h'
 import { attr, strictSelect } from '../lib/dom/util'
 import { AppRect, State } from '../types'
@@ -21,7 +21,7 @@ export const createLayers = () => {
   )
 }
 
-export const updateLayers = ( state: State ) => {  
+export const updateLayersEl = ( state: State ) => {  
   const { getSelected, isAnySelected } = selectActions( state )
 
   const fieldsetEl = strictSelect('#layers fieldset')

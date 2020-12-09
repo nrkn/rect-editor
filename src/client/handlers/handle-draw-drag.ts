@@ -3,10 +3,10 @@ import { rect } from '../lib/dom/s'
 import { Rect } from '../lib/geometry/types'
 import { randomId } from '../lib/util'
 import { State } from '../types'
-import { handleRectDrag } from './handle-rect-drag'
-import { DragEventType } from './types'
+import { handleAppRectDrag } from './util/handle-app-rect-drag'
 import { createSnapTranslatePoint } from './util'
 import { selectActions } from '../state/select-actions'
+import { DragEventType } from '../lib/handlers/types'
 
 export const handleDrawDrag = (state: State) => {
   const { clearSelection } = selectActions( state )
@@ -43,7 +43,7 @@ export const handleDrawDrag = (state: State) => {
     state.rects.add([ appRect ])    
   }
 
-  handleRectDrag( 
-    state, predicate, transformPoint, createDrawDragRect, onEndRect 
+  handleAppRectDrag( 
+    'draw', state, predicate, transformPoint, createDrawDragRect, onEndRect 
   )
 }

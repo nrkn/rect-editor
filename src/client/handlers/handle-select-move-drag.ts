@@ -1,10 +1,11 @@
 import { attr, getRectElRect, strictSelect } from '../lib/dom/util'
 import { State } from '../types'
-import { handleDrag } from './handle-drag'
-import { DragCallback, DragEventType } from './types'
+import { getPosition } from '../lib/handlers/util'
+import { handleAppDrag } from './util/handle-app-drag'
+import { DragEventType, OnHandleDrag } from '../lib/handlers/types'
 
 import {
-  createSelectGetDragType, createSnapTranslatePoint, getAppRects, getPosition,
+  createSelectGetDragType, createSnapTranslatePoint, getAppRects, 
   getResizerPositions
 } from './util'
 
@@ -40,7 +41,7 @@ export const handleMoveDrag = (state: State) => {
   const transformPoint = createSnapTranslatePoint(state)
   const getSelectDragType = createSelectGetDragType(state, transformPoint)
 
-  const onDrag: DragCallback = (_start, end, prev) => {
+  const onDrag: OnHandleDrag = (_start, end, prev) => {
     const dX = end.x - prev.x
     const dY = end.y - prev.y
 
@@ -64,7 +65,7 @@ export const handleMoveDrag = (state: State) => {
     setSelection(ids)
   }
 
-  const onEnd: DragCallback = () => {
+  const onEnd: OnHandleDrag = () => {
     const ids = getSelection()
     const appRects = getAppRects(ids)
 
@@ -73,7 +74,8 @@ export const handleMoveDrag = (state: State) => {
     setSelection(ids)
   }
 
-  return handleDrag(
+  return handleAppDrag(
+    'move',
     state,
     onDrag,
     { transformPoint, predicate, onEnd }

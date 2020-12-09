@@ -1,5 +1,6 @@
 html {
   box-sizing: border-box;
+  font-size: 80%;
 }
 
 *, *:before, *:after {
@@ -7,7 +8,7 @@ html {
 }
 
 body {
-  font-family: sans-serif;
+  font-family: sans-serif;  
   margin: 0;
 }
 
@@ -20,7 +21,7 @@ fieldset {
   grid-template-rows: auto 1fr auto;
   width: 100vw;
   height: 100vh;
-  overflow: hidden;
+  overflow: hidden;  
 }
 
 #app > header, #app > footer {

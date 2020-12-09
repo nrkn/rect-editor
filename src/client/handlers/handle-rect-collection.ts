@@ -1,4 +1,3 @@
-import { updateLayers } from '../els/layers'
 import { createAppRectEl, updateAppRectEl } from '../els/rect'
 import { strictSelect } from '../lib/dom/util'
 import { State } from '../types'
@@ -15,7 +14,7 @@ export const handleRectCollection = (
     rects => {
       rectsEl.append(...rects.map(createAppRectEl))
 
-      updateLayers(state)
+      state.dirty = true
     }
   )
 
@@ -29,7 +28,7 @@ export const handleRectCollection = (
         }
       )
 
-      updateLayers(state)
+      state.dirty = true
     }
   )
 
@@ -39,7 +38,7 @@ export const handleRectCollection = (
         rect => updateAppRectEl(rect)
       )
 
-      updateLayers(state)
+      state.dirty = true
     }
   )
 
@@ -53,7 +52,7 @@ export const handleRectCollection = (
         }
       )
 
-      updateLayers(state)
+      state.dirty = true
     }
   )
 

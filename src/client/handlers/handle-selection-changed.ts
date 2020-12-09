@@ -1,6 +1,5 @@
 import { handleSize } from '../consts'
 import { updateInfoSelection } from '../els/info-selection'
-import { updateLayers } from '../els/layers'
 import { updateResizer, createResizer } from '../els/resizer'
 import { strictSelect, getRectElRect } from '../lib/dom/util'
 import { getBoundingRect } from '../lib/geometry/rect'
@@ -11,6 +10,8 @@ export const handleSelectionChanged = (state: State) => {
   const rectsEl = strictSelect<SVGGElement>('#rects')
 
   const handler = (ids: string[]) => {
+    state.dirty = true
+
     const existing = document.querySelector<SVGGElement>('#resizer')
 
     if (ids.length === 0) {
@@ -43,9 +44,7 @@ export const handleSelectionChanged = (state: State) => {
 
       bodyEl.append(resizerEl)
     }
-
-    updateLayers(state)
   }
 
-  return handler
+  state.selector.on( handler )
 }

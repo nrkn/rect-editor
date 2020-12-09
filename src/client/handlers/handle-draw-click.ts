@@ -1,12 +1,18 @@
 import { State } from '../types'
-import { handleClick } from './handle-click'
-import { createTranslatePoint } from './util'
+import { ClickPredicate, OnHandleClick } from '../lib/handlers/types'
+import { handleAppClick } from './util/handle-app-click'
 
-export const handleDrawClick = ( state: State ) => {
-  handleClick( createTranslatePoint( state ), ( button, _point ) => {
-    if( state.mode() !== 'draw' ) return
-    if( button !== 0 ) return
-
+export const handleDrawClick = (state: State) => {
+  const click: OnHandleClick = (_point, _button) => {
     // prompt for new
-  })
+  }
+
+  const predicate: ClickPredicate = ( _point, button ) => {
+    if (state.mode() !== 'draw') return false
+    if (button !== 0) return false
+
+    return true
+  }
+
+  handleAppClick( 'draw', state, click, predicate )
 }

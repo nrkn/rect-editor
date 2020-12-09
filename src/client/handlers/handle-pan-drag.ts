@@ -1,8 +1,7 @@
-import { updateDeltaEl } from '../els/info-delta'
 import { lineToVector, createLine } from '../lib/geometry/line'
+import { DragEventType } from '../lib/handlers/types'
 import { State } from '../types'
-import { handleDrag } from './handle-drag'
-import { DragEventType } from './types'
+import { handleAppDrag } from './util/handle-app-drag'
 
 export const handlePanDrag = (state: State) => {
   /*
@@ -31,7 +30,8 @@ export const handlePanDrag = (state: State) => {
     return true
   }
 
-  return handleDrag(
+  return handleAppDrag(
+    'pan',
     state,
     (start, end) => {
       const transform = state.viewTransform()

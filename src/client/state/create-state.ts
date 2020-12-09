@@ -22,7 +22,7 @@ export const createState = () => {
 
   const state: State = { 
     mode, snap, viewSize, viewTransform, documentSize, 
-    rects, selector, keys,
+    rects, selector, keys, dirty: true,
     zoomToFit, zoomAt
   }
 
