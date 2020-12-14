@@ -3,6 +3,7 @@ import { updateInfoSelection } from '../els/info-selection'
 import { updateResizer, createResizer } from '../els/resizer'
 import { strictSelect, getRectElRect } from '../lib/dom/util'
 import { getBoundingRect } from '../lib/geometry/rect'
+import { createHandler } from '../lib/handlers/create-handler'
 import { State } from '../types'
 
 export const handleSelectionChanged = (state: State) => {
@@ -46,5 +47,13 @@ export const handleSelectionChanged = (state: State) => {
     }
   }
 
-  state.selector.on( handler )
+  const enabler = () => {
+    state.selector.on( handler )
+  }
+
+  const disabler = () => {
+    state.selector.off( handler )
+  }
+
+  return createHandler( 'selection', enabler, disabler )
 }

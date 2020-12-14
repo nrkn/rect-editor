@@ -1,5 +1,3 @@
-import { Point } from '../geometry/types'
-
 export type Listener<T> = ( event: T ) => any
 
 export type Disposable = {

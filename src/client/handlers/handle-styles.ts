@@ -1,5 +1,6 @@
 import { getCurrentStyle } from '../els/util'
 import { strictSelect, strictFormRadioNodes } from '../lib/dom/util'
+import { createHandler } from '../lib/handlers/create-handler'
 import { State } from '../types'
 import { getAppRects } from './util'
 
@@ -23,5 +24,13 @@ export const handleStyles = (state: State) => {
     state.rects.update(appRects)
   }
 
-  styleRadios.forEach(el => el.addEventListener('change', updateSelected))
+  const enabler = () => {
+    styleRadios.forEach(el => el.addEventListener('change', updateSelected))
+  }
+
+  const disabler = () => {
+    styleRadios.forEach(el => el.removeEventListener('change', updateSelected))
+  }
+
+  return createHandler( 'styles', enabler, disabler )
 }

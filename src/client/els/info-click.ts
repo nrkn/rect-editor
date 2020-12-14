@@ -6,8 +6,7 @@ import { createInfoLabel } from './util'
 export const createClickEl = () => {
   const fieldsetEl = fieldset(
     { id: 'click' },
-    legend( 'Last Click' ),
-    createInfoLabel( 'name', 'clickName' ),
+    legend( 'Last Click' ),  
     createInfoLabel( 'x', 'clickX' ),
     createInfoLabel( 'y', 'clickY' )
   )
@@ -16,11 +15,16 @@ export const createClickEl = () => {
 }
 
 export const updateClickEl = ( p?: Point, name?: string ) => {  
-  const clickNameEl = strictSelect<HTMLInputElement>( '#clickName' )
+  const fieldsetEl = strictSelect<HTMLFieldSetElement>( '#click' )
+  const legendEl = strictSelect( 'legend', fieldsetEl )
+  
   const xEl = strictSelect<HTMLInputElement>( '#clickX' )
   const yEl = strictSelect<HTMLInputElement>( '#clickY' )
 
-  clickNameEl.value = name || ''
+  const nameLabel = name ? `: ${ name }` : ''
+  
+  legendEl.innerHTML = `Last Click${ nameLabel }`
+
   xEl.value = p?.x ? Math.floor( p.x ).toString() : ''
   yEl.value = p?.y ? Math.floor( p.y ).toString()  : ''
 }

@@ -13,6 +13,7 @@ import { xPositionNames, yPositionNames } from './lib/geometry/consts'
 import { flipRectInBounds, growSidesRectByDelta, rectToSidesRect, scaleRectFromBounds, sidesRectToRect } from './lib/geometry/rect'
 import { Rect, XPosition, YPosition } from './lib/geometry/types'
 import { createState } from './state/create-state'
+import { noop } from './lib/util'
 
 const appEl = createAppEls()
 const toolsEl = createToolsEls()
@@ -29,19 +30,25 @@ viewportSectionEl.append(documentEl)
 
 document.body.append(appEl)
 
-const state = createState()
+const state = createState({
+  updateAppMode: noop,
+  updateDocumentSize: noop,
+  updateSnapToGrid: noop,
+  updateViewSize: noop,
+  updateViewTransform: noop
+})
 
 state.mode('pan')
 state.snap({ width: 25, height: 25 })
 state.documentSize({ width: 1000, height: 1000 })
 
-handleViewportResize(state)
-handleResetZoom(state)
+handleViewportResize(state).enable()
+handleResetZoom(state).enable()
 
-handleUndo(state)
-handleRedo(state)
+handleUndo(state).enable()
+handleRedo(state).enable()
 
-handleSnapGrid()
+handleSnapGrid().enable()
 
 state.zoomToFit()
 

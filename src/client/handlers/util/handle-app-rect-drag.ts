@@ -8,10 +8,10 @@ import { handleAppDrag } from './handle-app-drag'
 export const handleAppRectDrag = (
   name: string,
   state: State,
-  predicate: DragPredicate, 
+  predicate: DragPredicate,
   transformPoint: DragTransformPoint,
   createDragRect: () => SVGRectElement,
-  onEndRect: ( rect: Rect ) => void
+  onEndRect: (rect: Rect) => void
 ) => {
   const rectsEl = strictSelect<SVGGElement>('#rects')
 
@@ -19,36 +19,35 @@ export const handleAppRectDrag = (
   let rectEl: SVGRectElement | null = null
 
   const onStart = () => {
-    rectEl = createDragRect()
-    dragRect = { x: 0, y: 0, width: 0, height: 0 }
-
-    rectsEl.after(rectEl)
+    if( rectEl !== null ) rectEl.remove()
   }
 
   const onDrag = (start: Point, end: Point) => {
-    if (rectEl === null) return
+    if (rectEl === null) {
+      rectEl = createDragRect()
+
+      rectsEl.after(rectEl)
+    }
 
     dragRect = getDragRect(start, end)
-
     attr(rectEl, dragRect)
   }
 
   const onEnd = () => {
-    if (rectEl === null) return
-    if (dragRect === null) return
+    if (rectEl) {
+      rectEl.remove()
+    }
 
-    rectEl.remove()
-
-    if (dragRect.width > 0 && dragRect.height > 0 ){            
-      onEndRect( dragRect )
-    } 
+    if (dragRect && dragRect.width > 0 && dragRect.height > 0) {
+      onEndRect(dragRect)
+    }
 
     rectEl = null
     dragRect = null
   }
 
-  handleAppDrag( 
-    name, state, onDrag, { onStart, onEnd, transformPoint, predicate } 
+  return handleAppDrag(
+    name, state, onDrag, { onStart, onEnd, transformPoint, predicate }
   )
 }
 

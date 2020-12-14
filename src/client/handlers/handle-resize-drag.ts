@@ -90,7 +90,7 @@ export const handleResizeDrag = (state: State) => {
   }
 
   return handleAppDrag(
-    'resize',
+    'select-resize-drag',
     state,
     onDrag,
     { onEnd, transformPoint, predicate }

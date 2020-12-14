@@ -1,7 +1,8 @@
 import { strictSelect } from '../lib/dom/util'
+import { createHandler } from '../lib/handlers/create-handler'
 import { State } from '../types'
 
-export const handleLayers = (state: State ) => {
+export const handleLayers = (state: State) => {
   const { get: getSelection, set: setSelection } = state.selector.actions
 
   const fieldsetEl = strictSelect<HTMLFieldSetElement>('#layers fieldset')
@@ -11,7 +12,7 @@ export const handleLayers = (state: State ) => {
   const backwardEl = strictSelect<HTMLButtonElement>('#backward', fieldsetEl)
   const toBackEl = strictSelect<HTMLButtonElement>('#toBack', fieldsetEl)
 
-  fieldsetEl.addEventListener('change', () => {
+  const change = () => {
     state.mode('select')
 
     const inputEls = fieldsetEl.querySelectorAll<HTMLInputElement>(
@@ -22,25 +23,53 @@ export const handleLayers = (state: State ) => {
       el => el.value
     )
 
-    console.log( 'layer fieldset changed' )
-    setSelection( ids )
-  })
+    console.log('layer fieldset changed')
+    setSelection(ids)
+  }
+
+  const clicks = new Map<HTMLButtonElement,(e: MouseEvent) => void>()
 
   const addClickEvent = (
     el: HTMLButtonElement, action: (ids: string[]) => void
   ) => {
-    el.addEventListener('click', e => {
+    clicks.set( el, e => {
       e.preventDefault()
 
       const ids = getSelection()
 
-      action( ids )
-    })
+      action(ids)
+    })     
   }
 
   // the list is stored with topmost last
-  addClickEvent( toFrontEl, state.rects.toEnd )
-  addClickEvent( forwardEl, state.rects.forward )
-  addClickEvent( backwardEl, state.rects.back )
-  addClickEvent( toBackEl, state.rects.toStart ) 
+  addClickEvent(toFrontEl, state.rects.toEnd)
+  addClickEvent(forwardEl, state.rects.forward)
+  addClickEvent(backwardEl, state.rects.back)
+  addClickEvent(toBackEl, state.rects.toStart)
+
+  const enabler = () => {
+    fieldsetEl.addEventListener('change', change )
+    
+    const pairs = [ ...clicks ]
+
+    pairs.forEach(
+      ([ el, listener ]) => {
+        el.addEventListener( 'click', listener )
+      }
+    ) 
+  }
+
+  const disabler = () => {
+    fieldsetEl.removeEventListener('change', change )
+
+    const pairs = [ ...clicks ]
+
+    pairs.forEach(
+      ([ el, listener ]) => {
+        el.removeEventListener( 'click', listener )
+      }
+    ) 
+  }
+
+  return createHandler( 'layers', enabler, disabler )
 }

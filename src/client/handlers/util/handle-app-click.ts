@@ -28,5 +28,5 @@ export const handleAppClick = (
     updateClickEl( point, name )
   }
   
-  handleClick( viewportEl, onAppClick, options )
+  return handleClick( name, viewportEl, onAppClick, options )
 }

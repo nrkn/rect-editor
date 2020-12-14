@@ -1,61 +1,72 @@
 import { createAppRectEl, updateAppRectEl } from '../els/rect'
 import { strictSelect } from '../lib/dom/util'
-import { State } from '../types'
+import { AppRect, State } from '../types'
 import { selectActions } from '../state/select-actions'
+import { Listener } from '../lib/events/types'
+import { createHandler } from '../lib/handlers/create-handler'
 
 export const handleRectCollection = (
   state: State
 ) => {
   const { rects } = state
-  const { clearSelection } = selectActions( state )
+  const { clearSelection } = selectActions(state)
   const rectsEl = strictSelect<SVGGElement>('#rects')
 
-  rects.on.add(
-    rects => {
-      rectsEl.append(...rects.map(createAppRectEl))
+  const add: Listener<AppRect[]> = rects => {
+    rectsEl.append(...rects.map(createAppRectEl))
 
-      state.dirty = true
-    }
-  )
+    state.dirty = true
+  }
 
-  rects.on.remove(
-    ids => {
-      ids.forEach(
-        id => {
-          const el = strictSelect(`#${id}`)
+  const remove: Listener<string[]> = ids => {
+    ids.forEach(
+      id => {
+        const el = strictSelect(`#${id}`)
 
-          el.remove()
-        }
-      )
+        el.remove()
+      }
+    )
 
-      state.dirty = true
-    }
-  )
+    state.dirty = true
+  }
 
-  rects.on.update(
-    rects => {
-      rects.forEach(
-        rect => updateAppRectEl(rect)
-      )
+  const update: Listener<AppRect[]> = rects => {
+    rects.forEach(
+      rect => updateAppRectEl(rect)
+    )
 
-      state.dirty = true
-    }
-  )
+    state.dirty = true
+  }
 
-  rects.on.setOrder(
-    ids => {
-      ids.forEach(
-        id => {
-          const el = strictSelect(`#${id}`)
+  const setOrder: Listener<string[]> = ids => {
+    ids.forEach(
+      id => {
+        const el = strictSelect(`#${id}`)
 
-          rectsEl.append(el)
-        }
-      )
+        rectsEl.append(el)
+      }
+    )
 
-      state.dirty = true
-    }
-  )
+    state.dirty = true
+  }
 
-  rects.on.undo( clearSelection )
-  rects.on.redo( clearSelection )
+  const enabler = () => {
+    rects.on.add(add)
+    rects.on.remove(remove)
+    rects.on.update(update)
+    rects.on.setOrder(setOrder)
+    rects.on.undo(clearSelection)
+    rects.on.redo(clearSelection)  
+  }
+
+  const disabler = () => {
+    rects.off.add(add)
+    rects.off.remove(remove)
+    rects.off.update(update)
+    rects.off.setOrder(setOrder)
+    rects.off.undo(clearSelection)
+    rects.off.redo(clearSelection)  
+  }
+
+  return createHandler( 'rects', enabler, disabler )
 }

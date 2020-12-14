@@ -7,7 +7,6 @@ export const createDeltaEl = () => {
   const fieldsetEl = fieldset(
     { id: 'delta' },
     legend( 'Delta' ),
-    createInfoLabel( 'name', 'deltaName' ),
     createInfoLabel( 'dx' ),
     createInfoLabel( 'dy' )
   )
@@ -16,11 +15,16 @@ export const createDeltaEl = () => {
 }
 
 export const updateDeltaEl = ( p?: Point, name?: string ) => {  
-  const deltaNameEl = strictSelect<HTMLInputElement>( '#deltaName' )
+  const fieldsetEl = strictSelect<HTMLFieldSetElement>( '#delta' )
+  const legendEl = strictSelect( 'legend', fieldsetEl )
+
   const dxEl = strictSelect<HTMLInputElement>( '#dx' )
   const dyEl = strictSelect<HTMLInputElement>( '#dy' )
 
-  deltaNameEl.value = name || ''
+  const nameLabel = name ? `: ${ name }` : ''
+
+  legendEl.innerHTML = `Delta${ nameLabel }`
+  
   dxEl.value = p?.x ? Math.floor( p.x ).toString() : ''
   dyEl.value = p?.y ? Math.floor( p.y ).toString()  : ''
 }

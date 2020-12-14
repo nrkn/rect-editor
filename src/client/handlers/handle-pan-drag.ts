@@ -9,29 +9,29 @@ export const handlePanDrag = (state: State) => {
 
     You can drag to pan in any mode if wheel/middle button
   */
- let isWheelDrag = false
+  let isWheelDrag = false
 
- const predicate = ( e: MouseEvent, type: DragEventType ) => {
-    if( type === 'start' && e.button === 1 ){
+  const predicate = (e: MouseEvent, type: DragEventType) => {
+    if (type === 'start' && e.button === 1) {
       isWheelDrag = true
 
       return true
     }
 
-    if( type === 'end' ){
+    if (type === 'end') {
       isWheelDrag = false
     }
 
-    if( isWheelDrag ) return true
+    if (isWheelDrag) return true
 
-    if( state.mode() !== 'pan' ) return false
-    if( type === 'start' && e.button !== 0 ) return false
+    if (state.mode() !== 'pan') return false
+    if (type === 'start' && e.button !== 0) return false
 
     return true
   }
 
   return handleAppDrag(
-    'pan',
+    'pan-drag',
     state,
     (start, end) => {
       const transform = state.viewTransform()

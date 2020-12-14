@@ -14,12 +14,21 @@ export const handleAppDrag = (
 ) => {
   const viewportEl = strictSelect<HTMLElement>('#viewport')
 
-  const { onEnd } = opts
+  const { onStart, onEnd } = opts
 
   const onDragWithDelta: OnHandleDrag = ( start, end, prev ) => {
     onDrag( start, end, prev )
 
     updateDeltaEl(deltaPoint(end,start), name)
+    console.log( name, 'dragging' )
+  }
+
+  const onDragStart: OnHandleDrag = ( start, end, prev ) => {
+    if( onStart !== undefined ){
+      onStart( start, end, prev )
+    }
+
+    console.log( name, 'drag start' )
   }
 
   const onDragEndWithDelta: OnHandleDrag = ( start, end, prev ) => {
@@ -28,6 +37,7 @@ export const handleAppDrag = (
     }
 
     updateDeltaEl()
+    console.log( name, 'drag end' )
   }
 
   const defaultOptions: Partial<DragOptions> = {
@@ -39,9 +49,10 @@ export const handleAppDrag = (
     defaultOptions, 
     opts,
     {
+      onStart: onDragStart,
       onEnd: onDragEndWithDelta
     }
   )
 
-  handleDrag( viewportEl, onDragWithDelta, options )
+  return handleDrag( name, viewportEl, onDragWithDelta, options )
 }

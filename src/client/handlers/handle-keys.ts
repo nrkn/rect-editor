@@ -1,3 +1,4 @@
+import { createHandler } from '../lib/handlers/create-handler'
 import { State } from '../types'
 import { getAllRectIds } from './util'
 
@@ -6,7 +7,7 @@ export const handleKeys = ( state: State ) => {
     get: getSelection, clear: clearSelection, add: addToSelection
   } = state.selector.actions
   
-  document.addEventListener( 'keydown', e => {
+  const down = ( e: KeyboardEvent ) => {
     state.keys[e.key] = true
 
     const lower = e.key.toLowerCase()
@@ -39,10 +40,22 @@ export const handleKeys = ( state: State ) => {
       state.rects.remove(selectedIds)
       
       clearSelection()
-    }    
-  })
-  
-  document.addEventListener( 'keyup', e => {
+    }   
+  }
+
+  const up = ( e: KeyboardEvent ) => {
     state.keys[e.key] = false
-  })
+  }
+
+  const enabler = () => {
+    document.addEventListener( 'keydown', down )
+    document.addEventListener( 'keyup', up )
+  }
+
+  const disabler = () => {
+    document.removeEventListener( 'keydown', down )
+    document.removeEventListener( 'keyup', up )
+  }
+
+  return createHandler( 'keys', enabler, disabler )
 }

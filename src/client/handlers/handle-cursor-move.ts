@@ -7,6 +7,7 @@ import { Point, Positions, StringRect } from '../lib/geometry/types'
 import { State } from '../types'
 import { createTranslatePoint } from './util'
 import { getPosition } from '../lib/handlers/util'
+import { createHandler } from '../lib/handlers/create-handler'
 
 export const handleCursorMove = ( 
   state: State,
@@ -16,7 +17,7 @@ export const handleCursorMove = (
   const positionXEl = strictSelect<HTMLInputElement>('#positionX')
   const positionYEl = strictSelect<HTMLInputElement>('#positionY')
   
-  viewportEl.addEventListener( 'mousemove', e => {
+  const cursorMove = ( e: MouseEvent ) => {
     const bounds = viewportEl.getBoundingClientRect()
 
     const current = transformPoint( getPosition( e, bounds ) )
@@ -27,7 +28,17 @@ export const handleCursorMove = (
     if( state.mode() === 'select' ){
       handleSelectMove( state, current, viewportEl )
     }
-  })
+  }
+
+  const enabler = () => {   
+    viewportEl.addEventListener( 'mousemove', cursorMove )
+  }
+
+  const disabler = () => {
+    viewportEl.removeEventListener( 'mousemove', cursorMove )
+  }
+
+  return createHandler( 'cursor-move', enabler, disabler )
 }
 
 const handleSelectMove = ( 

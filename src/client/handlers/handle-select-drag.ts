@@ -60,7 +60,7 @@ export const handleSelectDrag = (state: State) => {
     }
   }
 
-  handleAppRectDrag(
-    'select', state, predicate, transformPoint, createSelectDragRect, onEndRect
+  return handleAppRectDrag(
+    'select-drag', state, predicate, transformPoint, createSelectDragRect, onEndRect
   )
 }

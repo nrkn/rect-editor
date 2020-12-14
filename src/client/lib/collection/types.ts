@@ -16,6 +16,7 @@ export type Collection<T extends ID> = {
   redo: () => boolean
   toArray: () => T[]
   on: CollectionListener<T>
+  off: CollectionListener<T>
 }
 
 export type CollectionListener<T extends ID> = {

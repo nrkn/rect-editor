@@ -33,5 +33,5 @@ export const handleDrawClick = (state: State) => {
     return true
   }
 
-  handleAppClick( 'draw', state, click, predicate )
+  return handleAppClick( 'draw-click', state, click, predicate )
 }

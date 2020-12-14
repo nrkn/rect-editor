@@ -15,4 +15,5 @@ export type SelectActions<T = string> = {
 export type Selector<T = string> = {
   actions: SelectActions<T>
   on: (listener: Listener<T[]>) => Disposable
+  off: (listener: Listener<T[]>) => void
 }

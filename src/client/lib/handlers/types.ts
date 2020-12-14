@@ -1,10 +1,11 @@
 import { Point } from '../geometry/types'
 
 export type HandleClick = ( 
+  name: string,
   el: HTMLElement,
   onClick: OnHandleClick,
   options?: Partial<HandleClickOptions>
-) => void
+) => Handler
 
 export type OnHandleClick<T = void> = ( 
   point: Point, button: number, e: MouseEvent  
@@ -20,10 +21,11 @@ export type HandleClickOptions = {
 export type ClickPredicate = OnHandleClick<boolean>
 
 export type HandleDrag = (
+  name: string,
   el: HTMLElement,
   onDrag: OnHandleDrag,
   options?: Partial<DragOptions>
-) => void
+) => Handler
 
 export type DragEventType = 'start' | 'drag' | 'end'
 
@@ -39,3 +41,10 @@ export type DragTransformPoint = ( p: Point ) => Point
 export type DragPredicate = ( e: MouseEvent, type: DragEventType ) => boolean
 
 export type OnHandleDrag = ( start: Point, end: Point, prev: Point ) => void
+
+export type Handler = {
+  name: () => string
+  enable: () => void
+  disable: () => void
+  isActive: () => boolean
+}

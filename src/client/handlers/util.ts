@@ -5,8 +5,9 @@ import { getEdgePositions } from '../lib/geometry/position'
 import { rectContainsPoint, stringRectToRect } from '../lib/geometry/rect'
 import { translateAndScalePoint } from '../lib/geometry/scale'
 import { Point, Rect, StringRect } from '../lib/geometry/types'
-import { AppRect, State } from '../types'
-import { getPosition } from '../lib/handlers/util'
+import { AppMode, AppRect, State } from '../types'
+import { disableHandlers, enableHandlers, getPosition } from '../lib/handlers/util'
+import { Handler } from '../lib/handlers/types'
 
 export const createTranslatePoint = (state: State) =>
   (p: Point) => translateAndScalePoint(p, state.viewTransform())
@@ -110,3 +111,39 @@ export const getAppRects = (
   return appRects
 }
 
+const selectKeys = [
+  'select-click',
+  'select-drag',
+  'select-move-drag',
+  'select-resize-drag'
+]
+
+const drawKeys = [
+  'draw-click',
+  'draw-drag'  
+]
+
+export const setMode = ( handlers: Map<string,Handler>, mode: AppMode ) => {
+  const disableSelect = () => {
+    disableHandlers( handlers, ...selectKeys )
+  }
+
+  const disableDraw = () => {
+    disableHandlers( handlers, ...drawKeys )
+  }
+
+  if( mode === 'pan' ){
+    disableSelect()
+    disableDraw()
+  }
+
+  if( mode === 'draw' ){
+    disableSelect()
+    enableHandlers( handlers, ...drawKeys )
+  }
+
+  if( mode === 'select' ){
+    disableDraw()
+    enableHandlers( handlers, ...selectKeys )
+  }
+}

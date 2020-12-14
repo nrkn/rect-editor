@@ -41,9 +41,9 @@ export const createSelector = <T = string>() => {
     any: () => set.size > 0,
   }
 
-  const { on } = selectEmitter
+  const { on, off } = selectEmitter
 
-  const selector: Selector<T> = { actions, on }
+  const selector: Selector<T> = { actions, on, off }
 
   return selector
 }

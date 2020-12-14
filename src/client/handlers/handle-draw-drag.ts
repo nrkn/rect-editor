@@ -42,7 +42,7 @@ export const handleDrawDrag = (state: State) => {
     state.rects.add([ appRect ])    
   }
 
-  handleAppRectDrag( 
-    'draw', state, predicate, transformPoint, createDrawDragRect, onEndRect 
+  return handleAppRectDrag( 
+    'draw-drag', state, predicate, transformPoint, createDrawDragRect, onEndRect 
   )
 }

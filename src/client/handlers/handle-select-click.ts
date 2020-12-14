@@ -43,5 +43,5 @@ export const handleSelectClick = (state: State) => {
     return true
   }
 
-  handleAppClick( 'select', state, click, predicate )
+  return handleAppClick( 'select-click', state, click, predicate )
 }

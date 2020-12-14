@@ -13,7 +13,7 @@ import { Commands } from '../commands/types'
 
 export const createCollection = <T extends ID>() => {
   const { 
-    root, elMap, commands, events, on, tasks, orderActions, reorder 
+    root, elMap, commands, events, on, off, tasks, orderActions, reorder 
   } = initCollection<T>()
 
   const add = (elements: T[]) => {
@@ -82,7 +82,7 @@ export const createCollection = <T extends ID>() => {
 
   const collection: Collection<T> = {
     add, remove, update, toStart, toEnd, forward, back, has, get, toArray,
-    undo, redo, on
+    undo, redo, on, off
   }
 
   return collection
@@ -111,11 +111,22 @@ const initCollection = <T extends ID>() => {
     redo: events.redo.on
   }
 
+  const off: CollectionListener<T> = {
+    add: events.add.off,
+    remove: events.remove.off,
+    update: events.update.off,
+    setOrder: events.setOrder.off,
+    undo: events.undo.off,
+    redo: events.redo.off
+  }
+
   const tasks = createTasks(elMap, root)
   const orderActions = createOrderActions(elMap, root)
   const reorder = createReorder( events, commands, root )  
 
-  return { root, elMap, commands, events, on, tasks, orderActions, reorder }
+  return { 
+    root, elMap, commands, events, on, off, tasks, orderActions, reorder 
+  }
 }
 
 const createReorder = <T extends ID>(

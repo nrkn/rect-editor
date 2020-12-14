@@ -75,7 +75,7 @@ export const handleMoveDrag = (state: State) => {
   }
 
   return handleAppDrag(
-    'move',
+    'select-move-drag',
     state,
     onDrag,
     { transformPoint, predicate, onEnd }

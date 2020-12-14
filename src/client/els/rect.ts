@@ -21,8 +21,6 @@ export const updateAppRectEl = (
   const fill = dataStyleToFill(style)
 
   attr(appRectEl, appRect, { fill })
-
-  appRectEl.dataset.style = style
 }
 
 export const dataStyleToFill = (style: string) => {

@@ -1,6 +1,11 @@
 import { button, div, fieldset, form, input, label, legend } from '../lib/dom/h'
 import { appModes } from '../consts'
 import { createStyles } from './styles'
+import { AppMode } from '../types'
+import { strictSelect, strictFormRadioNodes } from '../lib/dom/util'
+import { isSize } from '../lib/geometry/predicates'
+import { Size } from '../lib/geometry/types'
+import { updateGridPattern } from './grid-pattern'
 
 export const createToolsEls = () => {
   const toolsFormEl = form(
@@ -8,7 +13,7 @@ export const createToolsEls = () => {
       { id: 'actionButtons' },
       button({ id: 'undo', type: 'button' }, 'Undo'),
       button({ id: 'redo', type: 'button' }, 'Redo'),
-      button({ id: 'reset-zoom', type: 'button' }, 'Reset Zoom')  
+      button({ id: 'reset-zoom', type: 'button' }, 'Reset Zoom')
     ),
     fieldset(
       { id: 'pointerMode' },
@@ -30,4 +35,22 @@ export const createToolsEls = () => {
   )
 
   return toolsFormEl
+}
+
+export const updateAppMode = (mode: AppMode) => {
+  const toolsEl = strictSelect('#tools')
+  const toolsFormEl = strictSelect('form', toolsEl)
+  const modeRadioNodes = strictFormRadioNodes(toolsFormEl, 'mode')
+
+  modeRadioNodes.value = mode
+}
+
+export const updateSnapToGrid = ( size: Size) => {
+  const widthInputEl = strictSelect<HTMLInputElement>('#snap-width')
+  const heightInputEl = strictSelect<HTMLInputElement>('#snap-height')
+
+  widthInputEl.valueAsNumber = size.width
+  heightInputEl.valueAsNumber = size.height
+  
+  updateGridPattern( size )
 }
