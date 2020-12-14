@@ -8,6 +8,7 @@ import { createSelector } from '../lib/select'
 import { AppMode, AppRect, State, StateFn, StateListeners } from '../types'
 
 export const createState = (
+  appRects: AppRect[],
   {
     updateAppMode, updateSnapToGrid, updateViewSize, updateDocumentSize,
     updateViewTransform
@@ -19,7 +20,7 @@ export const createState = (
   const documentSize = createDocumentSize( updateDocumentSize )
   const viewTransform = createViewTransform( updateViewTransform )
   
-  const rects = createCollection<AppRect>()
+  const rects = createCollection<AppRect>( appRects )
   const selector = createSelector()
   const keys: Record<string,boolean> = {}
   const zoomToFit = createZoomToFit( viewSize, documentSize, viewTransform )

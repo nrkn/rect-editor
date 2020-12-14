@@ -30,7 +30,7 @@ viewportSectionEl.append(documentEl)
 
 document.body.append(appEl)
 
-const state = createState({
+const state = createState([],{
   updateAppMode: noop,
   updateDocumentSize: noop,
   updateSnapToGrid: noop,

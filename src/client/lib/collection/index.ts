@@ -11,10 +11,14 @@ import { undoCommand, redoCommand } from './commands'
 import { createOrderActions } from './order'
 import { Commands } from '../commands/types'
 
-export const createCollection = <T extends ID>() => {
+export const createCollection = <T extends ID>(
+  initialElements: T[]
+) => {
   const { 
     root, elMap, commands, events, on, off, tasks, orderActions, reorder 
   } = initCollection<T>()
+
+  initialElements.forEach( tasks.addOne )
 
   const add = (elements: T[]) => {
     elements.forEach(tasks.addOne)

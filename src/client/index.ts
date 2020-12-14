@@ -5,20 +5,34 @@ import { createLayers, updateLayersEl } from './els/layers'
 import { createToolsEls, updateAppMode, updateSnapToGrid } from './els/tools'
 import { createHandlers } from './handlers/create-handlers'
 import { setMode } from './handlers/util'
-import { button } from './lib/dom/h'
+import { a, button, input } from './lib/dom/h'
 import { strictMapGet, strictSelect } from './lib/dom/util'
+import { isSize } from './lib/geometry/predicates'
 import { enableHandlers } from './lib/handlers/util'
+import { isAppRect } from './predicates'
 import { createState } from './state/create-state'
-import { App, AppMode, StateListeners } from './types'
+import { App, AppMode, AppRect, DocumentData, StateListeners } from './types'
 
 let app: Partial<App> = {}
 
 // --
 
-const newApp = () => {  
+let defaultData: DocumentData = {
+  rects: [],
+  snap: { width: 16, height: 16 },
+  documentSize: { width: 1000, height: 1000 }
+}
+
+const newApp = (
+  options: Partial<DocumentData> = {}
+) => {
   closeApp()
 
-  document.querySelector( '#new' )?.remove()
+  document.querySelector('#new')?.remove()
+
+  const data = Object.assign({}, defaultData, options)
+
+  const { rects, snap, documentSize } = data
 
   const appEl = createAppEls()
   const toolsEl = createToolsEls()
@@ -39,28 +53,30 @@ const newApp = () => {
 
   document.body.append(appEl)
 
-  const onAppMode = ( appMode: AppMode ) => {
-    updateAppMode( appMode )
-    setMode( handlers, appMode )    
+  const onAppMode = (appMode: AppMode) => {
+    updateAppMode(appMode)
+    setMode(handlers, appMode)
   }
- 
+
   const listeners: StateListeners = {
-    updateAppMode: onAppMode, 
-    updateSnapToGrid, 
+    updateAppMode: onAppMode,
+    updateSnapToGrid,
     updateViewSize: updateDocumentSize,
     updateDocumentSize: updateGrid,
     updateViewTransform: updateBodyTransform
   }
 
-  const state = createState( listeners )
+  const state = createState([], listeners)
 
   const handlers = createHandlers(state)
 
-  enableHandlers( handlers, ...handlers.keys() )
+  enableHandlers(handlers, ...handlers.keys())
 
   state.mode('draw')
-  state.snap({ width: 16, height: 16 })
-  state.documentSize({ width: 1000, height: 1000 })
+  state.snap(snap)
+  state.documentSize(documentSize)
+  
+  state.rects.add( rects )
 
   document.body.dispatchEvent(new Event('resize'))
 
@@ -69,13 +85,102 @@ const newApp = () => {
   app = { appEl, viewportSectionEl, state, handlers }
 
   const newButtonEl = button({ id: 'new', type: 'button' }, 'New')
+  const loadButtonEl = input(
+    { id: 'load', type: 'file', accept: '.json' }, 'Load'
+  )
+  const saveButtonEl = button({ id: 'save', type: 'button' }, 'Save')
   const closeButtonEl = button({ type: 'button' }, 'Close')
 
-  closeButtonEl.addEventListener('click', closeApp)
+  closeButtonEl.addEventListener('click', () => {
+    if( confirm( 'Leave without saving?' ) ) closeApp
+  })
 
-  newButtonEl.addEventListener('click', newApp)
+  newButtonEl.addEventListener('click', () => {
+    if( confirm( 'Leave without saving?' ) ) newApp()
+  })
 
-  headerEl.append(newButtonEl, closeButtonEl)
+  let lastSaveName = 'rects.json'
+
+  saveButtonEl.addEventListener('click', () => {
+    const data: DocumentData = {
+      snap: state.snap(),
+      documentSize: state.documentSize(),
+      rects: state.rects.toArray()
+    }
+
+    const json = JSON.stringify(data, null, 2)
+
+    const blob = new Blob([json], { type: 'application/json' })
+    const href = URL.createObjectURL(blob)
+    const download = lastSaveName
+
+    const actionEl = a({ href, download })
+
+    document.body.append(actionEl)
+
+    actionEl.click()
+
+    actionEl.remove()
+  })
+
+  const reader = new FileReader()
+
+  reader.addEventListener('load',
+    () => {
+      try {
+        if( !confirm( 'Leave without saving?' ) ) return
+
+        const { result } = reader
+
+        if (typeof result !== 'string') {
+          throw Error('Expected the upload to be text')
+        }
+
+        const maybeDocument = JSON.parse(result) as Partial<DocumentData>
+
+        if (!maybeDocument) throw Error('Expected file to be in JSON format')
+
+        let { rects, snap, documentSize } = defaultData
+
+        if (
+          Array.isArray(maybeDocument.rects) &&
+          maybeDocument.rects.every(isAppRect)
+        ) {
+          rects = maybeDocument.rects
+        }
+
+        if (isSize(maybeDocument.snap)) {
+          snap = maybeDocument.snap
+        }
+
+        if (isSize(maybeDocument.documentSize)) {
+          documentSize = maybeDocument.documentSize
+        }
+
+        newApp({ rects, snap, documentSize })
+      } catch (err) {
+        alert(err.message || 'An unknown error occurred')
+      }
+    },
+    false
+  )
+
+  loadButtonEl.addEventListener('change', () => {
+    if (loadButtonEl.files === null) return
+
+    const file = loadButtonEl.files[0]
+
+    if (file) {
+      reader.readAsText(file)
+    }
+  })
+
+  headerEl.append(
+    newButtonEl,
+    loadButtonEl,
+    saveButtonEl
+    //, closeButtonEl
+  )
 }
 
 const closeApp = () => {
@@ -90,11 +195,11 @@ const closeApp = () => {
   }
 
   if (appEl) {
-    const newButtonEl = strictSelect<HTMLButtonElement>( '#new', appEl )
+    const newButtonEl = strictSelect<HTMLButtonElement>('#new', appEl)
 
     appEl.remove()
 
-    document.body.append( newButtonEl )
+    document.body.append(newButtonEl)
   }
 
   app = {}
