@@ -1,4 +1,4 @@
-import { clone } from '../dom/util'
+import { clone } from '../util'
 import { deltaPoint, scalePoint, translatePoint } from './point'
 import { Point, Positions, Rect, SidesRect, Size, StringRect } from './types'
 

@@ -122,9 +122,6 @@ export const strictMapGet = <K,T>(
 export const getKeys = <T>( obj: T ) => 
   Object.keys( obj ) as ( keyof T & string )[]
 
-export const clone = <T>( obj: T ) => JSON.parse( JSON.stringify( obj ) ) as T
-
-
 export const getRectElRect = (
   rectEl: SVGRectElement
 ) => {

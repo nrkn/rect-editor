@@ -1,3 +1,4 @@
+import { clone } from '../util'
 import { isXPosition, isYPosition } from './predicates'
 import { growRect, rectContainsPoint, rectToSidesRect } from './rect'
 import { Point, Positions, Rect, XPosition, YPosition } from './types'
@@ -37,8 +38,10 @@ export const findYPosition = ( values: string[] ) => {
 export const getEdgePositions = ( 
   rect: Rect, growBy: number, point: Point
 ) => {    
-  const outerRect = growRect( rect, growBy )
-  const innerRect = growRect( rect, -growBy )
+  // const outerRect = growRect( rect, growBy )
+  // const innerRect = growRect( rect, -growBy )
+  const outerRect = growRect( rect, growBy * 2 )
+  const innerRect = clone( rect )
 
   if( !rectContainsPoint( outerRect, point ) ) return
 

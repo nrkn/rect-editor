@@ -1,5 +1,5 @@
 import {
-  createSnapTranslatePoint, getAppRects, getResizerPositions
+  createSnapTranslatePoint, createTranslatePoint, getAppRects, getResizerPositions
 } from './util'
 
 import { attr, strictSelect } from '../lib/dom/util'
@@ -23,11 +23,15 @@ export const handleResizeDrag = (state: State) => {
 
     if (type === 'start') {
       if (e.button !== 0) return false
-
+      
+      const transformPositionsPoint = createTranslatePoint( state)
+      
       const bounds = viewportEl.getBoundingClientRect()
-      const point = transformPoint(getPosition(e, bounds))
+      const positionsPoint = transformPositionsPoint(getPosition(e, bounds))
 
-      positions = getResizerPositions(point) || null
+      positions = getResizerPositions(positionsPoint) || null
+
+      console.log( 'resize-drag positions', positions )
 
       if (positions !== null) {
         const [xPosition, yPosition] = positions
@@ -37,7 +41,7 @@ export const handleResizeDrag = (state: State) => {
     }
 
     return positions !== null
-  }
+  } 
 
   const transformPoint = createSnapTranslatePoint(state)
 

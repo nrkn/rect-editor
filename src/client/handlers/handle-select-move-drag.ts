@@ -5,7 +5,7 @@ import { handleAppDrag } from './util/handle-app-drag'
 import { DragEventType, OnHandleDrag } from '../lib/handlers/types'
 
 import {
-  createSelectGetDragType, createSnapTranslatePoint, getAppRects, 
+  createSelectGetDragType, createSnapTranslatePoint, createTranslatePoint, getAppRects, 
   getResizerPositions
 } from './util'
 
@@ -22,9 +22,13 @@ export const handleMoveDrag = (state: State) => {
 
       if (getSelectDragType(e) !== 'move') return false
 
+      const transformPositionsPoint = createTranslatePoint( state)
+
       const bounds = viewportEl.getBoundingClientRect()
-      const point = transformPoint(getPosition(e, bounds))
-      const positions = getResizerPositions(point)
+      const positionsPoint = transformPositionsPoint(getPosition(e, bounds))
+      const positions = getResizerPositions(positionsPoint)
+
+      console.log( 'move-drag positions', positions )
 
       if (positions === undefined) return true
 
