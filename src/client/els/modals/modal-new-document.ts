@@ -1,6 +1,6 @@
-import { form, fieldset, legend, label, input } from '../lib/dom/h'
-import { strictFormElement, strictSelect } from '../lib/dom/util'
-import { DocumentData } from '../types'
+import { form, fieldset, legend, label, input } from '../../lib/dom/h'
+import { strictFormElement, strictSelect } from '../../lib/dom/util'
+import { DocumentData } from '../../types'
 
 export const createModalNewDocument = () => {
   const modalNewEl = form(

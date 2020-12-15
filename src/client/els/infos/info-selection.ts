@@ -1,8 +1,8 @@
-import { fieldset, input, label, legend } from '../lib/dom/h'
-import { strictSelect } from '../lib/dom/util'
-import { rectToStringRect } from '../lib/geometry/rect'
-import { Rect } from '../lib/geometry/types'
-import { createInfoLabel } from './util'
+import { fieldset, legend } from '../../lib/dom/h'
+import { strictSelect } from '../../lib/dom/util'
+import { rectToStringRect } from '../../lib/geometry/rect'
+import { Rect } from '../../lib/geometry/types'
+import { createInfoLabel } from '../util'
 
 export const createInfoSelectionEl = () => {
   const fieldsetEl = fieldset(

@@ -1,5 +1,5 @@
-import { fieldset, legend } from '../lib/dom/h'
-import { createInfoLabel } from './util'
+import { fieldset, legend } from '../../lib/dom/h'
+import { createInfoLabel } from '../util'
 
 export const createPositionEl = () => {
   const fieldsetEl = fieldset(

@@ -1,7 +1,7 @@
-import { fieldset, legend } from '../lib/dom/h'
-import { strictSelect } from '../lib/dom/util'
-import { Point } from '../lib/geometry/types'
-import { createInfoLabel } from './util'
+import { fieldset, legend } from '../../lib/dom/h'
+import { strictSelect } from '../../lib/dom/util'
+import { Point } from '../../lib/geometry/types'
+import { createInfoLabel } from '../util'
 
 export const createDeltaEl = () => {
   const fieldsetEl = fieldset(

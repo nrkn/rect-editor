@@ -1,4 +1,4 @@
-import { updateClickEl } from '../../els/info-click'
+import { updateClickEl } from '../../els/infos/info-click'
 import { strictSelect } from '../../lib/dom/util'
 import { handleClick } from '../../lib/handlers/handle-click'
 import { ClickPredicate, HandleClickOptions, OnHandleClick } from '../../lib/handlers/types'

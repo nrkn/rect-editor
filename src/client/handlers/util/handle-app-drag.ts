@@ -1,4 +1,4 @@
-import { updateDeltaEl } from '../../els/info-delta'
+import { updateDeltaEl } from '../../els/infos/info-delta'
 import { strictSelect } from '../../lib/dom/util'
 import { deltaPoint } from '../../lib/geometry/point'
 import { State } from '../../types'

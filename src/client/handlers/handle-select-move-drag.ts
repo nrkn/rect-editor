@@ -5,8 +5,8 @@ import { handleAppDrag } from './util/handle-app-drag'
 import { DragEventType, OnHandleDrag } from '../lib/handlers/types'
 
 import {
-  createSelectGetDragType, createSnapTranslatePoint, createTranslatePoint, getAppRects, 
-  getResizerPositions
+  createSelectGetDragType, createSnapTranslatePoint, createTranslatePoint, 
+  getAppRects, getResizerPositions
 } from './util'
 
 export const handleMoveDrag = (state: State) => {

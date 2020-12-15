@@ -1,4 +1,4 @@
-import { createModalNewDocument, getModalNewDocumentValue } from '../els/modal-new'
+import { createModalNewDocument, getModalNewDocumentValue } from '../els/modals/modal-new-document'
 import { DocumentData } from '../types'
 import { handleModal } from './util/handle-modal'
 

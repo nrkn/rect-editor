@@ -3,7 +3,7 @@ import { createDocumentEl, updateBodyTransform, updateDocumentSize, updateGrid }
 import { createInfo } from './els/info'
 import { createLayers, updateLayersEl } from './els/layers'
 import { hideModal, showModal, updateModal } from './els/modal'
-import { createModalNewDocument, getModalNewDocumentValue } from './els/modal-new'
+import { createModalNewDocument, getModalNewDocumentValue } from './els/modals/modal-new-document'
 import { createToolsEls, updateAppMode, updateSnapToGrid } from './els/tools'
 import { createHandlers } from './handlers/create-handlers'
 import { handleModalNewDocument } from './handlers/handle-modal-new-document'

@@ -1,5 +1,5 @@
 import { handleSize } from '../consts'
-import { updateInfoSelection } from '../els/info-selection'
+import { updateInfoSelection } from '../els/infos/info-selection'
 import { updateResizer, createResizer } from '../els/resizer'
 import { strictSelect, getRectElRect } from '../lib/dom/util'
 import { getBoundingRect } from '../lib/geometry/rect'
