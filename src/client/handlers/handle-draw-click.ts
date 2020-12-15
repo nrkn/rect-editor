@@ -1,6 +1,6 @@
 import { State } from '../types'
 import { ClickPredicate, OnHandleClick } from '../lib/handlers/types'
-import { handleAppClick } from './util/handle-app-click'
+import { handleAppClick } from './helpers/handle-app-click'
 import { getAllRectIds, getAppRects } from './util'
 import { rectContainsPoint } from '../lib/geometry/rect'
 

@@ -10,9 +10,9 @@ import { getPosition } from '../lib/handlers/util'
 import { selectActions } from '../state/select-actions'
 import { DragEventType, OnHandleDrag } from '../lib/handlers/types'
 import { getBoundingRect, scaleRectFrom } from '../lib/geometry/rect'
-import { handleAppDrag } from './util/handle-app-drag'
+import { handleAppDrag } from './helpers/handle-app-drag'
 
-export const handleResizeDrag = (state: State) => {
+export const handleSelectResizeDrag = (state: State) => {
   const { getSelected, setSelected } = selectActions(state)
 
   const viewportEl = strictSelect<HTMLElement>('#viewport')

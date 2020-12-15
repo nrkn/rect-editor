@@ -2,7 +2,9 @@ import { createAppEls } from './els/app'
 import { createDocumentEl } from './els/document'
 import { createInfo } from './els/info'
 import { createToolsEls } from './els/tools'
-import { handleRedo, handleResetZoom, handleUndo } from './handlers/create-handlers'
+import { handleRectCollectionRedo } from "./handlers/handle-rect-collection-redo"
+import { handleRectCollectionUndo } from "./handlers/handle-rect-collection-undo"
+import { handleViewportResetZoom } from "./handlers/handle-viewport-reset-zoom"
 import { handleViewportResize } from "./handlers/handle-viewport-resize"
 import { handleSnapGrid } from './handlers/handle-snap-grid'
 import { getAllRects, getAppRects } from './handlers/util'
@@ -43,10 +45,10 @@ state.snap({ width: 25, height: 25 })
 state.documentSize({ width: 1000, height: 1000 })
 
 handleViewportResize(state).enable()
-handleResetZoom(state).enable()
+handleViewportResetZoom(state).enable()
 
-handleUndo(state).enable()
-handleRedo(state).enable()
+handleRectCollectionUndo(state).enable()
+handleRectCollectionRedo(state).enable()
 
 handleSnapGrid().enable()
 

@@ -1,7 +1,7 @@
 import { lineToVector, createLine } from '../lib/geometry/line'
 import { DragEventType } from '../lib/handlers/types'
 import { State } from '../types'
-import { handleAppDrag } from './util/handle-app-drag'
+import { handleAppDrag } from './helpers/handle-app-drag'
 
 export const handlePanDrag = (state: State) => {
   /*

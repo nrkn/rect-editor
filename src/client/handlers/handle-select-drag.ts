@@ -3,7 +3,7 @@ import { getRectElRect, strictSelect } from '../lib/dom/util'
 import { rectIntersection } from '../lib/geometry/rect'
 import { Rect } from '../lib/geometry/types'
 import { State } from '../types'
-import { handleAppRectDrag } from './util/handle-app-rect-drag'
+import { handleAppRectDrag } from './helpers/handle-app-rect-drag'
 import { getPosition } from '../lib/handlers/util'
 import { selectActions } from '../state/select-actions'
 

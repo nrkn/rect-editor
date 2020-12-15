@@ -2,7 +2,7 @@ import { rectContainsPoint } from '../lib/geometry/rect'
 import { State } from '../types'
 import { selectActions } from '../state/select-actions'
 import { getAllRects, svgRectToRect } from './util'
-import { handleAppClick } from './util/handle-app-click'
+import { handleAppClick } from './helpers/handle-app-click'
 import { ClickPredicate, OnHandleClick } from '../lib/handlers/types'
 
 export const handleSelectClick = (state: State) => {

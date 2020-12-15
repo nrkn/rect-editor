@@ -1,7 +1,7 @@
 import { attr, getRectElRect, strictSelect } from '../lib/dom/util'
 import { State } from '../types'
 import { getPosition } from '../lib/handlers/util'
-import { handleAppDrag } from './util/handle-app-drag'
+import { handleAppDrag } from './helpers/handle-app-drag'
 import { DragEventType, OnHandleDrag } from '../lib/handlers/types'
 
 import {
@@ -9,7 +9,7 @@ import {
   getAppRects, getResizerPositions
 } from './util'
 
-export const handleMoveDrag = (state: State) => {
+export const handleSelectMoveDrag = (state: State) => {
   const { get: getSelection, set: setSelection } = state.selector.actions
 
   const viewportEl = strictSelect<HTMLElement>('#viewport')

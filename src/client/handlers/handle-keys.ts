@@ -12,14 +12,6 @@ export const handleKeys = ( state: State ) => {
 
     const lower = e.key.toLowerCase()
 
-    if (state.keys.Control && lower === 'z') {
-      e.preventDefault()
-
-      state.keys.Shift ? state.rects.redo() : state.rects.undo()
-
-      return
-    }
-
     if (state.keys.Control && lower === 'a') {
       e.preventDefault()
 

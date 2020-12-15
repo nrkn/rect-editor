@@ -1,6 +1,6 @@
 import { createModalNewDocument, getModalNewDocumentValue } from '../els/modals/modal-new-document'
 import { DocumentData } from '../types'
-import { handleModal } from './util/handle-modal'
+import { handleModal } from './helpers/handle-modal'
 
 export const handleModalNewDocument = (
   newApp: (options?: Partial<DocumentData>) => void
