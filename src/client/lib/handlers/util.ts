@@ -11,6 +11,8 @@ export const getPosition = (event: MouseEvent, bounds: DOMRect) => {
   return point
 }
 
+
+
 export const enableHandlers = <T extends string = string>(
   handlers: Map<T, Handler>, ...keys: T[]
 ) =>

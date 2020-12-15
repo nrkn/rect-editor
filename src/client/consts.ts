@@ -1,4 +1,4 @@
-export const appModes = [ 'pan', 'draw', 'select' ] as const
+export const appModes = [ 'pan', 'draw', 'select', 'pick', 'paint' ] as const
 
 // TODO - options
 export const minScale = 0.9

@@ -1,5 +1,5 @@
-import { strictFormRadioNodes, strictSelect } from '../lib/dom/util'
-import { AppMode, State } from '../types'
+import { strictSelect } from '../lib/dom/util'
+import { State } from '../types'
 import { handleDrawClick } from './handle-draw-click'
 import { handleDrawDrag } from './handle-draw-drag'
 import { handleKeys } from './handle-keys'
@@ -16,9 +16,10 @@ import { handleSnapGrid } from './handle-snap-grid'
 import { handleStyles } from './handle-styles'
 import { handleViewportResize } from './handle-viewport-resize'
 import { Handler } from '../lib/handlers/types'
-import { strictMapGet } from '../lib/util'
 import { createHandler } from '../lib/handlers/create-handler'
-import { disableHandlers, enableHandlers } from '../lib/handlers/util'
+import { handlePickClick } from './handle-pick-click'
+import { handlePaintClick } from './handle-paint-click'
+import { handleModeChange } from './handle-mode-change'
 
 export const createHandlers = (state: State) => {
   const handlers = new Map<string, Handler>()
@@ -32,6 +33,8 @@ export const createHandlers = (state: State) => {
   }
 
   // ---  
+
+  // don't add modals here, or they will be displayed
 
   addHandler(handleKeys(state))
 
@@ -66,31 +69,13 @@ export const createHandlers = (state: State) => {
 
   addHandler(handleModeChange(state))
 
+  addHandler(handlePickClick(state))
+
+  addHandler(handlePaintClick(state))
+
   // ---
 
   return handlers
-}
-
-export const handleModeChange = ( state: State ) => {
-  const toolsEl = strictSelect('#tools')
-  const toolsFormEl = strictSelect('form', toolsEl)
-  const modeRadioNodes = strictFormRadioNodes(toolsFormEl, 'mode')
-  
-  const change = () => {
-    if( modeRadioNodes.value !== state.mode() ){
-      state.mode( modeRadioNodes.value as AppMode )
-    }
-  }
-
-  const enabler = () => {
-    toolsFormEl.addEventListener( 'change', change )
-  }
-
-  const disabler = () => {
-    toolsFormEl.removeEventListener( 'change', change )
-  }
-
-  return createHandler( 'mode-change', enabler, disabler )
 }
 
 export const handleResetZoom = (state: State) => {

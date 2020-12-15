@@ -16,7 +16,7 @@ export const handleAppRectDrag = (
   const rectsEl = strictSelect<SVGGElement>('#rects')
 
   let dragRect: Rect | null = null
-  let rectEl: SVGRectElement | null = null
+  let rectEl: SVGRectElement | null = null 
 
   const onStart = () => {
     if( rectEl !== null ) rectEl.remove()

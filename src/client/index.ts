@@ -2,16 +2,19 @@ import { createAppEls } from './els/app'
 import { createDocumentEl, updateBodyTransform, updateDocumentSize, updateGrid } from './els/document'
 import { createInfo } from './els/info'
 import { createLayers, updateLayersEl } from './els/layers'
+import { hideModal, showModal, updateModal } from './els/modal'
+import { createModalNewDocument, getModalNewDocumentValue } from './els/modal-new'
 import { createToolsEls, updateAppMode, updateSnapToGrid } from './els/tools'
 import { createHandlers } from './handlers/create-handlers'
-import { setMode } from './handlers/util'
+import { handleModalNewDocument } from './handlers/handle-modal-new-document'
+import { setMode } from './handlers/handle-mode-change'
 import { a, button, input } from './lib/dom/h'
-import { strictMapGet, strictSelect } from './lib/dom/util'
+import { strictFormElement, strictMapGet, strictSelect } from './lib/dom/util'
 import { isSize } from './lib/geometry/predicates'
 import { enableHandlers } from './lib/handlers/util'
 import { isAppRect } from './predicates'
 import { createState } from './state/create-state'
-import { App, AppMode, AppRect, DocumentData, StateListeners } from './types'
+import { App, AppMode, DocumentData, StateListeners } from './types'
 
 let app: Partial<App> = {}
 
@@ -30,9 +33,7 @@ const newApp = (
 
   document.querySelector('#new')?.remove()
 
-  const data = Object.assign({}, defaultData, options)
-
-  const { rects, snap, documentSize } = data
+  const { rects, snap, documentSize } = Object.assign({}, defaultData, options)
 
   const appEl = createAppEls()
   const toolsEl = createToolsEls()
@@ -52,6 +53,8 @@ const newApp = (
   footerEl.append(infoEl)
 
   document.body.append(appEl)
+
+  hideModal()
 
   const onAppMode = (appMode: AppMode) => {
     updateAppMode(appMode)
@@ -75,8 +78,8 @@ const newApp = (
   state.mode('draw')
   state.snap(snap)
   state.documentSize(documentSize)
-  
-  state.rects.add( rects )
+
+  state.rects.add(rects)
 
   document.body.dispatchEvent(new Event('resize'))
 
@@ -85,6 +88,7 @@ const newApp = (
   app = { appEl, viewportSectionEl, state, handlers }
 
   const newButtonEl = button({ id: 'new', type: 'button' }, 'New')
+
   const loadButtonEl = input(
     { id: 'load', type: 'file', accept: '.json' }, 'Load'
   )
@@ -92,11 +96,15 @@ const newApp = (
   const closeButtonEl = button({ type: 'button' }, 'Close')
 
   closeButtonEl.addEventListener('click', () => {
-    if( confirm( 'Leave without saving?' ) ) closeApp
+    if (confirm('Leave without saving?')) closeApp()
   })
 
+  const newDocHandler = handleModalNewDocument( newApp )  
+
   newButtonEl.addEventListener('click', () => {
-    if( confirm( 'Leave without saving?' ) ) newApp()
+    if (!confirm('Leave without saving?')) return
+
+    newDocHandler.enable()    
   })
 
   let lastSaveName = 'rects.json'
@@ -128,7 +136,7 @@ const newApp = (
   reader.addEventListener('load',
     () => {
       try {
-        if( !confirm( 'Leave without saving?' ) ) return
+        if (!confirm('Leave without saving?')) return
 
         const { result } = reader
 
@@ -231,5 +239,8 @@ const redraw = () => {
   requestAnimationFrame(redraw)
 }
 
+// ---
+
 newApp()
+
 redraw()

@@ -26,6 +26,7 @@ export const handleDrag: HandleDrag = (
 
   const move = ( e: MouseEvent ) => {
     if ( !predicate( e, 'drag' ) ) return
+    
     if( start === null || prev === null || end === null ) return
 
     const bounds = el.getBoundingClientRect()
@@ -37,6 +38,7 @@ export const handleDrag: HandleDrag = (
 
   const up = ( e: MouseEvent ) => {
     if ( !predicate( e, 'end' ) ) return
+
     if( start === null || prev === null || end === null  ) return
 
     onEnd( start, end, prev )
@@ -56,6 +58,10 @@ export const handleDrag: HandleDrag = (
     el.removeEventListener( 'mousedown', down )
     el.removeEventListener( 'mousemove', move )
     el.removeEventListener( 'mouseup', up )
+
+    start = null
+    prev = null
+    end = null
   }
 
   return createHandler( name, enabler, disabler )

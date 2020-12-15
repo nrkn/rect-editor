@@ -27,10 +27,10 @@ export const svgRectToRect = (rectEl: SVGRectElement) => {
 
 export const getAllRects = () => {
   const rectsEl = strictSelect<SVGGElement>('#rects')
-  const rectEls = [...rectsEl.querySelectorAll('rect')].filter( el => {
-    if( el.id === '' ){
-      console.warn( '<rect> in rects has no ID', el )
-      
+  const rectEls = [...rectsEl.querySelectorAll('rect')].filter(el => {
+    if (el.id === '') {
+      console.warn('<rect> in rects has no ID', el)
+
       return false
     }
 
@@ -87,15 +87,15 @@ export const getResizerPositions = (point: Point) => {
 }
 
 export const getRectEls = (
-  ids: string[], parent?: HTMLElement 
+  ids: string[], parent?: HTMLElement
 ) => ids.map(
   id => strictSelect<SVGRectElement>(`#${id}`, parent)
 )
 
-export const getAppRects = ( 
-  ids: string[], parent?: HTMLElement 
+export const getAppRects = (
+  ids: string[], parent?: HTMLElement
 ) => {
-  const rectEls = getRectEls( ids, parent )
+  const rectEls = getRectEls(ids, parent)
 
   const appRects = rectEls.map(el => {
     const style = el.dataset.style || 'none'
@@ -109,41 +109,4 @@ export const getAppRects = (
   })
 
   return appRects
-}
-
-const selectKeys = [
-  'select-click',
-  'select-drag',
-  'select-move-drag',
-  'select-resize-drag'
-]
-
-const drawKeys = [
-  'draw-click',
-  'draw-drag'  
-]
-
-export const setMode = ( handlers: Map<string,Handler>, mode: AppMode ) => {
-  const disableSelect = () => {
-    disableHandlers( handlers, ...selectKeys )
-  }
-
-  const disableDraw = () => {
-    disableHandlers( handlers, ...drawKeys )
-  }
-
-  if( mode === 'pan' ){
-    disableSelect()
-    disableDraw()
-  }
-
-  if( mode === 'draw' ){
-    disableSelect()
-    enableHandlers( handlers, ...drawKeys )
-  }
-
-  if( mode === 'select' ){
-    disableDraw()
-    enableHandlers( handlers, ...selectKeys )
-  }
 }
