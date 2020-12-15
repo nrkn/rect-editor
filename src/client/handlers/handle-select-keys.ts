@@ -43,5 +43,5 @@ export const handleSelectKeys = ( state: State ) => {
     document.removeEventListener( 'keydown', down )
   }
 
-  return createHandler( 'rect-collection-keys', enabler, disabler )
+  return createHandler( 'select-keys', enabler, disabler )
 }

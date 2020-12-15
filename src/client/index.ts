@@ -4,6 +4,7 @@ import { createInfo } from './els/info'
 import { createLayers, updateLayersEl } from './els/layers'
 import { hideModal, showModal, updateModal } from './els/modal'
 import { createModalNewDocument, getModalNewDocumentValue } from './els/modals/modal-new-document'
+import { updateStyles } from './els/styles'
 import { createToolsEls, updateAppMode, updateSnapToGrid } from './els/tools'
 import { createHandlers } from './handlers/create-handlers'
 import { handleModalNewDocument } from './handlers/handle-modal-new-document'
@@ -12,6 +13,7 @@ import { a, button, input } from './lib/dom/h'
 import { strictFormElement, strictMapGet, strictSelect } from './lib/dom/util'
 import { isSize } from './lib/geometry/predicates'
 import { enableHandlers } from './lib/handlers/util'
+import { noop } from './lib/util'
 import { isAppRect } from './predicates'
 import { createState } from './state/create-state'
 import { App, AppMode, DocumentData, StateListeners } from './types'
@@ -62,14 +64,18 @@ const newApp = (
   }
 
   const listeners: StateListeners = {
-    updateAppMode: onAppMode,
-    updateSnapToGrid,
-    updateViewSize: updateDocumentSize,
-    updateDocumentSize: updateGrid,
-    updateViewTransform: updateBodyTransform
+    listenAppMode: onAppMode,
+    listenSnapToGrid: updateSnapToGrid,
+    listenViewSize: updateDocumentSize,
+    listenDocumentSize: updateGrid,
+    listenViewTransform: updateBodyTransform,
+    // TODO
+    listenCurrentStyle: noop
   }
 
   const state = createState([], listeners)
+
+  updateStyles( state )
 
   const handlers = createHandlers(state)
 

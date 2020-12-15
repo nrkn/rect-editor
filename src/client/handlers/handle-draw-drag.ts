@@ -1,4 +1,3 @@
-import { getCurrentStyle } from '../els/util'
 import { rect } from '../lib/dom/s'
 import { Rect } from '../lib/geometry/types'
 import { randomId } from '../lib/util'
@@ -35,7 +34,7 @@ export const handleDrawDrag = (state: State) => {
     const id = randomId()
     
     const appRect = Object.assign( 
-      { id, 'data-style': getCurrentStyle() }, 
+      { id, 'data-style': state.currentStyleId() }, 
       dragRect 
     )
     

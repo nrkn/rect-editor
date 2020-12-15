@@ -5,9 +5,11 @@ import { getEdgePositions } from '../lib/geometry/position'
 import { rectContainsPoint, stringRectToRect } from '../lib/geometry/rect'
 import { translateAndScalePoint } from '../lib/geometry/scale'
 import { Point, Rect, StringRect } from '../lib/geometry/types'
-import { AppMode, AppRect, State } from '../types'
+import { AppMode, AppRect, AppStyle, State } from '../types'
 import { disableHandlers, enableHandlers, getPosition } from '../lib/handlers/util'
 import { Handler } from '../lib/handlers/types'
+import { Collection } from '../lib/collection/types'
+import { styleToFill } from '../state/create-styles'
 
 export const createTranslatePoint = (state: State) =>
   (p: Point) => translateAndScalePoint(p, state.viewTransform())
@@ -109,4 +111,14 @@ export const getAppRects = (
   })
 
   return appRects
+}
+
+export const appRectToFill = ( 
+  styles: Collection<AppStyle>, rect: AppRect, opacity: number 
+) => {
+  const styleId = rect['data-style']
+  const style = styles.get( styleId )
+  const fill = styleToFill( style, opacity ) || 'red'  
+
+  return fill
 }

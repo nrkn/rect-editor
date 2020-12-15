@@ -9,20 +9,14 @@ export type AppMode = typeof appModes[ number ]
 
 export type StateFn<T> = ( value?: T ) => T
 
-export type StateData = {
-  mode: StateFn<AppMode>
-  snap: StateFn<Size>,
-  viewSize: StateFn<Size>
-  viewTransform: StateFn<ScaleTransform>
-  documentSize: StateFn<Size>
-}
-
 export type State = {
   mode: StateFn<AppMode>
   snap: StateFn<Size>,
   viewSize: StateFn<Size>
   viewTransform: StateFn<ScaleTransform>
   documentSize: StateFn<Size>
+  currentStyleId: StateFn<string>
+  styles: Collection<AppStyle>  
   rects: Collection<AppRect>
   selector: Selector
   keys: Record<string,boolean>
@@ -32,17 +26,24 @@ export type State = {
 }
 
 export type StateListeners = {
-  updateAppMode: Listener<AppMode>
-  updateSnapToGrid: Listener<Size>
-  updateViewSize: Listener<Size>
-  updateDocumentSize: Listener<Size>
-  updateViewTransform: Listener<ScaleTransform>
+  listenAppMode: Listener<AppMode>
+  listenSnapToGrid: Listener<Size>
+  listenViewSize: Listener<Size>
+  listenDocumentSize: Listener<Size>
+  listenViewTransform: Listener<ScaleTransform>
+  listenCurrentStyle: Listener<string>
 }
 
 
 export type AppRect = Rect & { 
   id: string 
   'data-style': string
+}
+
+export type AppStyle = {
+  id: string
+  type: string
+  data: string
 }
 
 export type DocumentData = {

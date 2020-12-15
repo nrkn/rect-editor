@@ -1,48 +1,58 @@
-import { fieldset, input, label, legend } from '../lib/dom/h'
-import { attr } from '../lib/dom/util'
-import { createSequence } from '../lib/util'
+import { fieldset, input, label } from '../lib/dom/h'
+import { isElement } from '../lib/dom/predicates'
+import { attr, strictSelect } from '../lib/dom/util'
+import { styleToFill } from '../state/create-styles'
+import { State } from '../types'
 
 const defaultOpacity = 0.75
-const numHues = 25
-const deg = 360 / numHues
 
 export const createStyles = () => {
   const stylesEl = fieldset(
-    { id: 'styles' },
-    legend( 'Styles'),
-    createFillStyle( `rgba(255,255,255,${ defaultOpacity })`, true ),
-    createFillStyle( `rgba(191,191,191,${ defaultOpacity })`),
-    createFillStyle( `rgba(127,127,127,${ defaultOpacity })`),
-    createFillStyle( `rgba(63,63,63,${ defaultOpacity })`),
-    createFillStyle( `rgba(0,0,0,${ defaultOpacity })`),
-    ...hslas.map( s => createFillStyle( s ) )
-  )  
+    { id: 'styles' }
+  )
 
   return stylesEl
 }
 
-const degs = createSequence( 
-  numHues, 
-  i =>  `${ Math.floor( i * deg ) }deg`
-)
+export const updateStyles = (state: State) => {
+  const { styles } = state
+  const selectedId = state.currentStyleId()
 
-const hslas = degs.map( deg => `hsla(${ deg },100%,50%,${ defaultOpacity })`)
+  const stylesEl = strictSelect<HTMLFieldSetElement>('#styles')
+  const childNodes = [...stylesEl.childNodes]
 
-const createFillStyle = ( color: string, checked = false ) => {
+  childNodes.forEach(node => {
+    if (isElement(node) && node.localName === 'legend') return
+
+    node.remove()
+  })
+
+  styles.toArray().forEach(style => {
+    const isSelected = style.id === selectedId
+
+    const fill = styleToFill(style, defaultOpacity)
+
+    if( fill === undefined ) return
+
+    stylesEl.append( createFillStyle( style.id, fill, isSelected ) )
+  })
+}
+
+const createFillStyle = ( id: string, fill: string, checked = false) => {
   const radioEl = input(
-    { 
+    {
       type: 'radio',
-      name: 'fill', 
-      value: `color ${ color }` 
+      name: 'fill',
+      value: id
     }
   )
 
-  if( checked ){
-    attr( radioEl, { checked: '' } )
-  }  
+  if (checked) {
+    attr(radioEl, { checked: '' })
+  }
 
   const labelEl = label(
-    { class: 'style-radio-label', style: `background: ${ color }` },
+    { class: 'style-radio-label', style: `background: ${fill}` },
     radioEl
   )
 

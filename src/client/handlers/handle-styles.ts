@@ -1,4 +1,3 @@
-import { getCurrentStyle } from '../els/util'
 import { strictSelect, strictFormRadioNodes } from '../lib/dom/util'
 import { createHandler } from '../lib/handlers/create-handler'
 import { State } from '../types'
@@ -18,7 +17,7 @@ export const handleStyles = (state: State) => {
 
     appRects.forEach(
       appRect =>
-        Object.assign(appRect, { 'data-style': getCurrentStyle() })
+        Object.assign(appRect, { 'data-style': state.currentStyleId() })
     )
 
     state.rects.update(appRects)

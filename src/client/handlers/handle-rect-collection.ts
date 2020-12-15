@@ -32,7 +32,7 @@ export const handleRectCollection = (
 
   const update: Listener<AppRect[]> = rects => {
     rects.forEach(
-      rect => updateAppRectEl(rect)
+      rect => updateAppRectEl(state.styles, rect)
     )
 
     state.dirty = true
@@ -56,7 +56,7 @@ export const handleRectCollection = (
     rects.on.update(update)
     rects.on.setOrder(setOrder)
     rects.on.undo(clearSelection)
-    rects.on.redo(clearSelection)  
+    rects.on.redo(clearSelection)
   }
 
   const disabler = () => {
@@ -65,8 +65,8 @@ export const handleRectCollection = (
     rects.off.update(update)
     rects.off.setOrder(setOrder)
     rects.off.undo(clearSelection)
-    rects.off.redo(clearSelection)  
+    rects.off.redo(clearSelection)
   }
 
-  return createHandler( 'rects', enabler, disabler )
+  return createHandler('rects', enabler, disabler)
 }

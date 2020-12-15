@@ -33,11 +33,12 @@ viewportSectionEl.append(documentEl)
 document.body.append(appEl)
 
 const state = createState([],{
-  updateAppMode: noop,
-  updateDocumentSize: noop,
-  updateSnapToGrid: noop,
-  updateViewSize: noop,
-  updateViewTransform: noop
+  listenAppMode: noop,
+  listenDocumentSize: noop,
+  listenSnapToGrid: noop,
+  listenViewSize: noop,
+  listenViewTransform: noop,
+  listenCurrentStyle: noop
 })
 
 state.mode('pan')

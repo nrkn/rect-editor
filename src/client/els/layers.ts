@@ -1,9 +1,9 @@
-import { getAllRectIds, getAppRects } from '../handlers/util'
+import { appRectToFill, getAllRectIds, getAppRects } from '../handlers/util'
 import { selectActions } from '../state/select-actions'
 import { button, fieldset, input, label, legend, li, ol } from '../lib/dom/h'
 import { attr, strictSelect } from '../lib/dom/util'
 import { AppRect, State } from '../types'
-import { dataStyleToFill } from './rect'
+import { styleToFill } from '../state/create-styles'
 
 export const createLayers = () => {
   return fieldset(
@@ -46,10 +46,10 @@ export const updateLayersEl = ( state: State ) => {
     ...appRects.map(
       r => {
         const isChecked = selectedIds.includes( r.id )
+        const fill = appRectToFill( state.styles, r, 1 )
 
-        return createLayerEl(r, isChecked)
-      }
-        
+        return createLayerEl(r, fill, isChecked)
+      }        
     )
   )
 
@@ -60,14 +60,14 @@ export const updateLayersEl = ( state: State ) => {
   buttonEls.forEach( el => el.disabled = !canMove )
 }
 
-const createLayerEl = (appRect: AppRect, isChecked = false) => {
+const createLayerEl = (appRect: AppRect, fill: string, isChecked = false) => {
   const inputEl = input(
     { type: 'checkbox', name: 'selectedLayers', value: appRect.id }
   )
 
   const el = li(
     label(
-      { style: `background: ${dataStyleToFill(appRect['data-style'])}` },
+      { style: `background: ${ fill }` },
       inputEl
     )
   )
