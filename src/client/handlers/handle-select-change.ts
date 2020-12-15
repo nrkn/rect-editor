@@ -6,7 +6,7 @@ import { getBoundingRect } from '../lib/geometry/rect'
 import { createHandler } from '../lib/handlers/create-handler'
 import { State } from '../types'
 
-export const handleSelectionChanged = (state: State) => {
+export const handleSelectChange = (state: State) => {
   const bodyEl = strictSelect<SVGGElement>('#body')
   const rectsEl = strictSelect<SVGGElement>('#rects')
 

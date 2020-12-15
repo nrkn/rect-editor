@@ -9,30 +9,6 @@ export const handleKeys = ( state: State ) => {
   
   const down = ( e: KeyboardEvent ) => {
     state.keys[e.key] = true
-
-    const lower = e.key.toLowerCase()
-
-    if (state.keys.Control && lower === 'a') {
-      e.preventDefault()
-
-      clearSelection
-
-      if (!state.keys.Shift) {
-        addToSelection( getAllRectIds() )
-      }
-    }
-
-    if (e.key === 'Delete') {
-      e.preventDefault()
-
-      const selectedIds = getSelection()
-
-      if (selectedIds.length === 0) return
-
-      state.rects.remove(selectedIds)
-      
-      clearSelection()
-    }   
   }
 
   const up = ( e: KeyboardEvent ) => {

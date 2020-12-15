@@ -1,28 +1,30 @@
+import { Handler } from '../lib/handlers/types'
 import { State } from '../types'
+
+import { handleCursorMove } from './handle-cursor-move'
 import { handleDrawClick } from './handle-draw-click'
 import { handleDrawDrag } from './handle-draw-drag'
 import { handleKeys } from './handle-keys'
 import { handleLayers } from './handle-layers'
-import { handleCursorMove } from './handle-cursor-move'
-import { handleSelectMoveDrag } from './handle-select-move-drag'
+import { handleModeChange } from './handle-mode-change'
+import { handlePaintClick } from './handle-paint-click'
 import { handlePanDrag } from './handle-pan-drag'
+import { handlePanWheel } from './handle-pan-wheel'
+import { handlePickClick } from './handle-pick-click'
 import { handleRectCollection } from './handle-rect-collection'
-import { handleSelectResizeDrag } from './handle-select-resize-drag'
+import { handleRectCollectionKeys } from './handle-rect-collection-keys'
+import { handleRectCollectionRedo } from './handle-rect-collection-redo'
+import { handleRectCollectionUndo } from './handle-rect-collection-undo'
+import { handleSelectChange } from './handle-select-change'
 import { handleSelectClick } from './handle-select-click'
 import { handleSelectDrag } from './handle-select-drag'
-import { handleSelectionChanged } from './handle-selection-changed'
+import { handleSelectKeys } from './handle-select-keys'
+import { handleSelectMoveDrag } from './handle-select-move-drag'
+import { handleSelectResizeDrag } from './handle-select-resize-drag'
 import { handleSnapGrid } from './handle-snap-grid'
 import { handleStyles } from './handle-styles'
-import { handleViewportResize } from './handle-viewport-resize'
-import { Handler } from '../lib/handlers/types'
-import { handlePickClick } from './handle-pick-click'
-import { handlePaintClick } from './handle-paint-click'
-import { handleModeChange } from './handle-mode-change'
 import { handleViewportResetZoom } from './handle-viewport-reset-zoom'
-import { handleRectCollectionUndo } from './handle-rect-collection-undo'
-import { handleRectCollectionRedo } from './handle-rect-collection-redo'
-import { handlePanWheel } from './handle-pan-wheel'
-import { handleRectCollectionKeys } from './handle-rect-collection-keys'
+import { handleViewportResize } from './handle-viewport-resize'
 
 export const createHandlers = (state: State) => {
   const handlers = new Map<string, Handler>()
@@ -62,12 +64,12 @@ export const createHandlers = (state: State) => {
   addHandler(handleRectCollectionUndo(state))
   addHandler(handleRectCollection(state))
 
+  addHandler(handleSelectChange(state)) 
   addHandler(handleSelectClick(state))
   addHandler(handleSelectDrag(state))
+  addHandler(handleSelectKeys(state))
   addHandler(handleSelectMoveDrag(state))
   addHandler(handleSelectResizeDrag(state))
-
-  addHandler(handleSelectionChanged(state)) 
 
   addHandler(handleSnapGrid())
 
