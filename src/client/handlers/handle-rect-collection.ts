@@ -4,6 +4,7 @@ import { AppRect, State } from '../types'
 import { selectActions } from '../state/select-actions'
 import { Listener } from '../lib/events/types'
 import { createHandler } from '../lib/handlers/create-handler'
+import { getRectEls } from './util'
 
 export const handleRectCollection = (
   state: State
@@ -13,7 +14,13 @@ export const handleRectCollection = (
   const rectsEl = strictSelect<SVGGElement>('#rects')
 
   const add: Listener<AppRect[]> = rects => {
-    rectsEl.append(...rects.map(createAppRectEl))
+    rects.forEach( r => {
+      const el = createAppRectEl( r )
+
+      updateAppRectEl( state.styles, r, el )
+
+      rectsEl.append( el )
+    })
 
     state.dirty = true
   }

@@ -3,7 +3,7 @@ import { selectActions } from '../state/select-actions'
 import { button, fieldset, input, label, legend, li, ol } from '../lib/dom/h'
 import { attr, strictSelect } from '../lib/dom/util'
 import { AppRect, State } from '../types'
-import { styleToFill } from '../state/create-styles'
+import { styleToFill } from '../state/create-app-styles'
 
 export const createLayers = () => {
   return fieldset(
@@ -65,10 +65,21 @@ const createLayerEl = (appRect: AppRect, fill: string, isChecked = false) => {
     { type: 'checkbox', name: 'selectedLayers', value: appRect.id }
   )
 
+  let labelText = appRect.id
+
+  const rectIdSegs = appRect.id.split( '-' )
+
+  if( rectIdSegs.length > 1 ){
+    const [ name, index ] = rectIdSegs
+
+    labelText = `${ name } ${ index }`
+  }
+
   const el = li(
     label(
       { style: `background: ${ fill }` },
-      inputEl
+      inputEl,
+      labelText
     )
   )
 

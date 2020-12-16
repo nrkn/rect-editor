@@ -3,6 +3,7 @@ import { ClickPredicate, OnHandleClick } from '../lib/handlers/types'
 import { handleAppClick } from './helpers/handle-app-click'
 import { getAllRectIds, getAppRects } from './util'
 import { rectContainsPoint } from '../lib/geometry/rect'
+import { updateAppRectEl } from '../els/rect'
 
 export const handlePaintClick = (state: State) => {  
   const click: OnHandleClick = (point, _button) => {    
@@ -19,8 +20,9 @@ export const handlePaintClick = (state: State) => {
     if( appRects.length > 0 ){
       const last = appRects[ appRects.length - 1 ]
 
-      
-      console.log( 'painted', last['data-style'] )
+      last['data-style'] = state.currentStyleId()
+
+      updateAppRectEl( state.styles, last )
     }
   }
 

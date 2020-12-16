@@ -1,28 +1,24 @@
 import { Rect } from '../geometry/types'
-import { ElementAttributes, StrictSelect, StyleDefinitions } from './types'
+import { ElementAttributes, StrictSelect } from './types'
+
+const styleKey = 'style'
 
 export const attr = (el: Element, ...attributeRecords: ElementAttributes[]) => {
   attributeRecords.forEach(
     attributes => {
       Object.keys(attributes).forEach(
         key => {
+          if( key === styleKey ){
+            if( styleKey in el ){
+              Object.assign( el[ styleKey ], attributes[ key ] )
+            }
+            
+            return  
+          }
+          
           const value = String(attributes[key])
 
           el.setAttribute(key, value)
-        }
-      )
-    }
-  )
-}
-
-export const applyStyles = ( el: HTMLElement, ...styles: StyleDefinitions[] ) => {
-  styles.forEach(
-    styleDefs => {
-      Object.keys( styleDefs ).forEach(
-        key => {
-          const value = String( styleDefs[ key ] )
-
-          el.style[ key ] = value
         }
       )
     }

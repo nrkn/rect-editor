@@ -1,23 +1,18 @@
-import { createSequence } from '../lib/util'
+import { createNumericIndex, createSequence } from '../lib/util'
 import { AppStyle } from '../types'
 
-const numHues = 25
-const deg = 360 / numHues
+const numHues = 18
+const numGreys = 6
 
-let styleIndex = 0
+const deg = Math.floor( 360 / numHues )
+const value = Math.floor( 255 / numGreys )
 
-const newIndex = () => {
-  const current = styleIndex
+export const createAppStyles = () => {
+  const createIndex = createNumericIndex()
 
-  styleIndex++
-
-  return current
-}
-
-export const createStyles = () => {
   const createAppStyle = (prefix: string) => (color: string) => {
     const style: AppStyle = {
-      id: `${prefix}-${newIndex()}`,
+      id: `${prefix}-${createIndex( prefix )}`,
       type: prefix,
       data: color
     }
@@ -29,7 +24,7 @@ export const createStyles = () => {
   const hueToAppStyle = createAppStyle('hue')
 
   const appStyles: AppStyle[] = [
-    ...grays.map(greyToAppStyle),
+    ...greys.map(greyToAppStyle),
     ...hues.map(hueToAppStyle)
   ]  
 
@@ -55,7 +50,7 @@ const hues = createSequence(
   i => String( Math.floor(i * deg) )
 )
 
-const grays = createSequence(
-  5,
-  i => String( 255 - (i * 32) )
+const greys = createSequence(
+  numGreys,
+  i => String( 255 - i * value )
 )

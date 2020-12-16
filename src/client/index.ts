@@ -69,11 +69,13 @@ const newApp = (
     listenViewSize: updateDocumentSize,
     listenDocumentSize: updateGrid,
     listenViewTransform: updateBodyTransform,
-    // TODO
     listenCurrentStyle: noop
   }
 
   const state = createState([], listeners)
+
+  // needs state
+  listeners.listenCurrentStyle = () => updateStyles( state )
 
   updateStyles( state )
 

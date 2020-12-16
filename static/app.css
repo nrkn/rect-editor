@@ -77,14 +77,19 @@ fieldset {
 
 #styles {
   display: grid;
-  grid-template-columns: repeat( 5, auto );
+  grid-template-columns: repeat( 3, auto );
   gap: 0.5rem
 }
 
 #styles label {
   border: 1px solid #ccc;
-  display: inline-block;
-  padding: 0.25rem;
+  display: flex;
+  width: 4rem;
+  height: 4rem;
+}
+
+#styles label input {
+  margin: auto;
 }
 
 #layers ol {

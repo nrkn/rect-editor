@@ -4,7 +4,7 @@ import { createHandler } from '../../lib/handlers/create-handler'
 
 export const handleModal = <T>(
   name: string,
-  modalNewEl: HTMLElement,
+  contents: HTMLElement,
   getValue: () => T,
   onSubmit: (value: T) => void,
   isClosable = true
@@ -23,10 +23,10 @@ export const handleModal = <T>(
   }
 
   const enablers = () => {
-    updateModal(modalNewEl)
+    updateModal(contents)
     showModal()
 
-    modalNewEl.addEventListener('submit', submit)
+    contents.addEventListener('submit', submit)
     
     if( isClosable ){
       document.addEventListener('keydown', esc)
@@ -36,7 +36,7 @@ export const handleModal = <T>(
   }
 
   const disablers = () => {
-    modalNewEl.removeEventListener('submit', submit)
+    contents.removeEventListener('submit', submit)
 
     if( isClosable ){
       document.removeEventListener('keydown', esc)
@@ -44,7 +44,7 @@ export const handleModal = <T>(
       closeButtonEl.removeEventListener('click', close) 
     }
 
-    modalNewEl.remove()
+    contents.remove()
 
     hideModal()    
   }

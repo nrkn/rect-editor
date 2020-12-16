@@ -14,12 +14,6 @@ export const createModal = () => {
   return modalEl
 }
 
-export const isModal = () => {
-  const modalEl = strictSelect<HTMLElement>( '#modal' )
-
-  return modalEl.style.display === 'flex'
-}
-
 export const hideModal = () => {
   const modalEl = strictSelect<HTMLElement>( '#modal' )
 
@@ -30,16 +24,6 @@ export const showModal = () => {
   const modalEl = strictSelect<HTMLElement>( '#modal' )
 
   modalEl.style.display = 'flex'
-}
-
-export const toggleModal = ( visible?: boolean ) => {
-  const modalEl = strictSelect<HTMLElement>( '#modal' )
-
-  if( visible === undefined ){
-    visible = modalEl.style.display === 'none'
-  }
-  
-  modalEl.style.display = visible ? 'flex' : 'none'
 }
 
 export const updateModal = ( ...contents: ( Node | string )[] ) => {

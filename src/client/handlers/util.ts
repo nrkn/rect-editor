@@ -9,7 +9,7 @@ import { AppMode, AppRect, AppStyle, State } from '../types'
 import { disableHandlers, enableHandlers, getPosition } from '../lib/handlers/util'
 import { Handler } from '../lib/handlers/types'
 import { Collection } from '../lib/collection/types'
-import { styleToFill } from '../state/create-styles'
+import { styleToFill } from '../state/create-app-styles'
 
 export const createTranslatePoint = (state: State) =>
   (p: Point) => translateAndScalePoint(p, state.viewTransform())

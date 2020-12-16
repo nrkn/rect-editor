@@ -31,3 +31,21 @@ export const clone = <T>(value: T): T =>
   JSON.parse(JSON.stringify(value))
 
 export const noop = () => {}
+
+export const createNumericIndex = ( start = 0 ) => {
+  const ids = new Map<string,number>()
+
+  const getNext = ( name: string ) => {
+    let index = ids.get( name )
+
+    if( index === undefined ){
+      index = start
+    }
+
+    ids.set( name, index + 1 )
+
+    return index
+  }
+
+  return getNext
+}

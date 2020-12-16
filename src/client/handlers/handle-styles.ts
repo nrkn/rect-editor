@@ -1,3 +1,4 @@
+import { form } from '../lib/dom/h'
 import { strictSelect, strictFormRadioNodes } from '../lib/dom/util'
 import { createHandler } from '../lib/handlers/create-handler'
 import { State } from '../types'
@@ -5,10 +6,16 @@ import { getAppRects } from './util'
 
 export const handleStyles = (state: State) => {
   const toolsEl = strictSelect<HTMLFormElement>('#tools > form')
-
-  const styleRadios = strictFormRadioNodes(toolsEl, 'fill')
-
+ 
   const updateSelected = () => {
+    const styleRadios = strictFormRadioNodes(toolsEl, 'fill')
+    
+    if( styleRadios.value === state.currentStyleId() ) return
+
+    state.currentStyleId( styleRadios.value )
+
+    if( state.mode() !== 'select' ) return
+
     const ids = state.selector.actions.get()
 
     if (ids.length === 0) return
@@ -24,11 +31,11 @@ export const handleStyles = (state: State) => {
   }
 
   const enabler = () => {
-    styleRadios.forEach(el => el.addEventListener('change', updateSelected))
+    toolsEl.addEventListener( 'change', updateSelected )
   }
 
   const disabler = () => {
-    styleRadios.forEach(el => el.removeEventListener('change', updateSelected))
+    toolsEl.removeEventListener( 'change', updateSelected )
   }
 
   return createHandler( 'styles', enabler, disabler )

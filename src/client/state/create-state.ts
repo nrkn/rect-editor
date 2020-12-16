@@ -1,27 +1,23 @@
 import { minScale } from '../consts'
 import { createCollection } from '../lib/collection'
-import { Listener } from '../lib/events/types'
 import { zoomAt } from '../lib/geometry/scale'
 import { zoomToFit } from '../lib/geometry/size'
 import { ScaleTransform, Size } from '../lib/geometry/types'
 import { createSelector } from '../lib/select'
 import { AppMode, AppRect, AppStyle, State, StateFn, StateListeners } from '../types'
-import { createStyles } from './create-styles'
+import { createAppStyles } from './create-app-styles'
 
 export const createState = (
   appRects: AppRect[],
-  {
-    listenAppMode, listenSnapToGrid, listenViewSize, listenDocumentSize,
-    listenViewTransform, listenCurrentStyle
-  }: StateListeners
+  listeners: StateListeners
 ) => {
-  const mode = createMode( listenAppMode )
-  const snap = createSnapToGrid( listenSnapToGrid )
-  const viewSize = createViewSize( listenViewSize )
-  const documentSize = createDocumentSize( listenDocumentSize )
-  const currentStyleId = createCurrentStyle( listenCurrentStyle )
+  const mode = createMode( listeners )
+  const snap = createSnapToGrid( listeners )
+  const viewSize = createViewSize( listeners )
+  const documentSize = createDocumentSize( listeners )
+  const currentStyleId = createCurrentStyle( listeners )
 
-  const viewTransform = createViewTransform( listenViewTransform )
+  const viewTransform = createViewTransform( listeners )
   
   const rects = createCollection<AppRect>( appRects )
   const styles = createCollection<AppStyle>( [] )
@@ -31,7 +27,7 @@ export const createState = (
   const zoomToFit = createZoomToFit( viewSize, documentSize, viewTransform )
   const zoomAt = createZoomAt( viewTransform )
 
-  styles.add( createStyles() )
+  styles.add( createAppStyles() )
 
   if( styles.has( 'grey-0' ) ){
     currentStyleId( 'grey-0' )
@@ -46,14 +42,14 @@ export const createState = (
   return state
 }
 
-const createMode = ( listener: Listener<AppMode> ) => {
+const createMode = ( listeners: StateListeners ) => {
   let appMode: AppMode = 'draw'
 
   const mode = (value?: AppMode) => {
     if (value !== undefined) {
       appMode = value
       
-      listener( appMode )
+      listeners.listenAppMode( appMode )
     }
 
     return appMode
@@ -62,14 +58,14 @@ const createMode = ( listener: Listener<AppMode> ) => {
   return mode
 }
 
-const createSnapToGrid = ( listener: Listener<Size> ) => {
+const createSnapToGrid = ( listeners: StateListeners ) => {
   let size: Size = { width: 16, height: 16 }
 
   const snapSize = ( value?: Size ) => {
     if( value !== undefined ){
       size = value    
 
-      listener( size )
+      listeners.listenSnapToGrid( size )
     }
     
     return size
@@ -78,14 +74,14 @@ const createSnapToGrid = ( listener: Listener<Size> ) => {
   return snapSize
 }
 
-const createViewSize = ( listener: Listener<Size> ) => {
+const createViewSize = ( listeners: StateListeners ) => {
   let size: Size = { width: 0, height: 0 }
 
   const viewSize = (value?: Size) => {
     if (value !== undefined) {
       size = value
 
-      listener( size )
+      listeners.listenViewSize( size )
     }
 
     const { width, height } = size
@@ -96,14 +92,14 @@ const createViewSize = ( listener: Listener<Size> ) => {
   return viewSize
 }
 
-const createDocumentSize = ( listener: Listener<Size> ) => {
+const createDocumentSize = ( listeners: StateListeners ) => {
   let size: Size = { width: 0, height: 0 }
 
   const documentSize = (value?: Size) => {
     if (value !== undefined) {
       size = value
 
-      listener( size )
+      listeners.listenDocumentSize( size )
     }
 
     const { width, height } = size
@@ -114,14 +110,14 @@ const createDocumentSize = ( listener: Listener<Size> ) => {
   return documentSize
 }
 
-const createCurrentStyle = ( listener: Listener<string> ) => {
+const createCurrentStyle = ( listeners: StateListeners ) => {
   let currentStyleId: string = ''
 
   const mode = (value?: string) => {
     if (value !== undefined) {
       currentStyleId = value
       
-      listener( currentStyleId )
+      listeners.listenCurrentStyle( currentStyleId )
     }
 
     return currentStyleId
@@ -130,7 +126,7 @@ const createCurrentStyle = ( listener: Listener<string> ) => {
   return mode
 }
 
-const createViewTransform = ( listener: Listener<ScaleTransform> ) => {
+const createViewTransform = ( listeners: StateListeners ) => {
   let scaleTransform: ScaleTransform = { x: 0, y: 0, scale: 1 }
 
   const viewTransform = (value?: ScaleTransform) => {
@@ -141,7 +137,7 @@ const createViewTransform = ( listener: Listener<ScaleTransform> ) => {
 
       const scale = Math.max(transformScale, minScale)
 
-      listener( { x, y, scale })
+      listeners.listenViewTransform( { x, y, scale })
     }
 
     const { x, y, scale } = scaleTransform

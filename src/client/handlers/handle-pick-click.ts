@@ -3,6 +3,7 @@ import { ClickPredicate, OnHandleClick } from '../lib/handlers/types'
 import { handleAppClick } from './helpers/handle-app-click'
 import { getAllRectIds, getAppRects } from './util'
 import { rectContainsPoint } from '../lib/geometry/rect'
+import { updateStyles } from '../els/styles'
 
 export const handlePickClick = (state: State) => {  
   const click: OnHandleClick = (point, _button) => {    
@@ -18,9 +19,10 @@ export const handlePickClick = (state: State) => {
 
     if( appRects.length > 0 ){
       const last = appRects[ appRects.length - 1 ]
-
       
-      console.log( 'picked', last['data-style'] )
+      state.currentStyleId( last['data-style'] )
+
+      updateStyles( state )
     }
   }
 

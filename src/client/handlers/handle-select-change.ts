@@ -10,12 +10,18 @@ export const handleSelectChange = (state: State) => {
   const bodyEl = strictSelect<SVGGElement>('#body')
   const rectsEl = strictSelect<SVGGElement>('#rects')
 
+  let lastStyleId = ''
+
   const handler = (ids: string[]) => {
     state.dirty = true
 
     const existing = document.querySelector<SVGGElement>('#resizer')
 
     if (ids.length === 0) {
+      if( lastStyleId !== '' ){
+        state.currentStyleId( lastStyleId )
+      }
+
       existing?.remove()
       updateInfoSelection()
 
@@ -25,6 +31,11 @@ export const handleSelectChange = (state: State) => {
     const rectEls = ids.map(
       id => strictSelect<SVGRectElement>(`#${id}`, rectsEl)
     )
+
+    const [ first ] = rectEls
+
+    lastStyleId = state.currentStyleId()
+    state.currentStyleId( first.dataset.style )
 
     const rectElRects = rectEls.map(getRectElRect)
 
@@ -53,6 +64,7 @@ export const handleSelectChange = (state: State) => {
 
   const disabler = () => {
     state.selector.off( handler )
+    lastStyleId = ''
   }
 
   return createHandler( 'selection', enabler, disabler )
