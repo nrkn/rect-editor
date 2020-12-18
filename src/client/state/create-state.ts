@@ -4,7 +4,11 @@ import { zoomAt } from '../lib/geometry/scale'
 import { zoomToFit } from '../lib/geometry/size'
 import { ScaleTransform, Size } from '../lib/geometry/types'
 import { createSelector } from '../lib/select'
-import { AppMode, AppRect, AppStyle, State, StateFn, StateListeners } from '../types'
+
+import { 
+  AppMode, AppRect, AppStyle, BackgroundImage, State, StateFn, StateListeners 
+} from '../types'
+
 import { createAppStyles } from './create-app-styles'
 
 export const createState = (
@@ -18,6 +22,8 @@ export const createState = (
   const currentStyleId = createCurrentStyle( listeners )
 
   const viewTransform = createViewTransform( listeners )
+
+  const backgroundImage = createBackgroundImage( listeners )
   
   const rects = createCollection<AppRect>( appRects )
   const styles = createCollection<AppStyle>( [] )
@@ -35,11 +41,30 @@ export const createState = (
 
   const state: State = { 
     mode, snap, viewSize, viewTransform, documentSize, currentStyleId,
+    backgroundImage,
+
     rects, styles, selector, keys, dirty: true,
+
     zoomToFit, zoomAt
   }
 
   return state
+}
+
+const createBackgroundImage = ( listeners: StateListeners ) => {
+  let backgroundImage: BackgroundImage | undefined = undefined
+
+  const image = ( value?: BackgroundImage ) => {
+    if( value !== undefined ){
+      backgroundImage = value
+
+      listeners.listenBackgroundImage( backgroundImage )
+    }
+
+    return backgroundImage
+  }
+
+  return image
 }
 
 const createMode = ( listeners: StateListeners ) => {

@@ -1,16 +1,17 @@
 import { updateGridPattern } from '../els/grid-pattern'
 import { strictSelect } from '../lib/dom/util'
 import { createHandler } from '../lib/handlers/create-handler'
+import { State } from '../types'
 
-export const handleSnapGrid = () => {
+export const handleSnapGrid = ( state: State ) => {
   const snapWidthEl = strictSelect<HTMLInputElement>( '#snap-width' )
-  const snapHeightEl = strictSelect<HTMLInputElement>( '#snap-width' )
+  const snapHeightEl = strictSelect<HTMLInputElement>( '#snap-height' )
 
   const onChange = () => {
     const width = snapWidthEl.valueAsNumber
     const height = snapHeightEl.valueAsNumber
 
-    updateGridPattern({ width, height })
+    state.snap({ width, height })
   }  
 
   const enabler = () => {

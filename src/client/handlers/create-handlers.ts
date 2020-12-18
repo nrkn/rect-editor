@@ -71,7 +71,7 @@ export const createHandlers = (state: State) => {
   addHandler(handleSelectMoveDrag(state))
   addHandler(handleSelectResizeDrag(state))
 
-  addHandler(handleSnapGrid())
+  addHandler(handleSnapGrid(state))
 
   addHandler(handleStyles(state))
 

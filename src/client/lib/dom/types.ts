@@ -1,7 +1,7 @@
 import { cursorStates } from './consts'
 
 export type ElementAttributes = Record<string,any> & {
-  style?: Partial<CSSStyleDeclaration>
+  style?: string | Partial<CSSStyleDeclaration> 
 }
 
 export type StyleDefinitions = Record<string,any>

@@ -1,5 +1,6 @@
 import { createAppEls } from './els/app'
-import { createDocumentEl, updateBodyTransform, updateDocumentSize, updateGrid } from './els/document'
+import { updateBackgroundImagePattern } from './els/background-pattern'
+import { createDocumentEl, updateBackgroundImageSize, updateBodyTransform, updateDocumentSize, updateGridSize } from './els/document'
 import { createInfo } from './els/info'
 import { createLayers, updateLayersEl } from './els/layers'
 import { hideModal, showModal, updateModal } from './els/modal'
@@ -16,7 +17,7 @@ import { enableHandlers } from './lib/handlers/util'
 import { noop } from './lib/util'
 import { isAppRect } from './predicates'
 import { createState } from './state/create-state'
-import { App, AppMode, DocumentData, StateListeners } from './types'
+import { App, AppMode, BackgroundImage, DocumentData, StateListeners } from './types'
 
 let app: Partial<App> = {}
 
@@ -67,9 +68,26 @@ const newApp = (
     listenAppMode: onAppMode,
     listenSnapToGrid: updateSnapToGrid,
     listenViewSize: updateDocumentSize,
-    listenDocumentSize: updateGrid,
+    listenDocumentSize: size => {
+      updateGridSize( size )
+      updateBackgroundImageSize( size )
+
+      const img = state.backgroundImage()
+
+      if( img !== undefined ){
+        updateBackgroundImagePattern( size, img )
+      }
+    },
     listenViewTransform: updateBodyTransform,
-    listenCurrentStyle: noop
+    
+    // shouldn't someone be listening to this?
+    listenCurrentStyle: noop,
+
+    listenBackgroundImage: img => {
+      if( img !== undefined ){
+        updateBackgroundImagePattern( state.documentSize(), img )
+      }
+    }
   }
 
   const state = createState([], listeners)
@@ -92,6 +110,14 @@ const newApp = (
   document.body.dispatchEvent(new Event('resize'))
 
   state.zoomToFit()
+
+  // const image = new Image()
+
+  // image.onload = () => {
+  //   state.backgroundImage( { image } )
+  // }
+
+  // image.src = 'santa-monica.png'
 
   app = { appEl, viewportSectionEl, state, handlers }
 

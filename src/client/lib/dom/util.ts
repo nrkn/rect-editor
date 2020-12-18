@@ -8,9 +8,25 @@ export const attr = (el: Element, ...attributeRecords: ElementAttributes[]) => {
     attributes => {
       Object.keys(attributes).forEach(
         key => {
-          if( key === styleKey ){
+          if( key === styleKey ){            
             if( styleKey in el ){
-              Object.assign( el[ styleKey ], attributes[ key ] )
+              const value = attributes[ key ]
+
+              if( typeof value === 'string' ){
+                el.setAttribute( 'style', value )
+                
+                return
+              }
+
+              const styleTarget = el[ styleKey ]
+
+              try {
+                Object.assign( styleTarget, value )
+              } catch( err ){
+                console.warn( 'setting style on el', { styleTarget, value } )
+
+                throw err
+              }              
             }
             
             return  

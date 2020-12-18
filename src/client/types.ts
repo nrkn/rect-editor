@@ -1,3 +1,5 @@
+import { fitAndPosition } from 'object-fit-math'
+import { FitMode } from 'object-fit-math/dist/types'
 import { appModes } from './consts'
 import { Collection } from './lib/collection/types'
 import { Listener } from './lib/events/types'
@@ -16,6 +18,7 @@ export type State = {
   viewTransform: StateFn<ScaleTransform>
   documentSize: StateFn<Size>
   currentStyleId: StateFn<string>
+  backgroundImage: StateFn<BackgroundImage|undefined>
   styles: Collection<AppStyle>  
   rects: Collection<AppRect>
   selector: Selector
@@ -32,8 +35,15 @@ export type StateListeners = {
   listenDocumentSize: Listener<Size>
   listenViewTransform: Listener<ScaleTransform>
   listenCurrentStyle: Listener<string>
+  listenBackgroundImage: Listener<BackgroundImage|undefined>
 }
 
+export type BackgroundImage = {
+  image: HTMLImageElement
+  fitMode?: FitMode
+  left?: string
+  top?: string
+}
 
 export type AppRect = Rect & { 
   id: string 
