@@ -2,7 +2,7 @@ import { createEmitter } from '.'
 import { distance } from '../geometry/line'
 import { rectContainsPoint } from '../geometry/rect'
 import { Point } from '../geometry/types'
-import { PointerEmitterOptions, PointerEvent } from './types'
+import { PointerEmitterOptions, PointerEmitterEvent } from './types'
 
 export const createPointerEmitter = (
   target: HTMLElement, options: Partial<PointerEmitterOptions> = {}
@@ -11,10 +11,10 @@ export const createPointerEmitter = (
     preventDefault, tapDistanceThreshold, tapDelay
   } = Object.assign({}, defaultOptions, options)
 
-  const down = createEmitter<PointerEvent>()
-  const up = createEmitter<PointerEvent>()
-  const move = createEmitter<PointerEvent>()
-  const tap = createEmitter<PointerEvent>()
+  const down = createEmitter<PointerEmitterEvent>()
+  const up = createEmitter<PointerEmitterEvent>()
+  const move = createEmitter<PointerEmitterEvent>()
+  const tap = createEmitter<PointerEmitterEvent>()
 
   let isDragging = false
   let isAttached = false  
@@ -115,7 +115,9 @@ export const createPointerEmitter = (
     const position = getPosition( mouseEvent, bounds )
     const isInside = rectContainsPoint( bounds, position )
 
-    const event: PointerEvent = { position, isDragging, isInside, button }
+    const event: PointerEmitterEvent = { 
+      position, isDragging, isInside, button, mouseEvent 
+    }
 
     return event
   }

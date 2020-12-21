@@ -13,11 +13,12 @@ export type TypedEventEmitter<T> = {
   emit: ( event: T ) => void
 }
 
-export type PointerEvent = {
+export type PointerEmitterEvent = {
   position: Point
   isDragging: boolean
   isInside: boolean
   button: number
+  mouseEvent: MouseEvent
 }
 
 export type PointerEmitterOptions = {
