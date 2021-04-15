@@ -111,13 +111,13 @@ const newApp = (
 
   state.zoomToFit()
 
-  const image = new Image()
+  // const image = new Image()
 
-  image.onload = () => {
-    state.backgroundImage( { image } )
-  }
+  // image.onload = () => {
+  //   state.backgroundImage( { image } )
+  // }
 
-  image.src = 'santa-monica.png'
+  // image.src = 'santa-monica.png'
 
   app = { appEl, viewportSectionEl, state, handlers }
 
