@@ -111,7 +111,7 @@ const newApp = (
         }
 
         newApp({ rects, snap, documentSize })
-      } catch (err) {
+      } catch (err:any) {
         alert(err.message || 'An unknown error occurred')
       }
     },
