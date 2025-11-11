@@ -1,6 +1,9 @@
 # rect-editor
 
-Drag and drop rectangle editor
+Browser based drag and drop rectangle editor
+
+Intended as a base for building document editors operating on a fixed canvas
+size
 
 ## TODO
 

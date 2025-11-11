@@ -31,6 +31,7 @@ export const undoCommand = <T extends ID>(
 
   if (command.type === 'order') {
     setOrder(command.before)
+
     events.setOrder.emit(command.before)
   }
 }

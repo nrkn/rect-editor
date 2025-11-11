@@ -1,4 +1,3 @@
-import { isAppRect } from '../../predicates'
 import { Handler } from './types'
 
 export const createHandler = (

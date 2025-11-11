@@ -3,7 +3,6 @@ import { appModes } from '../consts'
 import { createStyles } from './styles'
 import { AppMode } from '../types'
 import { strictSelect, strictFormRadioNodes } from '../lib/dom/util'
-import { isSize } from '../lib/geometry/predicates'
 import { Size } from '../lib/geometry/types'
 import { updateGridPattern } from './grid-pattern'
 

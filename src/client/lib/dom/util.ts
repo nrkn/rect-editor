@@ -8,30 +8,30 @@ export const attr = (el: Element, ...attributeRecords: ElementAttributes[]) => {
     attributes => {
       Object.keys(attributes).forEach(
         key => {
-          if( key === styleKey ){            
-            if( styleKey in el ){
-              const value = attributes[ key ]
+          if (key === styleKey) {
+            if (styleKey in el) {
+              const value = attributes[key]
 
-              if( typeof value === 'string' ){
-                el.setAttribute( 'style', value )
-                
+              if (typeof value === 'string') {
+                el.setAttribute('style', value)
+
                 return
               }
 
-              const styleTarget = el[ styleKey ]
+              const styleTarget = el[styleKey] as Record<string, string>
 
               try {
-                Object.assign( styleTarget, value )
-              } catch( err ){
-                console.warn( 'setting style on el', { styleTarget, value } )
+                Object.assign(styleTarget, value)
+              } catch (err) {
+                console.warn('setting style on el', { styleTarget, value })
 
                 throw err
-              }              
+              }
             }
-            
-            return  
+
+            return
           }
-          
+
           const value = String(attributes[key])
 
           el.setAttribute(key, value)
@@ -100,39 +100,39 @@ export const strictFormRadioNodes = (
   )
 }
 
-export const strictGetData = ( el: HTMLElement | SVGElement, key: string ) => {
-  const value = el.dataset[ key ]
+export const strictGetData = (el: HTMLElement | SVGElement, key: string) => {
+  const value = el.dataset[key]
 
-  if( value === undefined ) 
-    throw Error( `Expected element dataset to contain ${ key }` )
-  
+  if (value === undefined)
+    throw Error(`Expected element dataset to contain ${key}`)
+
   return value
 }
 
-export const strictFind = <T>( 
-  elements: T[], 
-  predicate: (value: T, index: number, obj: T[]) => boolean 
+export const strictFind = <T>(
+  elements: T[],
+  predicate: (value: T, index: number, obj: T[]) => boolean
 ) => {
-  const result = elements.find( predicate )
+  const result = elements.find(predicate)
 
-  if( result === undefined )
-    throw Error( `Expected predicate to match something` )
+  if (result === undefined)
+    throw Error(`Expected predicate to match something`)
 
   return result
 }
 
-export const strictMapGet = <K,T>(
-  map: Map<K,T>, key: K
+export const strictMapGet = <K, T>(
+  map: Map<K, T>, key: K
 ) => {
-  const value = map.get( key )
+  const value = map.get(key)
 
-  if( value === undefined ) throw Error( `Expected map to contain ${ key }` )
-  
+  if (value === undefined) throw Error(`Expected map to contain ${key}`)
+
   return value
 }
 
-export const getKeys = <T>( obj: T ) => 
-  Object.keys( obj ) as ( keyof T & string )[]
+export const getKeys = <T extends object>(obj: T) =>
+  Object.keys(obj)
 
 export const getRectElRect = (
   rectEl: SVGRectElement
@@ -152,7 +152,7 @@ export const getRectElRect = (
 export const setRectElRect = (
   rectEl: SVGRectElement, rect: Partial<Rect>
 ) => {
-  const initialRect = getRectElRect( rectEl )
+  const initialRect = getRectElRect(rectEl)
 
   const { x, y, width, height } = Object.assign(
     {}, initialRect, rect

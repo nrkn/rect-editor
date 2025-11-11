@@ -1,4 +1,4 @@
-import { button, div, fieldset, form, input, label, legend } from '../lib/dom/h'
+import { button, div } from '../lib/dom/h'
 import { isElement } from '../lib/dom/predicates'
 import { strictSelect } from '../lib/dom/util'
 

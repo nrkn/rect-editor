@@ -1,4 +1,3 @@
-import { fitAndPosition } from 'object-fit-math'
 import { FitMode } from 'object-fit-math/dist/types'
 import { appModes } from './consts'
 import { Collection } from './lib/collection/types'
