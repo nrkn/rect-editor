@@ -1,4 +1,3 @@
-import { form } from '../lib/dom/h'
 import { strictSelect, strictFormRadioNodes } from '../lib/dom/util'
 import { createHandler } from '../lib/handlers/create-handler'
 import { State } from '../types'

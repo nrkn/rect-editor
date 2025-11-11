@@ -27,7 +27,8 @@ let defaultData: DocumentData = {
   rects: [],
   snap: defaultSnap,
   grid: defaultGrid,
-  documentSize: { width: 1000, height: 1000 }
+  documentSize: { width: 1000, height: 1000 },
+  backgroundUri: undefined
 }
 
 const newApp = (
@@ -37,7 +38,7 @@ const newApp = (
 
   document.querySelector('#new')?.remove()
 
-  const { rects, snap, grid, documentSize } = Object.assign(
+  const { rects, snap, grid, documentSize, backgroundUri } = Object.assign(
     {}, defaultData, options
   )
 
@@ -116,13 +117,15 @@ const newApp = (
 
   state.zoomToFit()
 
-  // const image = new Image()
+  if( backgroundUri !== undefined ){
+    const image = new Image()
 
-  // image.onload = () => {
-  //   state.backgroundImage( { image } )
-  // }
-
-  // image.src = 'santa-monica.png'
+    image.onload = () => {
+      state.backgroundImage( { image } )
+    }
+    
+    image.src = backgroundUri
+  }  
 
   app = { appEl, viewportSectionEl, state, handlers }
 
@@ -154,6 +157,12 @@ const newApp = (
       grid: state.grid(),
       documentSize: state.documentSize(),
       rects: state.rects.toArray()
+    }
+
+    const bgImage = state.backgroundImage()
+
+    if( bgImage !== undefined ){
+      data.backgroundUri = bgImage.image.src
     }
 
     const json = JSON.stringify(data, null, 2)
@@ -188,7 +197,7 @@ const newApp = (
 
         if (!maybeDocument) throw Error('Expected file to be in JSON format')
 
-        let { rects, snap, grid, documentSize } = defaultData
+        let { rects, snap, grid, documentSize, backgroundUri } = defaultData
 
         if (
           Array.isArray(maybeDocument.rects) &&
@@ -209,7 +218,11 @@ const newApp = (
           documentSize = maybeDocument.documentSize
         }
 
-        newApp({ rects, snap, grid, documentSize })
+        if( typeof maybeDocument.backgroundUri === 'string' ){
+          backgroundUri = maybeDocument.backgroundUri
+        }
+
+        newApp({ rects, snap, grid, documentSize, backgroundUri })
       } catch (err:any) {
         alert(err.message || 'An unknown error occurred')
       }

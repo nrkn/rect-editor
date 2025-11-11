@@ -64,6 +64,7 @@ export type DocumentData = {
   grid: Size
   documentSize: Size
   rects: AppRect[]
+  backgroundUri?: string
 }
 
 export type App = {
