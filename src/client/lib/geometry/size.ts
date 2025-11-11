@@ -1,14 +1,12 @@
 import { fitAndPosition } from 'object-fit-math'
 import { ScaleTransform, Size } from './types'
 
-export const zoomToFit = ( parent: Size, child: Size ) => {
-  const { x: fx, y: fy, width: fw } = fitAndPosition(
+export const zoomToFit = (parent: Size, child: Size) => {
+  const { x, y, width } = fitAndPosition(
     parent, child, 'contain', '50%', '50%'
   )
 
-  const scale = fw / child.width
-  const x = fx / scale
-  const y = fy / scale
+  const scale = width / child.width
 
   const transform: ScaleTransform = { x, y, scale }
 

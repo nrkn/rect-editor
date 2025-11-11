@@ -193,10 +193,22 @@ const createZoomToFit = (
   viewSize: StateFn<Size>, documentSize: StateFn<Size>,
   viewTransform: StateFn<ScaleTransform>
 ) => {
-  const action = () =>
-    viewTransform(
-      zoomToFit(viewSize(), documentSize())
-    )
+  const action = () => {
+    const parent = viewSize()
+    const child = documentSize()
+    
+    let transform = zoomToFit(parent, child)
+
+    if (transform.scale < minScale) {
+      const scale = minScale
+      const x = (parent.width - scale * child.width) / 2
+      const y = (parent.height - scale * child.height) / 2
+
+      transform = { x, y, scale }
+    }
+
+    viewTransform(transform)
+  }
 
   return action
 }
