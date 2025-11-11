@@ -7,27 +7,54 @@ size
 
 ## TODO
 
-- Selected rect should have a form to edit eg x, y, width, height
-  - Disabled if multiselect?
-- If tap in draw mode, location is x,y - modal asks for width and height
-  - Maybe have drop down, allow placing more than 1 
-    - If more than one, choose pattern, eg stack, column, row, grid
-- Set cursor type (on mouse move? or CSS?)
-- Arrange rect(s) (bring forward, send to back etc)
-  - Should be undo/redoable - new action or make code more z index aware?
-- Arrow keys in pan should move canvas
-- Plus/minus/asterisk keys should zoom in/out/reset zoom (plus Control?)
-- Arrow keys with a selection should move rects
-- Show width/height tooltip while creating/resizing
-- Show dx/dy tooltip while dragging
-- New mode, zoom?
-- Copy/cut/paste - on paste, action add, on cut action delete
-- Undo/redo should probably restore selection if possible
-- New project / save / load
-- Right Click menu
-- Double click to edit selection?
-- Prefabs - basically, like copy/paste except they get saved
-- Layers
-- Groups - basically just saved selections?
-- Align and distribute
-- Icons for buttons etc
+Legend:
+  [x] Done  [+] Partial / basic  [ ] Not started
+
+UI / Interaction
+  [x] Arrange rect(s) (bring forward/back) with undo/redo
+  [x] Show dx/dy tooltip while dragging (Delta panel)
+  [x] Show selection bounds and style swap
+  [+] Set cursor type (resize & move states implemented; others todo)
+  [ ] Selected rect form edit (x,y,width,height)
+  [ ] Tap in draw mode opens size modal / multiple placement patterns
+  [ ] Arrow keys in pan should move canvas
+  [ ] Arrow keys move selected rect(s)
+  [ ] Plus/minus/asterisk keys zoom in/out/reset
+  [ ] Zoom mode (dedicated)
+  [ ] Right click context menu
+  [ ] Double click to edit selection
+  [ ] Copy/cut/paste, prefabs
+  [ ] Align and distribute
+  [ ] Icons for buttons
+
+State / Persistence
+  [x] New / save / load (JSON)
+  [x] Background image persist & fit
+  [x] Visual grid vs snap grid decoupled
+  [ ] Undo/redo restore selection (currently resets style; selection not restored)
+  [ ] Layer groups (saved selections)
+
+Modal System
+  [+] Custom modal implementation
+  [ ] Migrate to <dialog>
+
+Keyboard
+  [x] Ctrl+Z / Ctrl+Shift+Z undo/redo
+  [ ] Arrow keys behaviors (pan / move)
+  [ ] Zoom shortcuts
+
+Quality / Polish
+  [x] Smooth exponential wheel zoom
+  [x] Correct zoom-to-fit centering & minScale clamp
+  [x] Fixed pan drag scaling jump
+  [x] Aspect ratio resize with Shift
+  [ ] Dirty tracking of style changes (currently not tracked)
+  [ ] Inertial panning / double-click zoom
+  [ ] Debug overlay (bounds, center)
+
+Potential Enhancements
+  [ ] Align to selection edges
+  [ ] Distribute spacing horizontally/vertically
+  [ ] Snapshot diff tool for templates
+  [ ] Export optimized/minified doc
+
