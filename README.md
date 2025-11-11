@@ -17,6 +17,7 @@ UI / Interaction
 - [x] Show dx/dy tooltip while dragging (Delta panel)
 - [x] Show selection bounds and style swap
 - [+] Set cursor type (resize & move states implemented; others todo)
+- [ ] Side panels should scroll vertically when window too small (bottom panel horizontally?)
 - [ ] Selected rect form edit (x,y,width,height)
 - [ ] Tap in draw mode opens size modal / multiple placement patterns
 - [ ] Arrow keys in pan should move canvas
