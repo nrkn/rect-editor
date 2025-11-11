@@ -7,8 +7,6 @@ size
 
 ## TODO
 
-- Drag edges/handles to resize
-  - If handle is dragged with `Shift` key down, maintains aspect ratio
 - Selected rect should have a form to edit eg x, y, width, height
   - Disabled if multiselect?
 - If tap in draw mode, location is x,y - modal asks for width and height
