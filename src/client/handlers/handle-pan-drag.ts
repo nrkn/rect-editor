@@ -33,17 +33,19 @@ export const handlePanDrag = (state: State) => {
   return handleAppDrag(
     'pan-drag',
     state,
-    (start, end) => {
+    (_start, end, prev) => {
       const transform = state.viewTransform()
 
-      const v = lineToVector(createLine(start, end))
+      const v = lineToVector(createLine(prev, end))
 
       transform.x += v.x
       transform.y += v.y
 
-
       state.viewTransform(transform)
     },
-    { predicate }
+    {
+      predicate,
+      transformPoint: p => p
+    }
   )
 }

@@ -21,7 +21,8 @@ import { App, AppMode, DocumentData, StateListeners } from './types'
 
 let app: Partial<App> = {}
 
-// --
+// default save name for downloads; updated on file load
+let lastSaveName = 'rects.json'
 
 let defaultData: DocumentData = {
   rects: [],
@@ -149,8 +150,6 @@ const newApp = (
     newDocHandler.enable()    
   })
 
-  let lastSaveName = 'rects.json'
-
   saveButtonEl.addEventListener('click', () => {
     const data: DocumentData = {
       snap: state.snap(),
@@ -236,6 +235,8 @@ const newApp = (
     const file = loadButtonEl.files[0]
 
     if (file) {
+      // use loaded filename for subsequent saves
+      lastSaveName = file.name
       reader.readAsText(file)
     }
   })
