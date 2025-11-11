@@ -23,6 +23,15 @@ let app: Partial<App> = {}
 
 // default save name for downloads; updated on file load
 let lastSaveName = 'rects.json'
+// track unsaved changes
+let hasUnsavedChanges = false
+// guard to suppress marking dirty during initialization
+let isInitializing = false
+// suppress marking dirty on initial background image async load
+let suppressInitialBackgroundImage = false
+
+const markUnsavedIfReady = () => { if (!isInitializing) hasUnsavedChanges = true }
+const shouldPromptClose = () => hasUnsavedChanges
 
 let defaultData: DocumentData = {
   rects: [],
@@ -35,6 +44,7 @@ let defaultData: DocumentData = {
 const newApp = (
   options: Partial<DocumentData> = {}
 ) => {
+  isInitializing = true
   closeApp()
 
   document.querySelector('#new')?.remove()
@@ -42,6 +52,8 @@ const newApp = (
   const { rects, snap, grid, documentSize, backgroundUri } = Object.assign(
     {}, defaultData, options
   )
+
+  suppressInitialBackgroundImage = backgroundUri !== undefined
 
   const appEl = createAppEls()
   const toolsEl = createToolsEls()
@@ -71,8 +83,8 @@ const newApp = (
 
   const listeners: StateListeners = {
     listenAppMode: onAppMode,
-    listenSnapToGrid: updateSnapToGrid,
-    listenVisualGrid: updateVisualGrid,
+    listenSnapToGrid: s => { updateSnapToGrid(s); markUnsavedIfReady() },
+    listenVisualGrid: g => { updateVisualGrid(g); markUnsavedIfReady() },
     listenViewSize: updateDocumentSize,
     listenDocumentSize: size => {
       updateGridSize( size )
@@ -92,6 +104,11 @@ const newApp = (
     listenBackgroundImage: img => {
       if( img !== undefined ){
         updateBackgroundImagePattern( state.documentSize(), img )
+        if (suppressInitialBackgroundImage) {
+          suppressInitialBackgroundImage = false
+        } else {
+          markUnsavedIfReady()
+        }
       }
     }
   }
@@ -106,6 +123,14 @@ const newApp = (
   const handlers = createHandlers(state)
 
   enableHandlers(handlers, ...handlers.keys())
+
+  // mark dirty on rect collection changes
+  state.rects.on.add(() => markUnsavedIfReady())
+  state.rects.on.remove(() => markUnsavedIfReady())
+  state.rects.on.update(() => markUnsavedIfReady())
+  state.rects.on.setOrder(() => markUnsavedIfReady())
+  state.rects.on.undo(() => markUnsavedIfReady())
+  state.rects.on.redo(() => markUnsavedIfReady())
 
   state.mode('draw')
   state.snap(snap)
@@ -130,6 +155,10 @@ const newApp = (
 
   app = { appEl, viewportSectionEl, state, handlers }
 
+  // end initialization, reset dirty flag
+  isInitializing = false
+  hasUnsavedChanges = false
+
   const newButtonEl = button({ id: 'new', type: 'button' }, 'New')
 
   const loadButtonEl = input(
@@ -139,14 +168,13 @@ const newApp = (
   const closeButtonEl = button({ type: 'button' }, 'Close')
 
   closeButtonEl.addEventListener('click', () => {
-    if (confirm('Leave without saving?')) closeApp()
+    if (!shouldPromptClose() || confirm('Leave without saving?')) closeApp()
   })
 
   const newDocHandler = handleModalNewDocument( newApp )  
 
   newButtonEl.addEventListener('click', () => {
-    if (!confirm('Leave without saving?')) return
-
+    if (shouldPromptClose() && !confirm('Leave without saving?')) return
     newDocHandler.enable()    
   })
 
@@ -177,6 +205,7 @@ const newApp = (
     actionEl.click()
 
     actionEl.remove()
+    hasUnsavedChanges = false
   })
 
   const reader = new FileReader()
@@ -184,7 +213,7 @@ const newApp = (
   reader.addEventListener('load',
     () => {
       try {
-        if (!confirm('Leave without saving?')) return
+        if (shouldPromptClose() && !confirm('Leave without saving?')) return
 
         const { result } = reader
 
@@ -235,7 +264,6 @@ const newApp = (
     const file = loadButtonEl.files[0]
 
     if (file) {
-      // use loaded filename for subsequent saves
       lastSaveName = file.name
       reader.readAsText(file)
     }

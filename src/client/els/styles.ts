@@ -84,7 +84,9 @@ const createFillStyle = (id: string, fill: string, checked = false) => {
 }
 
 const updateFillStyle = (id: string, fill: string, checked = false) => {
-  const radioEl = strictSelect<HTMLInputElement>(`input[name="fill"][value="${id}"]`)
+  const radioEl = strictSelect<HTMLInputElement>(
+    `input[name="fill"][value="${id}"]`
+  )
 
   if (checked) {
     attr(radioEl, { checked: '' })

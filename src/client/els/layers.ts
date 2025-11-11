@@ -1,6 +1,6 @@
 import { appRectToFill, getAllRectIds, getAppRects } from '../handlers/util'
 import { selectActions } from '../state/select-actions'
-import { button, fieldset, input, label, legend, li, ol } from '../lib/dom/h'
+import { button, fieldset, input, label, legend, li, ol, span } from '../lib/dom/h'
 import { attr, strictSelect } from '../lib/dom/util'
 import { AppRect, State } from '../types'
 import { styleToFill } from '../state/create-app-styles'
@@ -79,7 +79,7 @@ const createLayerEl = (appRect: AppRect, fill: string, isChecked = false) => {
     label(
       { style: `background: ${ fill }` },
       inputEl,
-      labelText
+      span( labelText )
     )
   )
 

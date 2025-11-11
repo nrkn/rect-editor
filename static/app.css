@@ -103,8 +103,16 @@ fieldset {
 
 #layers label {
   border: 1px solid #ccc;
-  display: block;
+  display: flex;
+  align-items: center;
   line-height: 2rem;
+}
+
+#layers label span {
+  background: #fff;
+  color: #000;
+  padding: 0 0.5rem;
+  flex: 1;
 }
 
 #modalNew {
