@@ -4,10 +4,9 @@ import { snapPointToGrid } from '../lib/geometry/point'
 import { getEdgePositions } from '../lib/geometry/position'
 import { rectContainsPoint, stringRectToRect } from '../lib/geometry/rect'
 import { translateAndScalePoint } from '../lib/geometry/scale'
-import { Point, Rect, StringRect } from '../lib/geometry/types'
-import { AppMode, AppRect, AppStyle, State } from '../types'
-import { disableHandlers, enableHandlers, getPosition } from '../lib/handlers/util'
-import { Handler } from '../lib/handlers/types'
+import { Point, Positions, Rect, StringRect } from '../lib/geometry/types'
+import { AppRect, AppStyle, State } from '../types'
+import { getPosition } from '../lib/handlers/util'
 import { Collection } from '../lib/collection/types'
 import { styleToFill } from '../state/create-app-styles'
 
@@ -113,12 +112,35 @@ export const getAppRects = (
   return appRects
 }
 
-export const appRectToFill = ( 
-  styles: Collection<AppStyle>, rect: AppRect, opacity: number 
+export const appRectToFill = (
+  styles: Collection<AppStyle>, rect: AppRect, opacity: number
 ) => {
   const styleId = rect['data-style']
-  const style = styles.get( styleId )
-  const fill = styleToFill( style, opacity ) || 'red'  
+  const style = styles.get(styleId)
+  const fill = styleToFill(style, opacity) || 'red'
 
   return fill
+}
+
+export const adjustAspectDelta = (
+  dX: number, dY: number, [xPosition, yPosition]: Positions, aspect: number
+) => {
+  let ax = dX
+  let ay = dY
+
+  if (xPosition !== 'xCenter' && yPosition !== 'yCenter') {
+    if (Math.abs(dX) >= Math.abs(dY)) {
+      ay = Math.sign(dY || dX) * (Math.abs(dX) / aspect)
+    } else {
+      ax = Math.sign(dX || dY) * (Math.abs(dY) * aspect)
+    }
+  } else if (xPosition === 'xCenter') {
+    ax = Math.sign(dX || dY) * (Math.abs(dY) * aspect)
+  } else if (yPosition === 'yCenter') {
+    ay = Math.sign(dY || dX) * (Math.abs(dX) / aspect)
+  }
+
+  const p: Point = { x: ax, y: ay }
+
+  return p
 }

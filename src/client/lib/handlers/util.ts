@@ -19,4 +19,4 @@ export const enableHandlers = <T extends string = string>(
 export const disableHandlers = <T extends string = string>(
   handlers: Map<T, Handler>, ...keys: T[]
 ) =>
-  keys.forEach(key => strictMapGet(handlers, key).enable())
+  keys.forEach(key => strictMapGet(handlers, key).disable())

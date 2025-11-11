@@ -1,4 +1,4 @@
-import { minScale } from '../consts'
+import { defaultGrid, defaultSnap, minScale } from '../consts'
 import { createCollection } from '../lib/collection'
 import { zoomAt } from '../lib/geometry/scale'
 import { zoomToFit } from '../lib/geometry/size'
@@ -17,6 +17,7 @@ export const createState = (
 ) => {
   const mode = createMode( listeners )
   const snap = createSnapToGrid( listeners )
+  const grid = createVisualGrid( listeners )
   const viewSize = createViewSize( listeners )
   const documentSize = createDocumentSize( listeners )
   const currentStyleId = createCurrentStyle( listeners )
@@ -40,7 +41,7 @@ export const createState = (
   }
 
   const state: State = { 
-    mode, snap, viewSize, viewTransform, documentSize, currentStyleId,
+    mode, snap, grid, viewSize, viewTransform, documentSize, currentStyleId,
     backgroundImage,
 
     rects, styles, selector, keys, dirty: true,
@@ -84,7 +85,7 @@ const createMode = ( listeners: StateListeners ) => {
 }
 
 const createSnapToGrid = ( listeners: StateListeners ) => {
-  let size: Size = { width: 16, height: 16 }
+  let size: Size = defaultSnap
 
   const snapSize = ( value?: Size ) => {
     if( value !== undefined ){
@@ -97,6 +98,21 @@ const createSnapToGrid = ( listeners: StateListeners ) => {
   }
 
   return snapSize
+}
+
+const createVisualGrid = ( listeners: StateListeners ) => {
+  let size: Size = defaultGrid
+
+  const gridSize = ( value?: Size ) => {
+    if( value !== undefined ){
+      size = value
+      listeners.listenVisualGrid( size )
+    }
+
+    return size
+  }
+
+  return gridSize
 }
 
 const createViewSize = ( listeners: StateListeners ) => {

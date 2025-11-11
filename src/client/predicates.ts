@@ -10,6 +10,7 @@ export const isAppRect = ( value: any ): value is AppRect =>
 export const isDocumentData = ( value: any ): value is DocumentData => 
   value && 
   isSize( value.snap ) && 
+  isSize( value.grid ) &&
   isSize( value.documentSize ) &&
   Array.isArray( value.rects ) &&
   value.rects.every( isAppRect )

@@ -1,5 +1,7 @@
 import {
-  createSnapTranslatePoint, createTranslatePoint, getAppRects, getResizerPositions
+  adjustAspectDelta,
+  createSnapTranslatePoint, createTranslatePoint, getAppRects,
+  getResizerPositions
 } from './util'
 
 import { attr, strictSelect } from '../lib/dom/util'
@@ -23,15 +25,15 @@ export const handleSelectResizeDrag = (state: State) => {
 
     if (type === 'start') {
       if (e.button !== 0) return false
-      
-      const transformPositionsPoint = createTranslatePoint( state)
-      
+
+      const transformPositionsPoint = createTranslatePoint(state)
+
       const bounds = viewportEl.getBoundingClientRect()
       const positionsPoint = transformPositionsPoint(getPosition(e, bounds))
 
       positions = getResizerPositions(positionsPoint) || null
 
-      console.log( 'resize-drag positions', positions )
+      console.log('resize-drag positions', positions)
 
       if (positions !== null) {
         const [xPosition, yPosition] = positions
@@ -41,7 +43,7 @@ export const handleSelectResizeDrag = (state: State) => {
     }
 
     return positions !== null
-  } 
+  }
 
   const transformPoint = createSnapTranslatePoint(state)
 
@@ -51,8 +53,8 @@ export const handleSelectResizeDrag = (state: State) => {
 
     const delta = deltaPoint(end, prev)
 
-    const dX = delta.x
-    const dY = delta.y
+    let dX = delta.x
+    let dY = delta.y
 
     if (dX === 0 && dY === 0) {
       return
@@ -64,6 +66,20 @@ export const handleSelectResizeDrag = (state: State) => {
 
     if (bounds === undefined) {
       return
+    }
+
+    const isAspectRatio = state.keys.Shift
+    const hasBounds = bounds.width > 0 && bounds.height > 0
+
+    if (isAspectRatio && hasBounds) {
+      const aspect = bounds.width / bounds.height
+      
+      const { x: ax, y: ay } = adjustAspectDelta(
+        dX, dY, positions, aspect
+      )
+
+      dX = ax
+      dY = ay
     }
 
     appRects.forEach(appRect => {

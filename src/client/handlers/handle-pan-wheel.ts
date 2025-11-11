@@ -1,7 +1,7 @@
 import { strictSelect } from '../lib/dom/util'
 import { State } from '../types'
 import { createHandler } from '../lib/handlers/create-handler'
-
+import { zoomIntensity } from '../consts'
 
 export const handlePanWheel = (state: State) => {
   const viewportEl = strictSelect<HTMLElement>('#viewport')
@@ -16,7 +16,8 @@ export const handlePanWheel = (state: State) => {
     const x = clientX - left
     const y = clientY - top
 
-    const newScale = scale + deltaY * -0.1
+    const factor = Math.exp(-deltaY * zoomIntensity)
+    const newScale = scale * factor
 
     state.zoomAt({ x, y, scale: newScale })
   }

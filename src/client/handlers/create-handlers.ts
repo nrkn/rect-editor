@@ -25,6 +25,7 @@ import { handleSnapGrid } from './handle-snap-grid'
 import { handleStyles } from './handle-styles'
 import { handleViewportResetZoom } from './handle-viewport-reset-zoom'
 import { handleViewportResize } from './handle-viewport-resize'
+import { handleVisualGrid } from './handle-visual-grid.js'
 
 export const createHandlers = (state: State) => {
   const handlers = new Map<string, Handler>()
@@ -72,6 +73,7 @@ export const createHandlers = (state: State) => {
   addHandler(handleSelectResizeDrag(state))
 
   addHandler(handleSnapGrid(state))
+  addHandler(handleVisualGrid(state))
 
   addHandler(handleStyles(state))
 

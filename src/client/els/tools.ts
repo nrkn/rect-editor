@@ -30,6 +30,12 @@ export const createToolsEls = () => {
       label('Width', input({ id: 'snap-width', type: 'number', min: 1, step: 1 })),
       label('Height', input({ id: 'snap-height', type: 'number', min: 1, step: 1 }))
     ),
+    fieldset(
+      { id: 'visualGrid' },
+      legend('Visual Grid'),
+      label('Width', input({ id: 'grid-width', type: 'number', min: 1, step: 1 })),
+      label('Height', input({ id: 'grid-height', type: 'number', min: 1, step: 1 }))
+    ),
     createStyles()
   )
 
@@ -44,12 +50,20 @@ export const updateAppMode = (mode: AppMode) => {
   modeRadioNodes.value = mode
 }
 
-export const updateSnapToGrid = ( size: Size) => {
+export const updateSnapToGrid = (size: Size) => {
   const widthInputEl = strictSelect<HTMLInputElement>('#snap-width')
   const heightInputEl = strictSelect<HTMLInputElement>('#snap-height')
 
   widthInputEl.valueAsNumber = size.width
   heightInputEl.valueAsNumber = size.height
-  
-  updateGridPattern( size )
+}
+
+export const updateVisualGrid = (size: Size) => {
+  const widthInputEl = strictSelect<HTMLInputElement>('#grid-width')
+  const heightInputEl = strictSelect<HTMLInputElement>('#grid-height')
+
+  widthInputEl.valueAsNumber = size.width
+  heightInputEl.valueAsNumber = size.height
+
+  updateGridPattern(size)
 }

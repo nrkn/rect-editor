@@ -1,4 +1,3 @@
-import { updateGridPattern } from '../els/grid-pattern'
 import { strictSelect } from '../lib/dom/util'
 import { createHandler } from '../lib/handlers/create-handler'
 import { State } from '../types'

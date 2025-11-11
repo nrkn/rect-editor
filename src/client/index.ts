@@ -1,3 +1,4 @@
+import { defaultGrid, defaultSnap } from './consts.js'
 import { createAppEls } from './els/app'
 import { updateBackgroundImagePattern } from './els/background-pattern'
 import { createDocumentEl, updateBackgroundImageSize, updateBodyTransform, updateDocumentSize, updateGridSize } from './els/document'
@@ -5,7 +6,7 @@ import { createInfo } from './els/info'
 import { createLayers, updateLayersEl } from './els/layers'
 import { hideModal } from './els/modal'
 import { updateStyles } from './els/styles'
-import { createToolsEls, updateAppMode, updateSnapToGrid } from './els/tools'
+import { createToolsEls, updateAppMode, updateSnapToGrid, updateVisualGrid } from './els/tools'
 import { createHandlers } from './handlers/create-handlers'
 import { handleModalNewDocument } from './handlers/handle-modal-new-document'
 import { setMode } from './handlers/handle-mode-change'
@@ -24,7 +25,8 @@ let app: Partial<App> = {}
 
 let defaultData: DocumentData = {
   rects: [],
-  snap: { width: 16, height: 16 },
+  snap: defaultSnap,
+  grid: defaultGrid,
   documentSize: { width: 1000, height: 1000 }
 }
 
@@ -35,7 +37,9 @@ const newApp = (
 
   document.querySelector('#new')?.remove()
 
-  const { rects, snap, documentSize } = Object.assign({}, defaultData, options)
+  const { rects, snap, grid, documentSize } = Object.assign(
+    {}, defaultData, options
+  )
 
   const appEl = createAppEls()
   const toolsEl = createToolsEls()
@@ -66,6 +70,7 @@ const newApp = (
   const listeners: StateListeners = {
     listenAppMode: onAppMode,
     listenSnapToGrid: updateSnapToGrid,
+    listenVisualGrid: updateVisualGrid,
     listenViewSize: updateDocumentSize,
     listenDocumentSize: size => {
       updateGridSize( size )
@@ -102,6 +107,7 @@ const newApp = (
 
   state.mode('draw')
   state.snap(snap)
+  state.grid(grid)
   state.documentSize(documentSize)
 
   state.rects.add(rects)
@@ -145,6 +151,7 @@ const newApp = (
   saveButtonEl.addEventListener('click', () => {
     const data: DocumentData = {
       snap: state.snap(),
+      grid: state.grid(),
       documentSize: state.documentSize(),
       rects: state.rects.toArray()
     }
@@ -181,7 +188,7 @@ const newApp = (
 
         if (!maybeDocument) throw Error('Expected file to be in JSON format')
 
-        let { rects, snap, documentSize } = defaultData
+        let { rects, snap, grid, documentSize } = defaultData
 
         if (
           Array.isArray(maybeDocument.rects) &&
@@ -194,11 +201,15 @@ const newApp = (
           snap = maybeDocument.snap
         }
 
+        if (isSize(maybeDocument.grid)) {
+          grid = maybeDocument.grid
+        }
+
         if (isSize(maybeDocument.documentSize)) {
           documentSize = maybeDocument.documentSize
         }
 
-        newApp({ rects, snap, documentSize })
+        newApp({ rects, snap, grid, documentSize })
       } catch (err:any) {
         alert(err.message || 'An unknown error occurred')
       }

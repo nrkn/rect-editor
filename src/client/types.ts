@@ -12,7 +12,10 @@ export type StateFn<T> = ( value?: T ) => T
 
 export type State = {
   mode: StateFn<AppMode>
-  snap: StateFn<Size>,
+  // snap to grid size
+  snap: StateFn<Size>
+  // visual grid
+  grid: StateFn<Size>
   viewSize: StateFn<Size>
   viewTransform: StateFn<ScaleTransform>
   documentSize: StateFn<Size>
@@ -30,6 +33,7 @@ export type State = {
 export type StateListeners = {
   listenAppMode: Listener<AppMode>
   listenSnapToGrid: Listener<Size>
+  listenVisualGrid: Listener<Size>
   listenViewSize: Listener<Size>
   listenDocumentSize: Listener<Size>
   listenViewTransform: Listener<ScaleTransform>
@@ -57,6 +61,7 @@ export type AppStyle = {
 
 export type DocumentData = {
   snap: Size
+  grid: Size
   documentSize: Size
   rects: AppRect[]
 }

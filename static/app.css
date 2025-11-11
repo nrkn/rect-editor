@@ -56,14 +56,14 @@ fieldset {
   gap: 1rem;
 }
 
-#pointerMode label, #snapToGrid label {
+#pointerMode label, #snapToGrid label, #visualGrid label {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   gap: 0.25rem;
 }
 
-#pointerMode fieldset, #snapToGrid fieldset {
+#pointerMode fieldset, #snapToGrid fieldset, #visualGrid fieldset {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;

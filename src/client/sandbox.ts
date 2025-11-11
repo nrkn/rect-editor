@@ -1,3 +1,4 @@
+import { defaultGrid, defaultSnap } from './consts.js'
 import { createAppEls } from './els/app'
 import { 
   createDocumentEl, updateBodyTransform, updateDocumentSize 
@@ -18,7 +19,8 @@ let app: Partial<App> = {}
 
 let defaultData: DocumentData = {
   rects: [],
-  snap: { width: 16, height: 16 },
+  snap: defaultSnap,
+  grid: defaultGrid,
   documentSize: { width: 1000, height: 1000 }
 }
 
@@ -51,7 +53,8 @@ const newApp = (
     listenBackgroundImage: noop,
     listenCurrentStyle: noop,
     listenDocumentSize: noop,
-    listenSnapToGrid: noop
+    listenSnapToGrid: noop,
+    listenVisualGrid: noop
   }
 
   const state = createState([], listeners as StateListeners )
