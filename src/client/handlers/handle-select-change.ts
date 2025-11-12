@@ -20,6 +20,7 @@ export const handleSelectChange = (state: State) => {
     if (ids.length === 0) {
       if( lastStyleId !== '' ){
         state.currentStyleId( lastStyleId )
+        lastStyleId = ''
       }
 
       existing?.remove()
