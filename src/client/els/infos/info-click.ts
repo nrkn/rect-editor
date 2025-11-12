@@ -1,14 +1,14 @@
 import { fieldset, legend } from '../../lib/dom/h'
 import { strictSelect } from '../../lib/dom/util'
 import { Point } from '../../lib/geometry/types'
-import { createInfoLabel } from '../util'
+import { createInfoNumLabel } from '../util'
 
 export const createClickEl = () => {
   const fieldsetEl = fieldset(
     { id: 'click' },
     legend( 'Last Click' ),  
-    createInfoLabel( 'x', 'clickX' ),
-    createInfoLabel( 'y', 'clickY' )
+    createInfoNumLabel( 'x', 'clickX' ),
+    createInfoNumLabel( 'y', 'clickY' )
   )
   
   return fieldsetEl

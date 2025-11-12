@@ -1,6 +1,6 @@
 import { label, input } from '../lib/dom/h'
 
-export const createInfoLabel = (
+export const createInfoNumLabel = (
   caption: string, id = caption
 ) =>
   label(

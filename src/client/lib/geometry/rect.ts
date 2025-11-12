@@ -83,24 +83,35 @@ export const scaleRect = (
 export const rectToStringRect = (
   { x, y, width, height }: Rect
 ): StringRect => (
-    {
-      x: String(x),
-      y: String(y),
-      width: String(width),
-      height: String(height)
-    }
-  )
+  {
+    x: String(x),
+    y: String(y),
+    width: String(width),
+    height: String(height)
+  }
+)
+
+export const rectToStringRectFixed = (
+  { x, y, width, height }: Rect, fractionDigits = 1
+): StringRect => (
+  {
+    x: x.toFixed(fractionDigits),
+    y: y.toFixed(fractionDigits),
+    width: width.toFixed(fractionDigits),
+    height: height.toFixed(fractionDigits)
+  }
+)
 
 export const stringRectToRect = (
   { x, y, width, height }: StringRect
 ): Rect => (
-    {
-      x: Number(x),
-      y: Number(y),
-      width: Number(width),
-      height: Number(height)
-    }
-  )
+  {
+    x: Number(x),
+    y: Number(y),
+    width: Number(width),
+    height: Number(height)
+  }
+)
 
 export const growRect = (rect: Rect, ...args: number[]) => {
   let { x, y, width, height } = rect
@@ -238,9 +249,9 @@ export const scaleRectFrom = <T extends Rect>(
 
   // return rect
 
-  const sidesRect = rectToSidesRect( bounds )
+  const sidesRect = rectToSidesRect(bounds)
 
-  let grown = growSidesRectByDelta( sidesRect, delta, origin )
+  let grown = growSidesRectByDelta(sidesRect, delta, origin)
 
   if (maintainAspect) {
     const [originX, originY] = origin
@@ -260,27 +271,27 @@ export const scaleRectFrom = <T extends Rect>(
     }
   }
 
-  const newBoundsRect =  sidesRectToRect( grown )
+  const newBoundsRect = sidesRectToRect(grown)
 
   let flipX = false
   let flipY = false
 
-  if( newBoundsRect.width < 0 ){
+  if (newBoundsRect.width < 0) {
     flipX = true
     newBoundsRect.x += newBoundsRect.width * 2
     newBoundsRect.width *= -1
   }
 
-  if( newBoundsRect.height < 0 ){
+  if (newBoundsRect.height < 0) {
     flipY = true
     newBoundsRect.y += newBoundsRect.height * 2
     newBoundsRect.height *= -1
   }
 
-  if( newBoundsRect.width === 0 || newBoundsRect.height === 0 ) return
+  if (newBoundsRect.width === 0 || newBoundsRect.height === 0) return
 
-  appRect = scaleRectFromBounds( appRect, bounds, newBoundsRect )
-  appRect = flipRectInBounds( appRect, newBoundsRect, flipX, flipY )
+  appRect = scaleRectFromBounds(appRect, bounds, newBoundsRect)
+  appRect = flipRectInBounds(appRect, newBoundsRect, flipX, flipY)
 
   return appRect
 }
@@ -322,7 +333,7 @@ export const flipRectInBounds = <T extends Rect>(
     x = bounds.width - x - width
   }
 
-  if( flipY ){
+  if (flipY) {
     y = bounds.height - y - height
   }
 
