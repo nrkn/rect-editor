@@ -82,6 +82,41 @@ export const handleSelectResizeDrag = (state: State) => {
       dY = ay
     }
 
+    // detect crossing (flip) and swap handle positions so subsequent deltas
+    // behave as if the user grabbed the opposite handle after crossing
+    const [xPos, yPos] = positions
+    const left = bounds.x
+    const right = bounds.x + bounds.width
+    const top = bounds.y
+    const bottom = bounds.y + bounds.height
+
+    // new sides based on current origin positions and delta
+    let newLeft = left
+    let newRight = right
+    let newTop = top
+    let newBottom = bottom
+
+    if (xPos === 'left') newLeft += dX
+    if (xPos === 'right') newRight += dX
+    if (yPos === 'top') newTop += dY
+    if (yPos === 'bottom') newBottom += dY
+
+    const predictedWidth = newRight - newLeft
+    const predictedHeight = newBottom - newTop
+
+    let flippedX = false
+    let flippedY = false
+
+    if (predictedWidth < 0) {
+      flippedX = true
+      positions[0] = xPos === 'left' ? 'right' : 'left'
+    }
+
+    if (predictedHeight < 0) {
+      flippedY = true
+      positions[1] = yPos === 'top' ? 'bottom' : 'top'
+    }
+
     appRects.forEach(appRect => {
       const el = strictSelect(`#${appRect.id}`)
 
