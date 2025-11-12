@@ -1,6 +1,4 @@
-import { updateDeltaEl } from '../../els/infos/info-delta'
 import { strictSelect } from '../../lib/dom/util'
-import { deltaPoint } from '../../lib/geometry/point'
 import { State } from '../../types'
 import { createTranslatePoint } from '../util'
 import { DragOptions, OnHandleDrag } from '../../lib/handlers/types'
@@ -16,11 +14,8 @@ export const handleAppDrag = (
 
   const { onStart, onEnd } = opts
 
-  const onDragWithDelta: OnHandleDrag = ( start, end, prev ) => {
+  const onDragWrapped: OnHandleDrag = ( start, end, prev ) => {
     onDrag( start, end, prev )
-
-    updateDeltaEl(deltaPoint(end,start), name)
-    
     //console.log( name, 'dragging' )
   }
 
@@ -32,12 +27,10 @@ export const handleAppDrag = (
     //console.log( name, 'drag start', start )
   }
 
-  const onDragEndWithDelta: OnHandleDrag = ( start, end, prev ) => {
+  const onDragEnd: OnHandleDrag = ( start, end, prev ) => {
     if( onEnd !== undefined ){
       onEnd( start, end, prev )
     }
-
-    updateDeltaEl()
     //console.log( name, 'drag end', start, end )
   }
 
@@ -51,9 +44,9 @@ export const handleAppDrag = (
     opts,
     {
       onStart: onDragStart,
-      onEnd: onDragEndWithDelta
+      onEnd: onDragEnd
     }
   )
 
-  return handleDrag( name, viewportEl, onDragWithDelta, options )
+  return handleDrag( name, viewportEl, onDragWrapped, options )
 }
