@@ -17,6 +17,7 @@ export const handleViewportKeys = (state: State) => {
   const down = (e: KeyboardEvent) => {
     // avoid interfering with text inputs/contenteditable
     const target = e.target as HTMLElement | null
+
     if (
       target && target.closest('input, textarea, [contenteditable="true"]')
     ) return
@@ -29,6 +30,7 @@ export const handleViewportKeys = (state: State) => {
       zoomAtCenter(1.1)
     } else if (key === '-') {
       e.preventDefault()
+      
       zoomAtCenter(1 / 1.1)
     } else if (key === '*') {
       e.preventDefault()
