@@ -10,7 +10,7 @@ import { createToolsEls, updateAppMode, updateSnapToGrid, updateVisualGrid } fro
 import { createHandlers } from './handlers/create-handlers'
 import { handleModalNewDocument } from './handlers/handle-modal-new-document'
 import { setMode } from './handlers/handle-mode-change'
-import { a, button, input } from './lib/dom/h'
+import { a, button, input, label } from './lib/dom/h'
 import { strictMapGet, strictSelect } from './lib/dom/util'
 import { isSize } from './lib/geometry/predicates'
 import { enableHandlers } from './lib/handlers/util'
@@ -162,8 +162,9 @@ const newApp = (
   const newButtonEl = button({ id: 'new', type: 'button' }, 'New')
 
   const loadButtonEl = input(
-    { id: 'load', type: 'file', accept: '.json' }, 'Load'
+    { id: 'load', type: 'file', accept: '.json' }
   )
+  const openButtonEl = button({ id: 'open', type: 'button' }, 'Open')
   const saveButtonEl = button({ id: 'save', type: 'button' }, 'Save')
   const closeButtonEl = button({ type: 'button' }, 'Close')
 
@@ -177,6 +178,8 @@ const newApp = (
     if (shouldPromptClose() && !confirm('Leave without saving?')) return
     newDocHandler.enable()    
   })
+
+  openButtonEl.addEventListener('click', () => loadButtonEl.click())
 
   saveButtonEl.addEventListener('click', () => {
     const data: DocumentData = {
@@ -271,7 +274,7 @@ const newApp = (
 
   headerEl.append(
     newButtonEl,
-    loadButtonEl,
+    label({ for: 'load'},loadButtonEl,openButtonEl),
     saveButtonEl
     //, closeButtonEl
   )

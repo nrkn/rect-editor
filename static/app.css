@@ -12,15 +12,20 @@ body {
   margin: 0;
 }
 
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
 fieldset {
+  background-color: #f6f6f6;
   border: 1px solid #ccc;
 }
 
 #app {
   display: grid;
   grid-template-rows: auto 1fr auto;
-  width: 100vw;
-  height: 100vh;
+  height: 100%;
   overflow: hidden;  
   position: relative;
 }
@@ -29,11 +34,24 @@ fieldset {
   padding: 1rem;
 }
 
+#app > header {
+  background-color: #39f;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+#app > footer {
+  background-color: #eee;
+  border-top: 1px solid #bbb;
+}
+
 #app > header h1 {
-  font-size: 1rem;
+  font-size: 1.25rem;
   font-weight: normal;
-  display: inline-block;
-  margin-right: 2rem;
+  margin: 0;
+  margin-right: 0.75rem;
 }
 
 #app > footer {
@@ -46,8 +64,14 @@ fieldset {
   margin: auto 0;
 }
 
+#load {
+  display: none;
+}
+
 #tools {
-  padding: 0 1rem;
+  padding: 1rem;
+  height: 100%;
+  overflow-y: auto;
 }
 
 #tools form {
@@ -93,7 +117,9 @@ fieldset {
 }
 
 #layers {
-  overflow-y: auto;
+  height: 100%;
+  overflow-y: auto;  
+  padding: 1rem;
 }
 
 #layers ol {
@@ -143,6 +169,7 @@ main {
   display: grid;
   grid-template-columns: auto 1fr auto;
   overflow: hidden;
+  height: 100%;
 }
 
 #viewport {
@@ -163,7 +190,7 @@ main {
 
 #info input {
   border: 1px solid #eee;
-  width: 3rem;
+  width: 4rem;
   text-align: right;
 }
 
@@ -190,7 +217,7 @@ main {
 }
 
 svg#document {
-  background: #ddd;
+  background: #aaa;
   width: 100%;
   height: 100%;
   display: block;

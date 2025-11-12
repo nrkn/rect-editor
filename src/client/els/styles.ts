@@ -1,4 +1,4 @@
-import { fieldset, input, label } from '../lib/dom/h'
+import { fieldset, input, label, legend } from '../lib/dom/h'
 import { attr, strictSelect } from '../lib/dom/util'
 import { styleToFill } from '../state/create-app-styles'
 import { State } from '../types'
@@ -7,7 +7,8 @@ const defaultOpacity = 0.75
 
 export const createStyles = () => {
   const stylesEl = fieldset(
-    { id: 'styles' }
+    { id: 'styles' },
+    legend('Styles')
   )
 
   return stylesEl
