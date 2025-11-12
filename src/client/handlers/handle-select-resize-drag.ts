@@ -20,6 +20,10 @@ export const handleSelectResizeDrag = (state: State) => {
   const viewportEl = strictSelect<HTMLElement>('#viewport')
   let positions: Positions | null = null
 
+  // freeze aspect ratio at start of gesture so it doesn't drift
+  // if lock disengages or flips occur
+  let initialAspect: number | null = null
+
   const predicate = (e: MouseEvent, type: DragEventType) => {
     if (state.mode() !== 'select') return false
 
@@ -39,6 +43,17 @@ export const handleSelectResizeDrag = (state: State) => {
         const [xPosition, yPosition] = positions
 
         if (xPosition === 'xCenter' && yPosition === 'yCenter') return false
+
+        // intial aspect ratio of the selection
+        const ids = getSelected()
+        const appRects = getAppRects(ids)
+        const b = getBoundingRect(appRects)
+
+        if (b && b.width > 0 && b.height > 0) {
+          initialAspect = b.width / b.height
+        } else {
+          initialAspect = null
+        }
       }
     }
 
@@ -53,8 +68,12 @@ export const handleSelectResizeDrag = (state: State) => {
 
     const delta = deltaPoint(end, prev)
 
-    let dX = delta.x
-    let dY = delta.y
+    // Raw pointer delta (snapped in transformPoint already)
+    const rawDX = delta.x
+    const rawDY = delta.y
+
+    let dX = rawDX
+    let dY = rawDY
 
     if (dX === 0 && dY === 0) {
       return
@@ -71,16 +90,10 @@ export const handleSelectResizeDrag = (state: State) => {
     const isAspectRatio = state.keys.Shift
     const hasBounds = bounds.width > 0 && bounds.height > 0
 
-    if (isAspectRatio && hasBounds) {
-      const aspect = bounds.width / bounds.height
-      
-      const { x: ax, y: ay } = adjustAspectDelta(
-        dX, dY, positions, aspect
-      )
-
-      dX = ax
-      dY = ay
-    }
+    // use the aspect ratio from gesture start when available
+    const aspect = initialAspect ?? (
+      hasBounds ? (bounds.width / bounds.height) : undefined
+    )
 
     // detect crossing (flip) and swap handle positions so subsequent deltas
     // behave as if the user grabbed the opposite handle after crossing
@@ -90,16 +103,16 @@ export const handleSelectResizeDrag = (state: State) => {
     const top = bounds.y
     const bottom = bounds.y + bounds.height
 
-    // new sides based on current origin positions and delta
+    // new sides based on current origin positions and RAW (unconstrained) delta
     let newLeft = left
     let newRight = right
     let newTop = top
     let newBottom = bottom
 
-    if (xPos === 'left') newLeft += dX
-    if (xPos === 'right') newRight += dX
-    if (yPos === 'top') newTop += dY
-    if (yPos === 'bottom') newBottom += dY
+    if (xPos === 'left') newLeft += rawDX
+    if (xPos === 'right') newRight += rawDX
+    if (yPos === 'top') newTop += rawDY
+    if (yPos === 'bottom') newBottom += rawDY
 
     const predictedWidth = newRight - newLeft
     const predictedHeight = newBottom - newTop
@@ -117,13 +130,27 @@ export const handleSelectResizeDrag = (state: State) => {
       positions[1] = yPos === 'top' ? 'bottom' : 'top'
     }
 
+    // after establishing final positions (with any flips), apply aspect 
+    // constraint using RAW deltas so prediction doesn't trigger flips
+    if (isAspectRatio && hasBounds && aspect !== undefined) {
+      const { x: ax2, y: ay2 } = adjustAspectDelta(
+        rawDX, rawDY, positions, aspect
+      )
+
+      dX = ax2
+      dY = ay2
+    } else {
+      dX = rawDX
+      dY = rawDY
+    }
+
     appRects.forEach(appRect => {
       const el = strictSelect(`#${appRect.id}`)
 
       if (positions === null) return
 
       const scaledRect = scaleRectFrom(
-        bounds, appRect, { x: dX, y: dY }, positions
+        bounds, appRect, { x: dX, y: dY }, positions, isAspectRatio
       )
 
       if (scaledRect === undefined) return

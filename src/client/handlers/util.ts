@@ -129,15 +129,39 @@ export const adjustAspectDelta = (
   let ay = dY
 
   if (xPosition !== 'xCenter' && yPosition !== 'yCenter') {
-    if (Math.abs(dX) >= Math.abs(dY)) {
-      ay = Math.sign(dY || dX) * (Math.abs(dX) / aspect)
-    } else {
-      ax = Math.sign(dX || dY) * (Math.abs(dY) * aspect)
-    }
+
+    // corner drag: work in width/height delta space with handle-relative signs,
+    // project onto the aspect line, then map back to x/y deltas for the 
+    // dragged sides
+    // map pointer delta to width/height change according to which side 
+    // is moved
+    const wDelta = xPosition === 'right' ? dX : -dX
+    const hDelta = yPosition === 'bottom' ? dY : -dY
+
+    // in (w,h) space, the aspect line is b = (aspect, 1) so that h = w/aspect
+    const bw = aspect
+    const bh = 1
+    const denom = bw * bw + bh * bh
+    const t = denom === 0 ? 0 : ((wDelta * bw + hDelta * bh) / denom)
+
+    const wAdj = t * bw
+    const hAdj = t * bh
+
+    // back to pointer-space deltas for the dragged edges
+    ax = xPosition === 'right' ? wAdj : -wAdj
+    ay = yPosition === 'bottom' ? hAdj : -hAdj
   } else if (xPosition === 'xCenter') {
-    ax = Math.sign(dX || dY) * (Math.abs(dY) * aspect)
+    const heightDelta = yPosition === 'top' ? -dY : dY
+    const direction = Math.sign(heightDelta || dX || 0)
+    const widthDelta = Math.abs(heightDelta) * aspect
+
+    ax = direction * widthDelta
   } else if (yPosition === 'yCenter') {
-    ay = Math.sign(dY || dX) * (Math.abs(dX) / aspect)
+    const widthDelta = xPosition === 'left' ? -dX : dX
+    const direction = Math.sign(widthDelta || dY || 0)
+    const heightDelta = Math.abs(widthDelta) / aspect
+
+    ay = direction * heightDelta
   }
 
   const p: Point = { x: ax, y: ay }

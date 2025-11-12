@@ -240,7 +240,25 @@ export const scaleRectFrom = <T extends Rect>(
 
   const sidesRect = rectToSidesRect( bounds )
 
-  const grown = growSidesRectByDelta( sidesRect, delta, origin )
+  let grown = growSidesRectByDelta( sidesRect, delta, origin )
+
+  if (maintainAspect) {
+    const [originX, originY] = origin
+
+    if (originX === 'xCenter' && delta.x !== 0) {
+      const halfDeltaX = delta.x / 2
+
+      grown.left -= halfDeltaX
+      grown.right += halfDeltaX
+    }
+
+    if (originY === 'yCenter' && delta.y !== 0) {
+      const halfDeltaY = delta.y / 2
+
+      grown.top -= halfDeltaY
+      grown.bottom += halfDeltaY
+    }
+  }
 
   const newBoundsRect =  sidesRectToRect( grown )
 
