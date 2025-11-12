@@ -22,12 +22,12 @@ UI / Interaction
 - [ ] Tap in draw mode opens size modal / multiple placement patterns
 - [ ] Arrow keys in pan should move canvas
 - [ ] Arrow keys move selected rect(s)
-- [ ] Plus/minus/asterisk keys zoom in/out/reset
+- [x] Plus/minus/asterisk keys zoom in/out/reset
 - [ ] Zoom mode (dedicated)
 - [ ] Right click context menu
 - [ ] Double click to edit selection
 - [ ] Copy/cut/paste, prefabs
-- [ ] Align and distribute
+- [ ] Align and distribute, selection or canvas
 - [ ] Icons for buttons
 
 State / Persistence
@@ -44,7 +44,7 @@ Modal System
 Keyboard
 - [x] Ctrl+Z / Ctrl+Shift+Z undo/redo
 - [ ] Arrow keys behaviors (pan / move)
-- [ ] Zoom shortcuts
+- [x] Zoom shortcuts
 
 Quality / Polish
 - [x] Smooth exponential wheel zoom
@@ -54,10 +54,4 @@ Quality / Polish
 - [ ] Dirty tracking of style changes (currently not tracked)
 - [ ] Inertial panning / double-click zoom
 - [ ] Debug overlay (bounds, center)
-
-Potential Enhancements
-- [ ] Align to selection edges
-- [ ] Distribute spacing horizontally/vertically
-- [ ] Snapshot diff tool for templates
-- [ ] Export optimized/minified doc
 

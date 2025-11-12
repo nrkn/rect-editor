@@ -26,6 +26,7 @@ import { handleStyles } from './handle-styles'
 import { handleViewportResetZoom } from './handle-viewport-reset-zoom'
 import { handleViewportResize } from './handle-viewport-resize'
 import { handleVisualGrid } from './handle-visual-grid.js'
+import { handleViewportKeys } from './handle-viewport-keys'
 
 export const createHandlers = (state: State) => {
   const handlers = new Map<string, Handler>()
@@ -79,6 +80,7 @@ export const createHandlers = (state: State) => {
 
   addHandler(handleViewportResetZoom(state))
   addHandler(handleViewportResize(state))
+  addHandler(handleViewportKeys(state))
 
   // ---
 
