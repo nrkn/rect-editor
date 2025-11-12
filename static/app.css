@@ -22,6 +22,10 @@ fieldset {
   border: 1px solid #ccc;
 }
 
+button {
+  font-size: 1rem;
+}
+
 #app {
   display: grid;
   grid-template-rows: auto 1fr auto;
@@ -39,19 +43,23 @@ fieldset {
   color: #fff;
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 #app > footer {
   background-color: #eee;
   border-top: 1px solid #bbb;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 #app > header h1 {
   font-size: 1.25rem;
   font-weight: normal;
   margin: 0;
-  margin-right: 0.75rem;
+  margin-right: 0.5rem;
 }
 
 #app > footer {
@@ -71,19 +79,26 @@ fieldset {
 #tools {
   padding: 1rem;
   height: 100%;
-  overflow-y: auto;
+  overflow: auto;
 }
 
 #tools form {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  overflow: hidden;
+}
+
+#actionButtons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 #pointerMode label, #snapToGrid label, #visualGrid label {
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.25rem;
 }
 
@@ -108,8 +123,8 @@ fieldset {
 #styles label {
   border: 1px solid #ccc;
   display: flex;
-  width: 4rem;
-  height: 4rem;
+  width: 3rem;
+  height: 3rem;
 }
 
 #styles label input {
@@ -118,13 +133,20 @@ fieldset {
 
 #layers {
   height: 100%;
-  overflow-y: auto;  
+  overflow: auto;  
   padding: 1rem;
+}
+
+#layersActionButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 #layers ol {
   list-style: none;
   padding-left: 0;
+  margin-bottom: 0;
 }
 
 #layers label {
@@ -132,6 +154,10 @@ fieldset {
   display: flex;
   align-items: center;
   line-height: 2rem;
+}
+
+#layers label:empty {
+  min-height: 1rem;
 }
 
 #layers label span {

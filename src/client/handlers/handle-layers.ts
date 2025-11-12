@@ -23,7 +23,7 @@ export const handleLayers = (state: State) => {
       el => el.value
     )
 
-    console.log('layer fieldset changed')
+    //console.log('layer fieldset changed')
     setSelection(ids)
   }
 

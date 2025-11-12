@@ -28,7 +28,7 @@ export const handleSelectMoveDrag = (state: State) => {
       const positionsPoint = transformPositionsPoint(getPosition(e, bounds))
       const positions = getResizerPositions(positionsPoint)
 
-      console.log( 'move-drag positions', positions )
+      //console.log( 'move-drag positions', positions )
 
       if (positions === undefined) return true
 

@@ -33,7 +33,7 @@ export const handleSelectResizeDrag = (state: State) => {
 
       positions = getResizerPositions(positionsPoint) || null
 
-      console.log('resize-drag positions', positions)
+      //console.log('resize-drag positions', positions)
 
       if (positions !== null) {
         const [xPosition, yPosition] = positions

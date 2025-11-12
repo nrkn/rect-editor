@@ -21,7 +21,7 @@ export const handleAppDrag = (
 
     updateDeltaEl(deltaPoint(end,start), name)
     
-    console.log( name, 'dragging' )
+    //console.log( name, 'dragging' )
   }
 
   const onDragStart: OnHandleDrag = ( start, end, prev ) => {
@@ -29,7 +29,7 @@ export const handleAppDrag = (
       onStart( start, end, prev )
     }
 
-    console.log( name, 'drag start', start )
+    //console.log( name, 'drag start', start )
   }
 
   const onDragEndWithDelta: OnHandleDrag = ( start, end, prev ) => {
@@ -38,7 +38,7 @@ export const handleAppDrag = (
     }
 
     updateDeltaEl()
-    console.log( name, 'drag end', start, end )
+    //console.log( name, 'drag end', start, end )
   }
 
   const defaultOptions: Partial<DragOptions> = {
