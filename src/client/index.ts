@@ -1,12 +1,17 @@
 import { defaultGrid, defaultSnap } from './consts.js'
 import { createAppEls } from './els/app'
 import { updateBackgroundImagePattern } from './els/background-pattern'
-import { createDocumentEl, updateBackgroundImageSize, updateBodyTransform, updateDocumentSize, updateGridSize } from './els/document'
+import { 
+  createDocumentEl, updateBackgroundImageSize, updateBodyTransform, 
+  updateDocumentSize, updateGridSize 
+} from './els/document'
 import { createInfo } from './els/info'
 import { createLayers, updateLayersEl } from './els/layers'
 import { hideModal } from './els/modal'
 import { updateStyles } from './els/styles'
-import { createToolsEls, updateAppMode, updateSnapToGrid, updateVisualGrid } from './els/tools'
+import { 
+  createToolsEls, updateAppMode, updateSnapToGrid, updateVisualGrid 
+} from './els/tools'
 import { createHandlers } from './handlers/create-handlers'
 import { handleModalNewDocument } from './handlers/handle-modal-new-document'
 import { setMode } from './handlers/handle-mode-change'
@@ -30,7 +35,10 @@ let isInitializing = false
 // suppress marking dirty on initial background image async load
 let suppressInitialBackgroundImage = false
 
-const markUnsavedIfReady = () => { if (!isInitializing) hasUnsavedChanges = true }
+const markUnsavedIfReady = () => { 
+  if (!isInitializing) hasUnsavedChanges = true 
+}
+
 const shouldPromptClose = () => hasUnsavedChanges
 
 let defaultData: DocumentData = {
