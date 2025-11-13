@@ -1,10 +1,10 @@
 import { defaultGrid, defaultSnap } from './consts.js'
-import { createAppEls } from './els/app'
+import { createAppEls } from './views/app.js'
 import { 
   createDocumentEl, updateBodyTransform, updateDocumentSize 
-} from './els/document'
+} from './views/document.js'
 
-import { hideModal } from './els/modal'
+import { hideModal } from './views/modal.js'
 import { button, input } from './lib/dom/h'
 import { strictMapGet, strictSelect } from './lib/dom/util'
 import { isSize } from './lib/geometry/predicates'

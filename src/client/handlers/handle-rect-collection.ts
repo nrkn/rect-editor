@@ -1,4 +1,4 @@
-import { createAppRectEl, updateAppRectEl } from '../els/rect'
+import { createAppRectEl, updateAppRectEl } from '../views/rect'
 import { strictSelect } from '../lib/dom/util'
 import { AppRect, State } from '../types'
 import { selectActions } from '../state/select-actions'

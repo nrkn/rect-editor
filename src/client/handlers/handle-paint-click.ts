@@ -3,7 +3,7 @@ import { ClickPredicate, OnHandleClick } from '../lib/handlers/types'
 import { handleAppClick } from './helpers/handle-app-click'
 import { getAllRectIds, getAppRects } from './util'
 import { rectContainsPoint } from '../lib/geometry/rect'
-import { updateAppRectEl } from '../els/rect'
+import { updateAppRectEl } from '../views/rect'
 
 export const handlePaintClick = (state: State) => {  
   const click: OnHandleClick = (point, _button) => {    

@@ -1,6 +1,6 @@
 import { handleSize } from '../consts'
-import { updateInfoSelection } from '../els/infos/info-selection'
-import { updateResizer, createResizer } from '../els/resizer'
+import { updateInfoSelection } from '../views/infos/info-selection'
+import { updateResizer, createResizer } from '../views/resizer'
 import { strictSelect, getRectElRect } from '../lib/dom/util'
 import { getBoundingRect } from '../lib/geometry/rect'
 import { createHandler } from '../lib/handlers/create-handler'

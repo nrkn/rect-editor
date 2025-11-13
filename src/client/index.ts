@@ -1,17 +1,17 @@
 import { defaultGrid, defaultSnap } from './consts.js'
-import { createAppEls } from './els/app'
-import { updateBackgroundImagePattern } from './els/background-pattern'
+import { createAppEls } from './views/app.js'
+import { updateBackgroundImagePattern } from './views/background-pattern.js'
 import { 
   createDocumentEl, updateBackgroundImageSize, updateBodyTransform, 
   updateDocumentSize, updateGridSize 
-} from './els/document'
-import { createInfo } from './els/info'
-import { createLayers, updateLayersEl } from './els/layers'
-import { hideModal } from './els/modal'
-import { updateStyles } from './els/styles'
+} from './views/document.js'
+import { createInfo } from './views/info.js'
+import { createLayers, updateLayersEl } from './views/layers.js'
+import { hideModal } from './views/modal.js'
+import { updateStyles } from './views/styles.js'
 import { 
   createToolsEls, updateAppMode, updateSnapToGrid, updateVisualGrid 
-} from './els/tools'
+} from './views/tools.js'
 import { createHandlers } from './handlers/create-handlers'
 import { handleModalNewDocument } from './handlers/handle-modal-new-document'
 import { setMode } from './handlers/handle-mode-change'

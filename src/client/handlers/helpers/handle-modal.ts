@@ -1,4 +1,4 @@
-import { updateModal, showModal, hideModal } from '../../els/modal'
+import { updateModal, showModal, hideModal } from '../../views/modal'
 import { strictSelect } from '../../lib/dom/util'
 import { createHandler } from '../../lib/handlers/create-handler'
 
