@@ -14,7 +14,6 @@ Legend:
 
 UI / Interaction
 - [x] Arrange rect(s) (bring forward/back) with undo/redo
-- [x] Show dx/dy tooltip while dragging (Delta panel)
 - [x] Show selection bounds and style swap
 - [+] Set cursor type (resize & move states implemented; others todo)
 - [x] Side panels should scroll vertically when window too small (bottom panel horizontally?)

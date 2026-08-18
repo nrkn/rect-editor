@@ -4,7 +4,6 @@ import { AppRect, State } from '../types'
 import { selectActions } from '../state/select-actions'
 import { Listener } from '../lib/events/types'
 import { createHandler } from '../lib/handlers/create-handler'
-import { getRectEls } from './util'
 
 export const handleRectCollection = (
   state: State
